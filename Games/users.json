@@ -1,0 +1,20 @@
+[
+  {
+    "user_id": "usr_demo01",
+    "display_name": "SkyStrategist",
+    "avatar": "🚀",
+    "created_at": "2026-11-01T08:00:00Z"
+  },
+  {
+    "user_id": "usr_demo02",
+    "display_name": "NashMaster",
+    "avatar": "♟️",
+    "created_at": "2026-11-01T09:30:00Z"
+  },
+  {
+    "user_id": "usr_demo03",
+    "display_name": "HorizonExec",
+    "avatar": "✈️",
+    "created_at": "2026-11-02T10:15:00Z"
+  }
+]

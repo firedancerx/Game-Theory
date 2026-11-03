@@ -1,0 +1,32 @@
+{
+  "leaderboard": [
+    {
+      "user_id": "usr_demo02",
+      "display_name": "NashMaster",
+      "video_score": 1450,
+      "sim_score": 920,
+      "overall_score": 3290,
+      "last_active": "2026-11-02T14:20:00Z"
+    },
+    {
+      "user_id": "usr_demo01",
+      "display_name": "SkyStrategist",
+      "video_score": 1820,
+      "sim_score": 680,
+      "overall_score": 3180,
+      "last_active": "2026-11-02T15:45:00Z"
+    },
+    {
+      "user_id": "usr_demo03",
+      "display_name": "HorizonExec",
+      "video_score": 980,
+      "sim_score": 850,
+      "overall_score": 2680,
+      "last_active": "2026-11-02T16:10:00Z"
+    }
+  ],
+  "modules_unlocked": [
+    "lesson_01"
+  ],
+  "version": "1.0.0"
+}
