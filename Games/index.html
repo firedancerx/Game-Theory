@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Executive Game Theory Platform • Master Games Portal</title>
+  <style>
+    :root {
+      --bg: #0b1120;
+      --card-bg: #1e293b;
+      --card-border: #334155;
+      --accent: #38bdf8;
+      --accent-glow: rgba(56, 189, 248, 0.35);
+      --gold: #f59e0b;
+      --emerald: #10b981;
+      --rose: #f43f5e;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); min-height: 100vh; padding: 32px 16px; display: flex; flex-direction: column; align-items: center; }
+    .portal-container { max-width: 1040px; width: 100%; display: flex; flex-direction: column; gap: 28px; }
+    
+    /* Header */
+    header { text-align: center; border-bottom: 1px solid var(--card-border); padding-bottom: 24px; }
+    header h1 { font-size: 2.2rem; color: var(--text); letter-spacing: -0.5px; margin-bottom: 8px; }
+    header h1 span { color: var(--accent); }
+    header p { color: var(--text-muted); font-size: 1.05rem; }
+    .meta-pills { display: flex; justify-content: center; gap: 12px; margin-top: 14px; flex-wrap: wrap; }
+    .pill { background: #131b2e; border: 1px solid var(--card-border); padding: 6px 14px; border-radius: 9999px; font-size: 0.85rem; font-weight: 600; }
+    .pill-live { border-color: var(--emerald); color: var(--emerald); }
+    .pill-gold { border-color: var(--gold); color: var(--gold); }
+
+    /* Featured Active Module */
+    .section-title { font-size: 1.25rem; font-weight: 700; color: var(--accent); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+    .active-card { background: linear-gradient(145deg, #1e293b, #0f172a); border: 2px solid var(--accent); border-radius: 14px; padding: 26px; box-shadow: 0 12px 30px rgba(0,0,0,0.5), 0 0 20px var(--accent-glow); display: flex; flex-direction: column; gap: 18px; }
+    .card-top { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px; }
+    .mod-tag { font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--emerald); background: rgba(16, 185, 129, 0.15); padding: 4px 10px; border-radius: 6px; border: 1px solid var(--emerald); }
+    .mod-title { font-size: 1.5rem; font-weight: 700; color: #ffffff; }
+    .mod-desc { color: var(--text-muted); font-size: 0.98rem; line-height: 1.6; }
+    
+    /* Game Action Buttons */
+    .game-actions-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 6px; }
+    .game-btn-card { background: #131b2e; border: 1px solid var(--card-border); border-radius: 10px; padding: 18px; display: flex; flex-direction: column; justify-content: space-between; gap: 12px; transition: all 0.2s; text-decoration: none; color: inherit; }
+    .game-btn-card:hover { border-color: var(--accent); transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.4); background: #1a253c; }
+    .btn-header { display: flex; justify-content: space-between; align-items: center; }
+    .btn-header h3 { font-size: 1.15rem; color: var(--accent); }
+    .badge { font-size: 0.75rem; font-weight: 700; padding: 3px 8px; border-radius: 4px; }
+    .badge-arcade { background: #3b82f6; color: white; }
+    .badge-sim { background: var(--gold); color: #0f172a; }
+    .btn-body p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; }
+    .btn-launch { background: linear-gradient(135deg, #0284c7, #2563eb); color: white; padding: 10px 18px; border-radius: 6px; font-weight: 700; text-align: center; font-size: 0.92rem; margin-top: 6px; display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .btn-launch:hover { filter: brightness(1.1); }
+
+    /* Curriculum Schedule Grid */
+    .schedule-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
+    .sched-item { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 8px; padding: 16px; opacity: 0.8; }
+    .sched-item.active { border-color: var(--emerald); opacity: 1; }
+    .sched-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 0.8rem; font-weight: 700; }
+    .sched-item h4 { font-size: 0.95rem; color: #ffffff; margin-bottom: 4px; }
+    .sched-item p { font-size: 0.82rem; color: var(--text-muted); }
+
+    /* Footer */
+    footer { text-align: center; color: var(--text-muted); font-size: 0.85rem; border-top: 1px solid var(--card-border); padding-top: 20px; }
+  </style>
+</head>
+<body>
+
+<div class="portal-container">
+  <!-- HEADER -->
+  <header>
+    <h1>Executive <span>Game Theory</span> Platform</h1>
+    <p>12-Week Master Architecture • Interactive Video Games & High-Stakes Business Simulations</p>
+    <div class="meta-pills">
+      <span class="pill pill-live">● Lesson 01 Live & Playable</span>
+      <span class="pill pill-gold">2x Leaderboard Scoring Active</span>
+      <span class="pill">30-Module Roadmap</span>
+    </div>
+  </header>
+
+  <!-- FEATURED MODULE 01 -->
+  <section>
+    <div class="section-title">
+      <span>🚀</span> ACTIVE CURRICULUM MODULE
+    </div>
+
+    <div class="active-card">
+      <div class="card-top">
+        <div>
+          <span class="mod-tag">Lesson 01 • Master Release</span>
+          <h2 class="mod-title" style="margin-top:6px;">The Strategic Mindset: Interdependence & Orders of Thinking</h2>
+        </div>
+      </div>
+      <p class="mod-desc">
+        Deconstructing the four formal primitives (N, S, u, I) versus single-agent spreadsheet optimization. 
+        Sharpen your cognitive hierarchy reflexes: test your reaction speed against algorithmic bots in real-time arcade combat, 
+        and command AeroTransit across a 3-round duopoly fare war to avoid ruinous Nash equilibrium price-war collapse.
+      </p>
+
+      <!-- GAME ACTION CARDS WITH DIRECT LINKS -->
+      <div class="game-actions-grid">
+        <!-- GAME 1 -->
+        <a href="Lesson 01/game1_intercept_runner.html" class="game-btn-card">
+          <div>
+            <div class="btn-header">
+              <h3>Game 01: Intercept Runner</h3>
+              <span class="badge badge-arcade">Canvas Arcade</span>
+            </div>
+            <div class="btn-body" style="margin-top:8px;">
+              <p>Navigate a high-speed vector stream, dodge reactive algorithmic interceptors, and capture strategic payoff nodes.</p>
+              <p style="margin-top:6px; color:var(--emerald); font-weight:600; font-size:0.85rem;">⚡ Features 200% Entry Calibration Buff</p>
+            </div>
+          </div>
+          <div class="btn-launch">
+            Play Intercept Runner &rarr;
+          </div>
+        </a>
+
+        <!-- GAME 2 -->
+        <a href="Lesson 01/game2_commuter_route_fare_war.html" class="game-btn-card">
+          <div>
+            <div class="btn-header">
+              <h3>Game 02: Commuter Fare War</h3>
+              <span class="badge badge-sim">Executive Simulation</span>
+            </div>
+            <div class="btn-body" style="margin-top:8px;">
+              <p>Lead AeroTransit across a 3-round commercial route standoff against reactive competitor algorithms.</p>
+              <p style="margin-top:6px; color:var(--gold); font-weight:600; font-size:0.85rem;">🏆 Carries DOUBLE WEIGHT (2x) on Leaderboard</p>
+            </div>
+          </div>
+          <div class="btn-launch" style="background: linear-gradient(135deg, #d97706, #b45309);">
+            Launch Fare War Sim &rarr;
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- UPCOMING MODULES IN THE 30-LESSON CURRICULUM -->
+  <section>
+    <div class="section-title">
+      <span>📚</span> CURRICULUM ROADMAP (LESSONS 02 – 10)
+    </div>
+
+    <div class="schedule-grid">
+      <div class="sched-item">
+        <div class="sched-top"><span style="color:var(--accent);">LESSON 02</span><span style="color:#64748b;">SCHEDULED</span></div>
+        <h4>Payoff Matrices & Ordinal Utility</h4>
+        <p>Mapping 4=Best to 1=Worst utility rankings & capacity wars.</p>
+      </div>
+
+      <div class="sched-item">
+        <div class="sched-top"><span style="color:var(--accent);">LESSON 03</span><span style="color:#64748b;">SCHEDULED</span></div>
+        <h4>Dominant Strategies & Best Responses</h4>
+        <p>Strict vs weak dominance in enterprise contract bidding.</p>
+      </div>
+
+      <div class="sched-item">
+        <div class="sched-top"><span style="color:var(--accent);">LESSON 04</span><span style="color:#64748b;">SCHEDULED</span></div>
+        <h4>Nash Equilibrium & Coordination</h4>
+        <p>Strategic stability in platform ecosystem standards.</p>
+      </div>
+
+      <div class="sched-item">
+        <div class="sched-top"><span style="color:var(--accent);">LESSON 05</span><span style="color:#64748b;">SCHEDULED</span></div>
+        <h4>Sequential Moves & Backward Induction</h4>
+        <p>Game trees and credibility in multi-stage market entry.</p>
+      </div>
+
+      <div class="sched-item">
+        <div class="sched-top"><span style="color:var(--accent);">LESSON 06</span><span style="color:#64748b;">SCHEDULED</span></div>
+        <h4>Commitment Devices & Credible Threats</h4>
+        <p>Burning bridges and golden handcuffs in joint ventures.</p>
+      </div>
+
+      <div class="sched-item">
+        <div class="sched-top"><span style="color:var(--accent);">LESSON 07</span><span style="color:#64748b;">SCHEDULED</span></div>
+        <h4>Simultaneous Price & Quantity Battles</h4>
+        <p>Bertrand vs Cournot dynamics in SaaS and industrial supply.</p>
+      </div>
+
+      <div class="sched-item">
+        <div class="sched-top"><span style="color:var(--accent);">LESSON 08</span><span style="color:#64748b;">SCHEDULED</span></div>
+        <h4>Repeated Games & The Shadow of the Future</h4>
+        <p>Grim triggers, tit-for-tat, and long-term cartels.</p>
+      </div>
+
+      <div class="sched-item">
+        <div class="sched-top"><span style="color:var(--accent);">LESSON 09</span><span style="color:#64748b;">SCHEDULED</span></div>
+        <h4>Asymmetric Information & Signaling</h4>
+        <p>Screening, costly signals, and lemons in M&A valuation.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>Executive Game Theory Master Curriculum • GitHub Pages Deployment</p>
+    <p style="margin-top:6px; font-size:0.8rem;">Repository: <a href="https://github.com/firedancerx/Game-Theory" style="color:var(--accent); text-decoration:none;">github.com/firedancerx/Game-Theory</a></p>
+  </footer>
+</div>
+
+</body>
+</html>
