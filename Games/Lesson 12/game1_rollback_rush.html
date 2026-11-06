@@ -10,7 +10,7 @@
 <script src="../gt_kit.js"></script>
 <script>
 // L12 G1 - Rollback Rush: click the best branch at each node, deepest level first.
-const G=GT.init({lesson:'12',n:1,kind:'video',title:'Rollback Rush',sub:'start at the leaves and fold the tree back to the root',
+const G=GT.init({time:240,lesson:'12',n:1,kind:'video',title:'Rollback Rush',sub:'start at the leaves and fold the tree back to the root',
  how:'Each tree has three levels of decisions. Work <b>backwards</b>: first click the branch each deepest mover will take (highest payoff for them), then the next level, then the root. Wrong clicks cost a life. Each tree has a timer; faster wins more. Five trees.'});
 const W=720,H=360;const cv=GT.el('canvas',{class:'gt-c'});G.body.appendChild(cv);const g=GT.fit(cv,W,H);
 let T,lives=3,ti=0,level=2,tl=40,last=performance.now(),over=false,msg='';

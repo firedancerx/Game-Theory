@@ -10,7 +10,7 @@
 <script src="../gt_kit.js"></script>
 <script>
 // L25 G1 - Stable Pairs: match both sides, remove all blocking pairs.
-const G=GT.init({lesson:'25',n:1,kind:'video',title:'Stable Pairs',sub:'no pair should prefer each other to their partners',
+const G=GT.init({time:240,lesson:'25',n:1,kind:'video',title:'Stable Pairs',sub:'no pair should prefer each other to their partners',
  how:'Four firms (left) and four graduates (right) each rank the other side (1 = best). Click a firm, then a graduate, to pair them (re-click to unpair). A <b>blocking pair</b> is a firm and graduate who prefer each other to their current partners; blocking pairs are shown in red. Remove every blocking pair before time runs out. Four rounds, 40 seconds each.'});
 const W=720,H=300;const cv=GT.el('canvas',{class:'gt-c'});G.body.appendChild(cv);const g=GT.fit(cv,W,H);
 const info=GT.el('div',{class:'gt-card'});G.body.appendChild(info);

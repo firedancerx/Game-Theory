@@ -75,6 +75,7 @@
       <div>Multiplier: <span id="hud-mult" style="color:var(--gold);">1.0x</span></div>
       <div>Shield: <span id="hud-shield" style="color:var(--success);">READY</span></div>
       <div>High: <span id="hud-high" style="color:#cbd5e1;">0</span></div>
+      <div>Time: <span id="hud-time" style="color:var(--success);">2:00</span></div>
     </div>
 
     <div class="canvas-container">
@@ -106,7 +107,9 @@
   </div>
 </div>
 
+<script src="../gt_cert.js"></script>
 <script>
+GTCert.gate();
 // Web Audio API Synthesis for Arcade SFX
 const AudioCtx = window.AudioContext || window.webkitAudioContext;
 let audioCtx = null;
@@ -256,8 +259,11 @@ function resetGame() {
   document.getElementById("hud-high").textContent = highScore;
 }
 
+let runEnd=0,runTick=null;
 function startGame() {
   if (animationId) cancelAnimationFrame(animationId);
+  clearInterval(runTick);runEnd=Date.now()+120000;
+  runTick=setInterval(()=>{if(!gameActive)return;const l=Math.max(0,Math.ceil((runEnd-Date.now())/1000));const e=document.getElementById('hud-time');e.textContent=Math.floor(l/60)+':'+String(l%60).padStart(2,'0');e.style.color=l<=15?'var(--danger)':'var(--success)';if(l<=0)endGame();},250);
   resetGame();
   gameActive = true;
   document.getElementById("debrief-container").style.display = "none";
@@ -395,6 +401,7 @@ function loop() {
 
 function endGame() {
   gameActive = false;
+  clearInterval(runTick);
   playTone(150, "sawtooth", 0.4);
   if (score > highScore) {
     highScore = score;
@@ -404,7 +411,7 @@ function endGame() {
   document.getElementById("debrief-container").style.display = "block";
   const debrief = document.getElementById("debrief-text");
   debrief.innerHTML = `<strong>Simulation Concluded.</strong> Final Score: <strong>${score} pts</strong> (Calibration Buff: ${multiplierBuff}x).<br><br>
-    <strong>Strategic Evaluation:</strong> In this operational run, avoiding unhedged downside risk was just as vital as intercepting high-payoff equilibria. When an organization exposes itself to hazardous price-war moves without strategic shields, unilateral shocks terminate operational viability. Forward-looking players must anticipate counterparty maneuvers before allocating kinetic resources!`;
+    <strong>Strategic Evaluation:</strong> In this operational run, avoiding unhedged downside risk was just as vital as intercepting high-payoff equilibria. When an organization exposes itself to hazardous price-war moves without strategic shields, unilateral shocks terminate operational viability. Forward-looking players must anticipate counterparty maneuvers before allocating kinetic resources!<br><br><button class="btn-primary" onclick="GTCert.show({lesson:'01',n:1,title:'Intercept Runner',kind:'video',score:score})" style="background:linear-gradient(135deg,#d97706,#b45309)">Get Certified</button>`;
 }
 
 // Controls

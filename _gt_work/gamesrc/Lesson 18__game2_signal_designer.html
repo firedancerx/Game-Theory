@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 18 Game 2</title>
+</head>
+<body>
+<script src="../game_storage.js"></script>
+<script src="../gt_kit.js"></script>
+<script>
+// L18 G2 - Signal Designer: set the signal level so it separates strong from weak.
+const G=GT.init({lesson:'18',n:2,kind:'sim',title:'Signal Designer',sub:'make the signal expensive enough for the wrong people',
+ how:'You run a certification scheme. Set the <b>signal level s</b> (e.g. exam difficulty). Strong applicants pay <b>cs</b> per unit, weak applicants pay <b>cw</b> per unit (higher). The reward for being recognised as strong is <b>R</b>. A type takes the signal if R - cost*s &gt; 0. Good design: strong take it and weak do not (<b>separating</b>). Four markets with different costs; then 40 applicants are simulated.'});
+const MK=[{n:'Engineering licence',R:10,cs:1,cw:2},{n:'Executive MBA',R:20,cs:2,cw:3},{n:'Freelance badge',R:6,cs:1,cw:1.2},{n:'Medical board',R:30,cs:2,cw:5}];
+let mi=0,total=0;const ui=GT.el('div',{class:'gt-card'});G.body.appendChild(ui);
+function draw(){const m=MK[mi];ui.innerHTML='';ui.appendChild(GT.el('h3',{style:'color:#38bdf8',html:'Market '+(mi+1)+'/4: '+m.n+' <span class="gt-mu">R='+m.R+', strong cost '+m.cs+'/unit, weak cost '+m.cw+'/unit</span>'}));
+ const r=GT.el('input',{type:'range',class:'gt-r',min:0,max:20,step:.5,value:5});const o=GT.el('p',{class:'gt-mu'});
+ function up(){const s=+r.value,st=m.R-m.cs*s>0,wk=m.R-m.cw*s>0;o.innerHTML='Signal level <b>'+s+'</b>: strong gain '+(m.R-m.cs*s).toFixed(1)+' ('+(st?'take it':'skip')+'), weak gain '+(m.R-m.cw*s).toFixed(1)+' ('+(wk?'take it':'skip')+') &rarr; '+(st&&!wk?'<b class="gt-ok">separating</b>':st&&wk?'<b class="gt-bad">pooling: everyone signals</b>':!st&&!wk?'<b class="gt-bad">nobody signals</b>':'<b class="gt-bad">backwards</b>')}
+ r.oninput=up;up();const b=GT.el('button',{class:'gt-btn gold'},['Fix this level']);
+ b.onclick=()=>{const s=+r.value;let ok=0,wasted=0;for(let i=0;i<40;i++){const strong=Math.random()<.5;const c=strong?m.cs:m.cw;const take=m.R-c*s>0;if(strong&&take)ok++;else if(!strong&&take)ok-=1;if(take)wasted+=c*s}
+  const sep=(m.R-m.cs*s>0)&&(m.R-m.cw*s<=0);const pts=Math.max(0,Math.round((sep?150:20)+ok*3-wasted*0.4));total+=pts;G.setScore(total);
+  ui.innerHTML='';ui.appendChild(GT.el('p',{style:'line-height:1.6',html:'Level '+s+': '+(sep?'<b class="gt-ok">separating equilibrium</b>':'<b class="gt-bad">no separation</b>')+'. Recognised strong applicants: '+Math.max(0,ok)+'. Signalling cost burned: '+wasted.toFixed(0)+' &rarr; +'+pts+'.'}));
+  const n=GT.el('button',{class:'gt-btn gold',style:'margin-top:8px'},[mi<3?'Next market':'Finish']);n.onclick=()=>{mi++;if(mi>=4)G.end('A signal works in the window <b>R/cw &lt; s &lt; R/cs</b>: costly for the weak, affordable for the strong. Set it lower and everyone copies; set it higher and nobody can pay, and in either case you burn value without information.',total);else draw()};ui.appendChild(n)};ui.append(r,o,b)}
+draw();
+
+</script>
+</body>
+</html>

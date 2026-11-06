@@ -155,7 +155,9 @@
   </div>
 </div>
 
+<script src="../gt_cert.js"></script>
 <script>
+GTCert.gate();
 const matrix = {
   "High":   { "High": [2.5, 2.5], "Medium": [1.2, 3.0], "Low": [0.5, 3.5] },
   "Medium": { "High": [3.0, 1.2], "Medium": [2.0, 2.0], "Low": [0.8, 2.8] },
@@ -279,7 +281,7 @@ function finishCampaign() {
     <strong>2x Leaderboard Weighted Score: ${weightedScore} Points</strong>.<br><br>
     ${analysis}<br><br>
     <em>Core Game Theoretic Principle:</em> In repeated interactions, short-term temptation to undercut must be balanced against the discounted present value of retaliatory price wars.
-  `;
+  <br><br><button class="btn-primary" onclick="GTCert.show({lesson:'01',n:2,title:'Commuter Fare War',kind:'sim',score:totalPlayerProfit*2,stars:totalPlayerProfit>=8?5:totalPlayerProfit>=7?4:totalPlayerProfit>=5?3:totalPlayerProfit>=3?2:1})" style="background:linear-gradient(135deg,#d97706,#b45309)">Get Certified</button>`;
 }
 
 function resetCampaign() {

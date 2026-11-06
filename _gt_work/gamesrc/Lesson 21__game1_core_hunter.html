@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 21 Game 1</title>
+</head>
+<body>
+<script src="../game_storage.js"></script>
+<script src="../gt_kit.js"></script>
+<script>
+// L21 G1 - Core Hunter: pick a split of the grand coalition that no sub-coalition can block.
+const G=GT.init({lesson:'21',n:1,kind:'video',title:'Core Hunter',sub:'find a split nobody wants to walk out of',
+ how:'Three parties can create a joint surplus. Each pair can also deal alone for the value shown. Click inside the triangle to choose how the grand-coalition surplus is split (corners give everything to one party). A split is in the <b>core</b> when every pair gets at least what it could earn alone. You have 15 seconds per puzzle; some puzzles have <b>no core</b> - press <b>No core</b> then. Six puzzles.'});
+const W=420,H=380;const cv=GT.el('canvas',{class:'gt-c',style:'max-width:420px'});G.body.appendChild(cv);const g=GT.fit(cv,W,H);
+const info=GT.el('div',{class:'gt-card'});G.body.appendChild(info);
+const row=GT.el('div',{class:'gt-row',style:'justify-content:center'});const nb=GT.el('button',{class:'gt-btn',onclick:()=>nocore()},['No core exists']);row.appendChild(nb);G.body.appendChild(row);
+const PZ=[{V:100,ab:60,ac:50,bc:40},{V:100,ab:80,ac:70,bc:60},{V:90,ab:40,ac:40,bc:40},{V:120,ab:90,ac:80,bc:70},{V:100,ab:55,ac:55,bc:55},{V:60,ab:50,ac:45,bc:40}];
+const P=[[W/2,30],[40,H-50],[W-40,H-50]];let pi=0,tl=15,last=performance.now(),pick=null,over=false,done=false;
+const core=(p)=>p.ab>=0&&true;
+function hasCore(z){return z.ab+z.ac+z.bc<=2*z.V}
+function bary(x,y){const [a,b,c]=P;const d=(b[1]-c[1])*(a[0]-c[0])+(c[0]-b[0])*(a[1]-c[1]);const l1=((b[1]-c[1])*(x-c[0])+(c[0]-b[0])*(y-c[1]))/d,l2=((c[1]-a[1])*(x-c[0])+(a[0]-c[0])*(y-c[1]))/d;return [l1,l2,1-l1-l2]}
+function inCore(z,s){const [a,b,c]=s.map(v=>v*z.V);return a+b>=z.ab-1e-9&&a+c>=z.ac-1e-9&&b+c>=z.bc-1e-9}
+function show(){const z=PZ[pi];info.innerHTML='<b>Puzzle '+(pi+1)+'/6</b>: grand coalition surplus <b>'+z.V+'</b>. Alone: A+B '+z.ab+', A+C '+z.ac+', B+C '+z.bc+'. Time '+Math.max(0,tl|0)+'s'}
+cv.addEventListener('pointerdown',e=>{if(over||done)return;const p=GT.ptr(cv,W,H,e);const s=bary(p.x,p.y);if(s.some(v=>v<-0.001))return;pick=p;const z=PZ[pi];const ok=inCore(z,s);
+ done=true;if(ok){G.add(Math.round(100+tl*8))}else G.add(0);info.innerHTML+='<br>'+(ok?'<b class="gt-ok">In the core!</b>':'<b class="gt-bad">Blocked: some pair earns more alone. </b>')+' Split A '+(s[0]*z.V).toFixed(0)+' / B '+(s[1]*z.V).toFixed(0)+' / C '+(s[2]*z.V).toFixed(0);setTimeout(adv,1500)});
+function nocore(){if(over||done)return;done=true;const z=PZ[pi];const right=!hasCore(z);if(right)G.add(Math.round(150+tl*8));info.innerHTML+='<br>'+(right?'<b class="gt-ok">Correct, the core is empty.</b>':'<b class="gt-bad">A core exists here</b> (pair demands sum to '+(z.ab+z.ac+z.bc)+' &le; '+2*z.V+').');setTimeout(adv,1500)}
+function adv(){pi++;if(pi>=6){over=true;G.end('The <b>core</b> is the set of splits no coalition can improve on by leaving. It can be a large region, a single point, or empty: when pair demands are too high (sum of pair values above twice the total) no stable deal exists.',G.score)}else{pick=null;done=false;tl=15;show()}}
+function f(now){const dt=(now-last)/1000;last=now;if(!over){if(!done){tl-=dt;if(tl<=0){done=true;setTimeout(adv,200)}}
+ g.clearRect(0,0,W,H);g.fillStyle='#0b1220';g.fillRect(0,0,W,H);const z=PZ[pi];
+ g.beginPath();g.moveTo(...P[0]);g.lineTo(...P[1]);g.lineTo(...P[2]);g.closePath();g.fillStyle='rgba(239,68,68,.12)';g.fill();g.strokeStyle='#475569';g.stroke();
+ if(done||tl<8){const N=32;for(let i=0;i<=N;i++)for(let j=0;j<=N-i;j++){const s=[i/N,j/N,1-i/N-j/N];if(inCore(z,s)){const x=P[0][0]*s[0]+P[1][0]*s[1]+P[2][0]*s[2],y=P[0][1]*s[0]+P[1][1]*s[1]+P[2][1]*s[2];g.fillStyle='rgba(16,185,129,.55)';g.fillRect(x-4,y-4,8,8)}}}
+ g.fillStyle='#e2e8f0';g.font='700 14px sans-serif';g.fillText('A',P[0][0]-5,P[0][1]-8);g.fillText('B',P[1][0]-16,P[1][1]+16);g.fillText('C',P[2][0]+8,P[2][1]+16);
+ if(pick){g.fillStyle='#fbbf24';g.beginPath();g.arc(pick.x,pick.y,7,0,7);g.fill()}
+ g.fillStyle='#94a3b8';g.font='11px sans-serif';g.fillText('green hints appear after the picks or at 8s',10,H-8);
+ if(!done)info.firstChild&&show();requestAnimationFrame(f)}}
+show();requestAnimationFrame(f);
+
+</script>
+</body>
+</html>

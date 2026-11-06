@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 24 Game 2</title>
+</head>
+<body>
+<script src="../game_storage.js"></script>
+<script src="../gt_kit.js"></script>
+<script>
+// L24 G2 - Sealed Bid Lab: choose a shading level and see expected profit by Monte Carlo.
+const G=GT.init({lesson:'24',n:2,kind:'sim',title:'Sealed Bid Lab',sub:'how much should you shade in a first-price auction?',
+ how:'Five labs. In a sealed-bid first-price auction your value is uniformly random in 0-100 and rivals bid a fraction of their values. Choose your <b>bid factor</b> (bid = factor x value) with the slider; the lab simulates 2,000 auctions and plots expected profit against the factor. In the last two labs you face more rivals or a second-price rule. Score = profit relative to the best possible factor.'});
+const LAB=[{n:2,r:.5,t:'first',d:'2 bidders'},{n:4,r:.75,t:'first',d:'4 bidders'},{n:8,r:.875,t:'first',d:'8 bidders'},{n:4,r:.75,t:'second',d:'second-price rule, 4 bidders'},{n:6,r:.83,t:'first',d:'6 bidders, rivals shade less (0.9)',rf:.9}];
+let li=0,total=0;const ui=GT.el('div',{class:'gt-card'});G.body.appendChild(ui);
+function sim(L,f){let s=0;const N=2000;for(let i=0;i<N;i++){const v=Math.random()*100;const rf=L.rf||(L.n-1)/L.n;let hi=0,hi2=0;for(let j=0;j<L.n-1;j++){const b=Math.random()*100*rf;if(b>hi){hi2=hi;hi=b}else if(b>hi2)hi2=b}const bid=v*f;if(bid>hi){s+=L.t==='first'?v-bid:v-hi}}return s/N}
+function draw(){const L=LAB[li];ui.innerHTML='';ui.appendChild(GT.el('h3',{style:'color:#38bdf8',html:'Lab '+(li+1)+'/5: '+L.d}));
+ const curve=[];for(let f=.1;f<=1.001;f+=.05)curve.push([f,sim(L,f)]);const maxp=Math.max(...curve.map(c=>c[1]));
+ const cv=GT.el('canvas',{class:'gt-c'});ui.appendChild(cv);const g=GT.fit(cv,640,200);
+ const r=GT.el('input',{type:'range',class:'gt-r',min:10,max:100,step:5,value:100});const o=GT.el('div',{class:'gt-mu'});
+ function up(){const f=r.value/100;g.clearRect(0,0,640,200);g.fillStyle='#0b1220';g.fillRect(0,0,640,200);g.strokeStyle='#10b981';g.beginPath();curve.forEach((c,i)=>{const x=30+(c[0]-.1)/.9*580,y=180-c[1]/maxp*150;i?g.lineTo(x,y):g.moveTo(x,y)});g.stroke();g.fillStyle='#f59e0b';const x=30+(f-.1)/.9*580;g.fillRect(x-2,20,4,160);g.fillStyle='#94a3b8';g.font='11px sans-serif';g.fillText('bid factor 0.1 ... 1.0 (curve = expected profit)',30,196);o.innerHTML='Bid factor <b>'+f.toFixed(2)+'</b>'}
+ r.oninput=up;up();const b=GT.el('button',{class:'gt-btn gold',style:'margin-top:8px'},['Submit factor']);
+ b.onclick=()=>{const f=r.value/100;const mine=curve.reduce((a,c)=>Math.abs(c[0]-f)<Math.abs(a[0]-f)?c:a)[1];const bestc=curve.reduce((a,c)=>c[1]>a[1]?c:a);const pts=Math.round(Math.max(0,mine/maxp)*150);total+=pts;G.setScore(total);
+  ui.appendChild(GT.el('p',{html:'Expected profit at '+f.toFixed(2)+': <b>'+mine.toFixed(1)+'</b>. Best factor ~<b>'+bestc[0].toFixed(2)+'</b> ('+bestc[1].toFixed(1)+'). +'+pts}));b.disabled=true;
+  const n=GT.el('button',{class:'gt-btn gold'},[li<4?'Next lab':'Finish']);n.onclick=()=>{li++;if(li>=5)G.end('In first-price auctions the optimal bid is <b>below value</b> (about (n-1)/n of it in the uniform case); in second-price auctions bidding your value is dominant. More rivals means less shading.',total);else draw()};ui.appendChild(n)};ui.append(r,o,b)}
+draw();
+
+</script>
+</body>
+</html>

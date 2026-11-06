@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 13 Game 2</title>
+</head>
+<body>
+<script src="../game_storage.js"></script>
+<script src="../gt_kit.js"></script>
+<script>
+// L13 G2 - Lock-In Lab: pick a commitment device for each entry-deterrence case.
+const G=GT.init({lesson:'13',n:2,kind:'sim',title:'Lock-In Lab',sub:'which lock makes your threat believable?',
+ how:'Five entry-deterrence cases. A rival will enter unless your threat to fight is <b>credible</b>. Choose a commitment device: <b>None</b> (free), <b>Public pledge</b> (cost 10, weak), <b>Sunk capacity</b> (cost 30, strong, irreversible), <b>Long-term contract</b> (cost 20, medium, flexible). Each rival type reads credibility differently. Profit = market value if deterred minus lock cost; if the rival enters, fights cost you more with some locks.'});
+const CASES=[{n:'Airline vs low-cost entrant',v:120,r:{none:.2,pledge:.4,sunk:.9,contract:.65},fight:{none:-60,pledge:-60,sunk:-20,contract:-40}},
+ {n:'Retail incumbent vs online entrant',v:100,r:{none:.1,pledge:.25,sunk:.8,contract:.7},fight:{none:-50,pledge:-50,sunk:-25,contract:-30}},
+ {n:'Software platform vs open-source clone',v:140,r:{none:.15,pledge:.5,sunk:.6,contract:.8},fight:{none:-70,pledge:-60,sunk:-40,contract:-30}},
+ {n:'Supplier vs integrated rival (rival ignores pledges)',v:110,r:{none:.1,pledge:.12,sunk:.85,contract:.6},fight:{none:-60,pledge:-60,sunk:-20,contract:-40}},
+ {n:'Telecom vs challenger (regulator blocks sunk build)',v:130,r:{none:.2,pledge:.35,sunk:.3,contract:.75},fight:{none:-60,pledge:-55,sunk:-55,contract:-35}}];
+const COST={none:0,pledge:10,sunk:30,contract:20};let ci=0,total=0;const ui=GT.el('div',{class:'gt-card'});G.body.appendChild(ui);
+function draw(){const c=CASES[ci];ui.innerHTML='';ui.appendChild(GT.el('h3',{style:'color:#38bdf8',html:'Case '+(ci+1)+'/5: '+c.n}));
+ ui.appendChild(GT.el('p',{class:'gt-mu',html:'Market value if deterred: <b>'+c.v+'</b>. If the rival enters and you fight you lose between 20 and 70 depending on the lock.'}));
+ const row=GT.el('div',{class:'gt-row',style:'margin:10px 0'});[['none','None (0)'],['pledge','Public pledge (10)'],['sunk','Sunk capacity (30)'],['contract','Long-term contract (20)']].forEach(([k,l])=>row.appendChild(GT.el('button',{class:'gt-btn',onclick:()=>pick(k)},[l])));ui.appendChild(row)}
+function pick(k){const c=CASES[ci];const deter=Math.random()<c.r[k];let d=-COST[k];d+=deter?c.v:c.fight[k];total+=d+60;G.setScore(Math.max(0,total));
+ ui.innerHTML='';ui.appendChild(GT.el('p',{style:'line-height:1.6',html:'You chose <b>'+k+'</b>; the rival was '+(deter?'<b>deterred</b>':'<b>not deterred</b> and entered')+'. Net '+(d>=0?'+':'')+d+' (+60 base).'}));
+ const n=GT.el('button',{class:'gt-btn gold',style:'margin-top:10px'},[ci<4?'Next case':'Finish']);n.onclick=()=>{ci++;if(ci>=5)G.end('A commitment must be <b>visible, costly to reverse and relevant</b> to the rival. Cheap talk (pledges) rarely moves a determined entrant; irreversible capacity does, unless regulation or flexibility needs rule it out.',Math.max(0,total));else draw()};ui.appendChild(n)}
+draw();
+
+</script>
+</body>
+</html>

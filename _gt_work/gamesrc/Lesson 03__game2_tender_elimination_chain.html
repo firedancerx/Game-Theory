@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 03 Game 2</title>
+</head>
+<body>
+<script src="../game_storage.js"></script>
+<script src="../gt_kit.js"></script>
+<script>
+// Lesson 03 Game 2 - Tender Elimination Chain (iterated elimination of strictly dominated strategies, procedurally generated).
+const G=GT.init({lesson:'03',n:2,kind:'sim',title:'Tender Elimination Chain',sub:'iterated elimination in a contract-bidding standoff',
+ how:'You advise two bidders. Delete strategies <b>one at a time</b>: pick any option that is <b>strictly dominated within the strategies still alive</b> (worse than another surviving option against every surviving rival move). After a deletion, new dominated options may appear. When nothing can be deleted, tap the surviving outcome. Hints cost points. Three tenders.'});
+const NR=3,NC=3;let total=0,round=0;
+function simulate(m){let R=[0,1,2],C=[0,1,2],steps=0;for(;;){let ch=false;
+ for(const a of R.slice())for(const b of R){if(a===b)continue;if(C.every(c=>m[b][c][0]>m[a][c][0])){R=R.filter(x=>x!==a);ch=true;steps++;break}}
+ if(ch)continue;
+ for(const a of C.slice())for(const b of C){if(a===b)continue;if(R.every(r=>m[r][b][1]>m[r][a][1])){C=C.filter(x=>x!==a);ch=true;steps++;break}}
+ if(!ch)break}return {R,C,steps}}
+function gen(){for(let t=0;t<20000;t++){const m=[];for(let i=0;i<NR;i++){m.push([]);for(let j=0;j<NC;j++)m[i].push([GT.ri(1,9),GT.ri(1,9)])}
+ const s=simulate(m);if(s.steps>=3&&s.R.length===1&&s.C.length===1)return m}return null}
+const ui=GT.el('div',{class:'gt-card'});G.body.appendChild(ui);
+let m,R,C,found,tenderPts,stepsDone;
+function start(){m=gen();R=[0,1,2];C=[0,1,2];tenderPts=0;stepsDone=0;found=false;draw('Delete a strictly dominated strategy. Bidder 1 (Row) payoffs first, Bidder 2 (Column) second.')}
+function domRows(){return R.filter(a=>R.some(b=>b!==a&&C.every(c=>m[b][c][0]>m[a][c][0])))}
+function domCols(){return C.filter(a=>C.some(b=>b!==a&&R.every(r=>m[r][b][1]>m[r][a][1])))}
+function draw(msg,hint){ui.innerHTML='';
+ ui.appendChild(GT.el('h3',{style:'color:#38bdf8;margin-bottom:8px',html:'Tender '+(round+1)+' of 3 &nbsp;<span class="gt-mu">strategies left: '+R.length+' x '+C.length+'</span>'}));
+ const dr=domRows(),dc=domCols(),end=(!dr.length&&!dc.length);
+ const tb=GT.el('table',{class:'gt-t'});let h='<tr><th></th>';
+ for(let j=0;j<NC;j++){h+='<th>'+(C.includes(j)?'<button class="gt-btn" data-c="'+j+'" style="padding:4px 8px">Cut Bid '+'XYZ'[j]+'</button>':'<s class="gt-mu">Bid '+'XYZ'[j]+'</s>')+'</th>'}tb.innerHTML=h+'</tr>';
+ for(let i=0;i<NR;i++){const tr=GT.el('tr',{});tr.appendChild(GT.el('th',{html:R.includes(i)?'<button class="gt-btn" data-r="'+i+'" style="padding:4px 8px">Cut Bid '+'ABC'[i]+'</button>':'<s class="gt-mu">Bid '+'ABC'[i]+'</s>'}));
+  for(let j=0;j<NC;j++){const alive=R.includes(i)&&C.includes(j);const isH=hint&&((hint[0]==='r'&&hint[1]===i)||(hint[0]==='c'&&hint[1]===j));
+   const td=GT.el('td',{html:'<span class="gt-ok">'+m[i][j][0]+'</span> , <span class="gt-bad">'+m[i][j][1]+'</span>',style:(alive?'':'opacity:.2;')+(isH?'background:#3a2f12;':'')});
+   if(end&&alive){td.style.cursor='pointer';td.style.outline='2px dashed #38bdf8';td.addEventListener('click',()=>final(i,j))}
+   tr.appendChild(td)}
+  tb.appendChild(tr)}
+ ui.appendChild(tb);
+ ui.querySelectorAll('button[data-r]').forEach(b=>b.onclick=()=>cut('r',+b.dataset.r));
+ ui.querySelectorAll('button[data-c]').forEach(b=>b.onclick=()=>cut('c',+b.dataset.c));
+ const row=GT.el('div',{class:'gt-row',style:'margin-top:12px'});
+ if(!end&&!found)row.appendChild(GT.el('button',{class:'gt-btn gold',onclick:()=>{G.add(-20);tenderPts-=20;const t=dr.length?['r',dr[0]]:['c',dc[0]];draw('Hint (-20): the highlighted line is strictly dominated right now.',t)}},['Hint (-20)']));
+ ui.appendChild(row);
+ ui.appendChild(GT.el('p',{class:'gt-mu',style:'margin-top:10px;min-height:22px',html:end&&!found?'<b>No dominated strategies remain.</b> Tap the surviving cell (dashed outline).':(msg||'')}))}
+function cut(w,x){const dr=domRows(),dc=domCols();const ok=w==='r'?dr.includes(x):dc.includes(x);
+ if(ok){if(w==='r')R=R.filter(a=>a!==x);else C=C.filter(a=>a!==x);G.add(60);tenderPts+=60;stepsDone++;draw('Correct (+60). Re-check: has the deletion exposed a new dominated option?')}
+ else{G.add(-30);tenderPts-=30;draw('Not dominated right now (-30). Compare it only against options still alive.')}}
+function final(i,j){if(found)return;found=true;const ok=R.length===1&&C.length===1;
+ if(R.length===1&&C.length===1&&R[0]===i&&C[0]===j){G.add(100);draw('Correct (+100): ('+m[i][j][0]+', '+m[i][j][1]+') is the only outcome that survives every deletion - and rational bidders land there.')}
+ else{G.add(-20);draw('That cell is not the survivor.')}
+ const b=GT.el('button',{class:'gt-btn pri',style:'margin-top:12px'},[round<2?'Next tender':'Finish']);b.onclick=()=>{if(round<2){round++;start()}else G.end('Three tenders solved by iterated elimination. The power of the method: you never needed to guess what the rival "would do" - you only deleted what no rational bidder would ever play.',G.score)};ui.appendChild(b)}
+start();
+
+</script>
+</body>
+</html>

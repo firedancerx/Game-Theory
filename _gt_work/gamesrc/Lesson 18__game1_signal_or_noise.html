@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 18 Game 1</title>
+</head>
+<body>
+<script src="../game_storage.js"></script>
+<script src="../gt_kit.js"></script>
+<script>
+// L18 G1 - Signal or Noise: hire/pass conveyor, reading costly signals vs cheap talk.
+const G=GT.init({lesson:'18',n:1,kind:'video',title:'Signal or Noise',sub:'every candidate says they are great - who can prove it?',
+ how:'Candidates ride a conveyor. Every one says <b>"I am top talent"</b> (cheap talk, worthless). Look at the <b>costly signals</b>: a hard credential (certified project) is expensive for weak candidates to fake; a free badge is easy for all. Click <b>Hire</b> (H) or <b>Pass</b> (P) before they leave. Strong hire +10, weak hire -8, passing a strong -3. 24 candidates.'});
+const W=720,H=220;const cv=GT.el('canvas',{class:'gt-c'});G.body.appendChild(cv);const g=GT.fit(cv,W,H);
+const row=GT.el('div',{class:'gt-row',style:'justify-content:center'});row.append(GT.el('button',{class:'gt-btn pri',onclick:()=>dec(true)},['Hire (H)']),GT.el('button',{class:'gt-btn',onclick:()=>dec(false)},['Pass (P)']));G.body.appendChild(row);
+let n=0,cur=null,x=-100,last=performance.now(),tot=0,over=false,flash='';
+function mk(){const strong=Math.random()<.45;const cred=strong?Math.random()<.85:Math.random()<.18;const badge=Math.random()<.8;const test=strong?GT.ri(6,10):GT.ri(2,7);return {strong,cred,badge,test,x:-80,done:false}}
+function dec(h){if(!cur||cur.done||over)return;cur.done=true;let d=0;if(h)d=cur.strong?10:-8;else d=cur.strong?-3:0;tot+=d;G.setScore(Math.max(0,tot+50));flash=(h?'Hired':'Passed')+(cur.strong?' a STRONG candidate':' a WEAK candidate')+' ('+(d>=0?'+':'')+d+')';n++;if(n>=24){over=true;G.end('Cheap talk costs nothing so it carries no information; a signal separates types only if it is <b>much cheaper for strong types</b>. Credentials, work samples and costly commitments do that job.',Math.max(0,tot+50))}else{setTimeout(()=>{cur=mk()},350)}}
+addEventListener('keydown',e=>{const k=e.key.toLowerCase();if(k==='h')dec(true);if(k==='p')dec(false)});
+G.setScore(50);cur=mk();
+function f(now){const dt=(now-last)/1000;last=now;if(!over&&cur){cur.x+=dt*(W/5.5);if(cur.x>W+60){if(!cur.done){cur.done=true;if(cur.strong)tot-=3;n++;flash='Missed one';G.setScore(Math.max(0,tot+50));if(n>=24){over=true;G.end('Cheap talk costs nothing so it carries no information; costly signals separate the types.',Math.max(0,tot+50));return}}setTimeout(()=>{cur=mk()},1)}}
+ g.clearRect(0,0,W,H);g.fillStyle='#0b1220';g.fillRect(0,0,W,H);g.fillStyle='#1e293b';g.fillRect(0,160,W,16);
+ if(cur){const c=cur;g.fillStyle=c.done?'#334155':'#38bdf8';g.beginPath();g.arc(c.x,110,22,0,7);g.fill();g.fillRect(c.x-14,130,28,30);g.fillStyle='#fff';g.font='12px sans-serif';g.textAlign='center';g.fillText('"I am top talent!"',c.x,50);
+  g.fillStyle=c.cred?'#10b981':'#475569';g.fillText(c.cred?'[certified project]':'[no certified project]',c.x,70);g.fillStyle=c.badge?'#f59e0b':'#475569';g.fillText(c.badge?'[free badge]':'[no badge]',c.x,86);g.fillStyle='#e2e8f0';g.fillText('trial task: '+c.test+'/10',c.x,200)}
+ g.textAlign='left';g.fillStyle='#fbbf24';g.font='13px sans-serif';g.fillText(flash,10,18);g.fillStyle='#94a3b8';g.fillText('candidate '+Math.min(n+1,24)+'/24   score '+(tot+50),10,H-6);
+ if(!over)requestAnimationFrame(f)}
+requestAnimationFrame(f);
+
+</script>
+</body>
+</html>

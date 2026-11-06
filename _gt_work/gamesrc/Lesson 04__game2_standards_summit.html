@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 04 Game 2</title>
+</head>
+<body>
+<script src="../game_storage.js"></script>
+<script src="../gt_kit.js"></script>
+<script>
+// Lesson 04 Game 2 - Standards Summit (find all pure Nash equilibria, then coordinate on a focal standard).
+const G=GT.init({lesson:'04',n:2,kind:'sim',title:'Standards Summit',sub:'find the equilibria, then agree on a platform standard',
+ how:'<b>Stage 1:</b> in each payoff matrix, tap every cell that is a <b>pure Nash equilibrium</b> (neither side gains by changing alone). <b>Stage 2:</b> you and three partners must pick ONE platform standard. You score only if you match the majority. Partners lean toward the option that stands out - read the room.'});
+const ui=GT.el('div',{class:'gt-card'});G.body.appendChild(ui);let total=0,stage=0,mi=0;
+const MS=[
+ [[[3,3],[0,0],[1,2]],[[0,0],[2,2],[0,1]],[[2,1],[1,0],[1,1]]],
+ [[[4,4],[1,3]],[[3,1],[2,2]]],
+ [[[2,1],[0,0]],[[0,0],[1,2]]],
+ [[[5,1],[4,4],[1,2]],[[3,3],[2,5],[0,0]],[[1,2],[3,1],[2,2]]]];
+function nes(m){const R=m.length,C=m[0].length,out=[];for(let i=0;i<R;i++)for(let j=0;j<C;j++){
+ let ok=true;for(let k=0;k<R;k++)if(m[k][j][0]>m[i][j][0])ok=false;for(let k=0;k<C;k++)if(m[i][k][1]>m[i][j][1])ok=false;if(ok)out.push(i+','+j)}return out}
+let sel=new Set();
+function stage1(){const m=MS[mi];sel=new Set();ui.innerHTML='';
+ ui.appendChild(GT.el('h3',{style:'color:#38bdf8;margin-bottom:8px',html:'Stage 1 &nbsp;<span class="gt-mu">matrix '+(mi+1)+' of '+MS.length+'</span>'}));
+ const tb=GT.el('table',{class:'gt-t'});let h='<tr><th></th>';for(let j=0;j<m[0].length;j++)h+='<th>Col '+(j+1)+'</th>';tb.innerHTML=h+'</tr>';
+ for(let i=0;i<m.length;i++){const tr=GT.el('tr',{});tr.appendChild(GT.el('th',{},['Row '+(i+1)]));
+  for(let j=0;j<m[0].length;j++){const td=GT.el('td',{class:'cell',style:'cursor:pointer',html:m[i][j][0]+' , '+m[i][j][1]});td.dataset.k=i+','+j;
+   td.onclick=()=>{if(td.dataset.lock)return;const k=td.dataset.k;if(sel.has(k)){sel.delete(k);td.style.background=''}else{sel.add(k);td.style.background='rgba(245,158,11,.3)'}};tr.appendChild(td)}
+  tb.appendChild(tr)}
+ ui.appendChild(tb);const fb=GT.el('p',{class:'gt-mu',style:'margin:10px 0;min-height:22px'});
+ const b=GT.el('button',{class:'gt-btn pri'},['Lock in my equilibria']);
+ b.onclick=()=>{const t=new Set(nes(m));let good=0,bad=0;sel.forEach(k=>t.has(k)?good++:bad++);const miss=[...t].filter(k=>!sel.has(k)).length;
+  const pts=Math.max(0,good*80-bad*40-miss*30)+(bad===0&&miss===0?60:0);total+=pts;G.setScore(total);
+  tb.querySelectorAll('td.cell').forEach(td=>{td.dataset.lock=1;if(t.has(td.dataset.k))td.style.outline='3px solid #10b981'});
+  fb.innerHTML='<b>+'+pts+'</b>. Green outline = true pure equilibria ('+t.size+'). Test each cell: if either player can do better by switching alone, it is not stable.';b.disabled=true;
+  const n=GT.el('button',{class:'gt-btn gold',style:'margin-left:10px'},[mi<MS.length-1?'Next matrix':'Go to the summit']);n.onclick=()=>{if(mi<MS.length-1){mi++;stage1()}else stage2()};b.after(n)};
+ ui.append(fb,b)}
+// stage 2
+const STD=[{n:'OpenLink 2.0',tag:'Open standard, used by 60% of the market',f:3},{n:'NovaStack',tag:'Premium vendor stack',f:1},{n:'GovNet Certified',tag:'Government-backed, mandated for public tenders',f:4},{n:'LegacyBridge',tag:'Old but familiar',f:1}];
+let round=0,pts2=0;
+function stage2(){ui.innerHTML='';stage=2;ui.appendChild(GT.el('h3',{style:'color:#38bdf8;margin-bottom:6px',html:'Stage 2: choose the platform standard &nbsp;<span class="gt-mu">round '+(round+1)+' of 6</span>'}));
+ ui.appendChild(GT.el('p',{class:'gt-mu',style:'margin-bottom:10px',html:'Everyone prefers matching to splitting. Match the majority of the three partners to earn 120; otherwise 0. Partners weigh the "salience" of each standard plus noise.'}));
+ const row=GT.el('div',{class:'gt-row'});const fb=GT.el('p',{class:'gt-mu',style:'margin-top:12px;min-height:44px'});
+ STD.forEach((s,i)=>row.appendChild(GT.el('button',{class:'gt-btn',style:'flex:1;min-width:150px;text-align:left',html:'<b>'+s.n+'</b><br><span class="gt-mu">'+s.tag+'</span>',onclick:function(){choose(i,row,fb)}})));
+ ui.append(row,fb)}
+function choose(i,row,fb){row.querySelectorAll('button').forEach(b=>b.disabled=true);
+ const votes=[0,0,0,0];for(let p=0;p<3;p++){const w=STD.map((s,k)=>Math.exp((s.f+GT.rnd(-1.2,1.2))*.9));let t=w.reduce((a,b)=>a+b),x=Math.random()*t,k=0;for(;k<3;k++){x-=w[k];if(x<=0)break}votes[k]++}
+ votes[i]++;const mx=Math.max(...votes);const win=votes.indexOf(mx);const ok=votes[i]===mx&&votes.filter(v=>v===mx).length===1||votes[i]>=3;
+ const gain=ok?120:0;pts2+=gain;total+=gain;G.setScore(total);
+ fb.innerHTML='Votes: '+STD.map((s,k)=>s.n+' '+votes[k]).join(' &middot; ')+'. '+(ok?'<span class="gt-ok">You matched the majority (+120).</span>':'<span class="gt-bad">Miscoordination (0).</span>');
+ setTimeout(()=>{round++;if(round>=6)G.end('Coordination games have several equilibria - here, every standard everyone picks is stable. Which one wins is decided by a <b>focal point</b> (salience), not by payoff algebra.',total);else stage2()},1700)}
+stage1();
+
+</script>
+</body>
+</html>

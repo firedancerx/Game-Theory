@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 22 Game 2</title>
+</head>
+<body>
+<script src="../game_storage.js"></script>
+<script src="../gt_kit.js"></script>
+<script>
+// L22 G2 - Fair Split: allocate the surplus by Shapley logic and compare with naive rules.
+const G=GT.init({lesson:'22',n:2,kind:'sim',title:'Fair Split',sub:'pay people for what they truly add',
+ how:'Four joint ventures. Each shows the value of every subgroup of three partners. Use the sliders to split the grand-coalition value among A, B and C. Your score is higher the closer you get to the <b>Shapley value</b> (revealed afterwards, with the equal split and the proportional-to-standalone split for comparison). Sliders auto-balance to the total.'});
+const CASES=[{n:'Consulting trio',v:{A:10,B:10,C:10,AB:40,AC:40,BC:40,ABC:90}},{n:'Star and supporters',v:{A:50,B:0,C:0,AB:60,AC:60,BC:0,ABC:90}},{n:'Pipeline',v:{A:0,B:0,C:0,AB:0,AC:0,BC:0,ABC:100}},{n:'Platform with veto',v:{A:0,B:0,C:0,AB:40,AC:40,BC:0,ABC:80}}];
+let ci=0,total=0;const ui=GT.el('div',{class:'gt-card'});G.body.appendChild(ui);
+const k=a=>[...a].sort().join('');
+function shap(v){const P=['A','B','C'];const perms=[[0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]];const s=[0,0,0];perms.forEach(pm=>{let cur=[];pm.forEach(i=>{const before=cur.length?v[k(cur.map(x=>P[x]).join(''))]:0;cur.push(i);const after=v[k(cur.map(x=>P[x]).join(''))];s[i]+=(after-before)/6})});return s}
+function draw(){const c=CASES[ci];ui.innerHTML='';ui.appendChild(GT.el('h3',{style:'color:#38bdf8',html:'Venture '+(ci+1)+'/4: '+c.n}));
+ ui.appendChild(GT.el('p',{class:'gt-mu',html:Object.entries(c.v).map(([a,b])=>'v('+a+')='+b).join(' &nbsp; ')}));
+ const T=c.v.ABC;const val=[T/3,T/3,T/3];const sl=['A','B','C'].map((p,i)=>{const s=GT.el('input',{type:'range',class:'gt-r',min:0,max:T,step:1,value:Math.round(val[i])});const l=GT.el('span',{class:'gt-mu'});s.oninput=()=>{val[i]=+s.value;const rest=T-val[i];const o=[0,1,2].filter(j=>j!==i);const sum=val[o[0]]+val[o[1]];o.forEach(j=>{val[j]=sum>0?val[j]/sum*rest:rest/2});upd()};ui.appendChild(GT.el('div',{},[GT.el('span',{html:'<b>'+p+'</b> '}),s,l]));return [s,l]});
+ function upd(){sl.forEach(([s,l],i)=>{s.value=Math.round(val[i]);l.textContent=' '+val[i].toFixed(1)})}upd();
+ const b=GT.el('button',{class:'gt-btn gold',style:'margin-top:10px'},['Lock the split']);b.onclick=()=>{const S=shap(c.v);const err=val.reduce((a,x,i)=>a+Math.abs(x-S[i]),0);const sa=['A','B','C'].map(p=>c.v[p]);const sm=sa.reduce((x,y)=>x+y,0)||1;const prop=sa.map(x=>x/sm*T);
+  const pts=Math.max(0,Math.round(200-err*4));total+=pts;G.setScore(total);ui.innerHTML='';
+  ui.appendChild(GT.el('div',{html:'<table class="gt-t"><tr><th></th><th>A</th><th>B</th><th>C</th></tr><tr><td>Your split</td>'+val.map(x=>'<td>'+x.toFixed(1)+'</td>').join('')+'</tr><tr><td><b>Shapley</b></td>'+S.map(x=>'<td><b>'+x.toFixed(1)+'</b></td>').join('')+'</tr><tr><td>Equal</td>'+[T/3,T/3,T/3].map(x=>'<td>'+x.toFixed(1)+'</td>').join('')+'</tr><tr><td>Proportional to standalone</td>'+prop.map(x=>x.toFixed(1)).map(x=>'<td>'+x+'</td>').join('')+'</tr></table><p>Distance '+err.toFixed(1)+' &rarr; +'+pts+'</p>'}));
+  const n=GT.el('button',{class:'gt-btn gold'},[ci<3?'Next venture':'Finish']);n.onclick=()=>{ci++;if(ci>=4)G.end('Shapley gives each partner their <b>average marginal contribution</b>: it rewards real impact, not size or seniority. Equal splits overpay passengers; standalone-proportional splits ignore synergy.',total);else draw()};ui.appendChild(n)};ui.appendChild(b)}
+draw();
+
+</script>
+</body>
+</html>

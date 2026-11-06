@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 14 Game 2</title>
+</head>
+<body>
+<script src="../game_storage.js"></script>
+<script src="../gt_kit.js"></script>
+<script>
+// L14 G2 - Fog of Rules: clear red lines vs strategic ambiguity.
+const G=GT.init({lesson:'14',n:2,kind:'sim',title:'Fog of Rules',sub:'how clearly should you state your red line?',
+ how:'Eight rounds as a regional power. Each round a rival probes. Choose a stance: <b>Clear red line</b> (deters cautious rivals, but a bluffed or crossed line forces you to act), <b>Strategic ambiguity</b> (keeps rivals guessing, keeps your options open), or <b>Silence</b>. Rival types are shown after each round: Probing, Cautious, Aggressive. Maximise stability points.'});
+const TYPES={probe:{n:'Probing',clear:[.4,.5],amb:[.3,.55],sil:[.8,.2]},cautious:{n:'Cautious',clear:[.05,.8],amb:[.15,.75],sil:[.5,.45]},aggr:{n:'Aggressive',clear:[.7,.3],amb:[.45,.5],sil:[.9,.1]}};
+let r=0,total=0;const ui=GT.el('div',{class:'gt-card'});G.body.appendChild(ui);let hist=[];
+function draw(msg){ui.innerHTML='';ui.appendChild(GT.el('h3',{style:'color:#38bdf8',html:'Round '+(r+1)+'/8 &nbsp;<span class="gt-mu">stability '+total+'</span>'}));
+ ui.appendChild(GT.el('p',{class:'gt-mu',html:'History: '+(hist.length?hist.map(h=>h).join(' | '):'none yet')}));
+ const row=GT.el('div',{class:'gt-row',style:'margin:10px 0'});[['clear','Clear red line'],['amb','Strategic ambiguity'],['sil','Silence']].forEach(([k,l])=>row.appendChild(GT.el('button',{class:'gt-btn',onclick:()=>go(k)},[l])));ui.appendChild(row);ui.appendChild(GT.el('p',{html:msg||'',style:'min-height:40px'}))}
+function go(k){const key=GT.pick(Object.keys(TYPES));const T=TYPES[key];const [pc,pd]=T[k];const cross=Math.random()<pc;let d=0,txt='';
+ if(cross){if(k==='clear'){d=Math.random()<.5?-35:-10;txt='Rival crossed the line; you must respond (and credibility is on trial).'}else if(k==='amb'){d=-12;txt='Rival tested the fog; you chose your response freely.'}else{d=-25;txt='Rival grabbed ground unopposed.'}}
+ else{d=k==='clear'?30:k==='amb'?22:6;txt='Rival stayed back.'}
+ if(k==='clear')d-=4;total+=d+25;G.setScore(Math.max(0,total));hist.push(T.n.slice(0,3)+':'+k+(cross?'X':'ok'));
+ r++;if(r>=8){G.end('Clarity deters opponents who respond to bright lines; ambiguity keeps flexibility and uncertainty against opportunists. The right choice depends on <b>who is probing and what a failed deterrent costs you</b>.',Math.max(0,total));return}
+ draw('Rival was <b>'+T.n+'</b>. '+txt+' Net '+(d>=0?'+':'')+d+' (+25 base).')}
+draw();
+
+</script>
+</body>
+</html>

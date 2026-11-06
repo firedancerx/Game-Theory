@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 08 Game 2</title>
+</head>
+<body>
+<script src="../game_storage.js"></script>
+<script src="../gt_kit.js"></script>
+<script>
+// Lesson 08 Game 2 - Escalation Ladder (negotiation standoff against a hidden hawk or dove).
+const G=GT.init({lesson:'08',n:2,kind:'sim',title:'Escalation Ladder',sub:'climb, hold or concede - while guessing who you are facing',
+ how:'A labour-style standoff over a \$100k prize. Each turn you <b>Escalate</b> (+1 rung, raises the cost of conflict for both), <b>Hold</b>, or <b>Concede</b>. Rung costs grow: at rung 3 both lose heavily if nobody concedes. The rival is secretly a <b>Hawk</b> (rarely concedes) or a <b>Dove</b> (concedes quickly). Read its pattern, and decide how far to climb. Four standoffs.'});
+const ui=GT.el('div',{class:'gt-card'});G.body.appendChild(ui);let so=0,total=0;
+const COST=[0,8,22,60];
+function newSo(){return {rung:0,type:Math.random()<.5?'hawk':'dove',turn:0,log:[],done:false}}
+let s=newSo();
+function rivalAct(){const p=s.type==='hawk'?{c:.07,e:.5}:{c:.55,e:.1};const x=Math.random();if(x<p.c)return 'C';if(x<p.c+p.e)return 'E';return 'H'}
+function draw(){ui.innerHTML='';ui.appendChild(GT.el('h3',{style:'color:#38bdf8',html:'Standoff '+(so+1)+' of 4 &nbsp;<span class="gt-mu">prize $100k, rung '+s.rung+'/3, cost per rung so far $'+COST[s.rung]+'k each</span>'}));
+ const lad=GT.el('div',{class:'gt-row',style:'margin:10px 0'});for(let i=0;i<=3;i++)lad.appendChild(GT.el('div',{style:'flex:1;min-width:70px;text-align:center;padding:10px;border-radius:8px;border:2px solid '+(i===s.rung?'#f59e0b':'#2a3a5a')+';background:'+(i<=s.rung?'#3a2f12':'#101830'),html:'<b>Rung '+i+'</b><br><span class="gt-mu">'+(i===0?'talk':i===1?'threat':i===2?'public ultimatum':'total war')+'</span>'}));
+ ui.appendChild(lad);
+ ui.appendChild(GT.el('p',{class:'gt-mu',html:'Rival\'s moves so far: '+(s.log.length?s.log.map(x=>x[1]).join(' &rarr; '):'none yet')}));
+ const row=GT.el('div',{class:'gt-row',style:'margin:12px 0'});
+ ['E:Escalate','H:Hold','C:Concede'].forEach(x=>{const [k,l]=x.split(':');row.appendChild(GT.el('button',{class:'gt-btn '+(k==='E'?'gold':k==='C'?'':'pri'),onclick:()=>act(k)},[l]))});ui.appendChild(row)}
+function act(a){const r=rivalAct();s.turn++;s.log.push([a,{E:'Escalate',H:'Hold',C:'Concede'}[r]]);
+ let end=false,my=0,txt='';
+ if(a==='C'&&r==='C'){my=50;end=true;txt='Both conceded: split the prize.'}else if(a==='C'){my=10-COST[s.rung];end=true;txt='You conceded; rival takes the prize.'}else if(r==='C'){my=100-COST[s.rung];end=true;txt='Rival conceded - the prize is yours.'}
+ else{if(a==='E')s.rung=Math.min(3,s.rung+1);if(r==='E')s.rung=Math.min(3,s.rung+1);if(s.rung>=3&&s.turn>=2){my=-COST[3];end=true;txt='Total war: both sides burn $'+COST[3]+'k and nobody wins.'}else if(s.turn>=6){my=40-COST[s.rung];end=true;txt='Talks drift to a draw.'}}
+ if(end){total+=Math.max(-40,my)+60;G.setScore(total);ui.innerHTML='';ui.appendChild(GT.el('p',{html:'<b>'+txt+'</b> Result: '+(my>=0?'+':'')+my+' (+60 for taking part). The rival was a <b>'+s.type.toUpperCase()+'</b>.',style:'line-height:1.6'}));
+  ui.appendChild(GT.el('p',{class:'gt-mu',style:'margin:8px 0',html:s.type==='hawk'?'Against a Hawk, every rung you climb is a cost you pay for nothing - concede early or pre-commit to a firm limit.':'Against a Dove, steady pressure wins; over-climbing only wastes the prize.'}));
+  const n=GT.el('button',{class:'gt-btn gold'},[so<3?'Next standoff':'Finish']);n.onclick=()=>{if(so<3){so++;s=newSo();draw()}else G.end('Hawk-Dove logic: the best choice depends on <b>how many hawks are around</b>. Without information, escalate only as far as the expected rung cost allows; with signals, tailor your stance to the rival\'s type.',total)};ui.appendChild(n)}
+ else draw()}
+draw();
+
+</script>
+</body>
+</html>

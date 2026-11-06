@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 20 Game 1</title>
+</head>
+<body>
+<script src="../game_storage.js"></script>
+<script src="../gt_kit.js"></script>
+<script>
+// L20 G1 - Reputation Rally: real-time marketplace, trust builds slowly and collapses fast.
+const G=GT.init({lesson:'20',n:1,kind:'video',title:'Reputation Rally',sub:'every shortcut is a withdrawal from your trust account',
+ how:'You run a seller account for 40 seconds. A deal closes every 1.2 seconds. By default you deliver <b>honestly</b> (profit 4 x trust). Press <b>S</b> or click <b>Shortcut</b> to cheat on the current deal: instant profit 14 x trust, but trust halves. Honest delivery rebuilds trust slowly (+3%). A random <b>rumour</b> can also hit your trust; decide whether the next shortcut is worth it.'});
+const W=720,H=240;const cv=GT.el('canvas',{class:'gt-c'});G.body.appendChild(cv);const g=GT.fit(cv,W,H);
+const row=GT.el('div',{class:'gt-row',style:'justify-content:center'});const bs=GT.el('button',{class:'gt-btn gold',onclick:()=>{pendS=true}},['Shortcut on next deal (S)']);row.append(bs);G.body.appendChild(row);
+let trust=.5,t=40,acc=0,pendS=false,last=performance.now(),tot=0,over=false,hist=[],ev='';
+addEventListener('keydown',e=>{if(e.key.toLowerCase()==='s')pendS=true});
+function deal(){let p;if(pendS){p=14*trust;trust=Math.max(.02,trust*.5);ev='Shortcut: +'+p.toFixed(1)+', trust halved'}else{p=4*trust;trust=Math.min(1,trust+.03);ev='Honest: +'+p.toFixed(1)}
+ if(Math.random()<.06){trust=Math.max(.02,trust-.15);ev+=' | RUMOUR -15%'}pendS=false;tot+=p;G.setScore(Math.round(tot*3));hist.push(trust)}
+function f(now){const dt=(now-last)/1000;last=now;if(!over){t-=dt;acc+=dt;while(acc>1.2){acc-=1.2;deal()}if(t<=0){over=true;G.end('Final trust '+Math.round(trust*100)+'%. Reputation is an asset that compounds slowly and is destroyed quickly: one shortcut costs many honest deals to repair, so cheating only pays near the <b>end of the relationship</b>.',Math.round(tot*3));return}}
+ g.clearRect(0,0,W,H);g.fillStyle='#0b1220';g.fillRect(0,0,W,H);g.strokeStyle='#334155';g.strokeRect(20,20,W-40,150);g.strokeStyle='#10b981';g.beginPath();hist.forEach((v,i)=>{const x=20+i*(W-40)/34,y=170-v*150;i?g.lineTo(x,y):g.moveTo(x,y)});g.stroke();
+ g.fillStyle='#f59e0b';g.fillRect(20,190,(W-40)*trust,16);g.fillStyle='#e2e8f0';g.font='13px sans-serif';g.fillText('trust '+Math.round(trust*100)+'%   profit '+tot.toFixed(0)+'   time '+Math.max(0,t|0)+'s   '+(pendS?'SHORTCUT ARMED':''),20,228);g.fillStyle='#94a3b8';g.fillText(ev,260,228);
+ if(!over)requestAnimationFrame(f)}
+requestAnimationFrame(f);
+
+</script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 28 Game 1</title>
+</head>
+<body>
+<script src="../game_storage.js"></script>
+<script src="../gt_kit.js"></script>
+<script>
+// L28 G1 - Rush Hour: drivers pick routes selfishly; use a toll to approach the optimum.
+const G=GT.init({lesson:'28',n:1,kind:'video',title:'Rush Hour',sub:'selfish routing needs a nudge',
+ how:'1,000 drivers choose between a <b>Highway</b> whose travel time equals the share of drivers using it (0 to 1 hour) and a <b>Back road</b> that always takes 1 hour. Drivers pick the route that looks faster <b>including your toll</b> (toll on the highway, in hours). Without a toll everyone crowds the highway (average time 1.0). The optimum is half and half (average 0.75). Move the toll slider live to reach it; score rewards low average time with a small toll. Then a <b>Braess link</b> opens at the half-way mark - decide whether to keep it.'});
+const W=720,H=240;const cv=GT.el('canvas',{class:'gt-c'});G.body.appendChild(cv);const g=GT.fit(cv,W,H);
+const sl=GT.el('input',{type:'range',class:'gt-r',min:0,max:100,step:1,value:0});const lab=GT.el('div',{class:'gt-mu',style:'text-align:center'});
+const bt=GT.el('button',{class:'gt-btn',onclick:()=>{link=!link}},['Toggle shortcut link']);G.body.append(lab,sl,GT.el('div',{class:'gt-row',style:'justify-content:center'},[bt]));
+let t=40,last=performance.now(),x=1,score=0,over=false,link=false,cars=[];for(let i=0;i<80;i++)cars.push({p:Math.random(),r:0});
+sl.oninput=()=>{};
+function f(now){const dt=Math.min(.05,(now-last)/1000);last=now;if(!over){t-=dt;const toll=sl.value/100;
+ // drivers adjust: share on highway x; perceived highway cost x+toll vs backroad 1 (with link, backroad costs 1 but link route adds congestion)
+ let target;if(!link){const eq=Math.min(1,Math.max(0,1-toll));target=eq}else{target=Math.min(1,Math.max(0,1-toll*0.5));target=Math.min(1,target+.15)}
+ x+=(target-x)*Math.min(1,dt*1.5);
+ const avgT=link?(x*(x+0.3*x)+(1-x)*1):x*x+(1-x)*1;
+ score+=dt*(2-avgT*1.0)*10-toll*dt*3;G.setScore(Math.max(0,Math.round(score)));
+ lab.innerHTML='Toll <b>'+toll.toFixed(2)+'</b> h &nbsp; highway share <b>'+Math.round(x*100)+'%</b> &nbsp; average travel time <b>'+avgT.toFixed(2)+'</b> h &nbsp; shortcut: '+(link?'ON':'off')+' &nbsp; time '+Math.max(0,t|0)+'s';
+ if(t<=0){over=true;G.end('Selfish routing (the Nash flow) can be far worse than the planner\'s optimum - the <b>price of anarchy</b>. A toll that internalises congestion moves drivers to the efficient split; adding a free link can make everyone slower (Braess).',Math.max(0,Math.round(score)));return}
+ g.clearRect(0,0,W,H);g.fillStyle='#0b1220';g.fillRect(0,0,W,H);g.strokeStyle='#38bdf8';g.lineWidth=14;g.beginPath();g.moveTo(40,70);g.lineTo(W-40,70);g.stroke();g.strokeStyle='#a78bfa';g.lineWidth=6;g.beginPath();g.moveTo(40,170);g.lineTo(W-40,170);g.stroke();g.lineWidth=1;
+ if(link){g.strokeStyle='#f59e0b';g.setLineDash([6,4]);g.beginPath();g.moveTo(W/2,70);g.lineTo(W/2,170);g.stroke();g.setLineDash([])}
+ cars.forEach((c,i)=>{c.p+=dt*(.25+(c.r?0.3:0.55-0.4*x*(1)));if(c.p>1){c.p=0;c.r=Math.random()<x?0:1}const y=c.r?170:70+((i%3)-1)*4;g.fillStyle=c.r?'#c4b5fd':'#7dd3fc';g.beginPath();g.arc(40+c.p*(W-80),y,5,0,7);g.fill()});
+ g.fillStyle='#e2e8f0';g.font='13px sans-serif';g.fillText('Highway (time = share of drivers)',40,50);g.fillText('Back road (always 1 hour)',40,200);requestAnimationFrame(f)}}
+requestAnimationFrame(f);
+
+</script>
+</body>
+</html>

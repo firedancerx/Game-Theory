@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 27 Game 1</title>
+</head>
+<body>
+<script src="../game_storage.js"></script>
+<script src="../gt_kit.js"></script>
+<script>
+// L27 G1 - Keep the Peace: steer a Hawk-Dove population with the cost of fighting.
+const G=GT.init({lesson:'27',n:1,kind:'video',title:'Keep the Peace',sub:'tune the cost of conflict and watch the population evolve',
+ how:'A population plays Hawk-Dove. Hawks win the resource V=10 but pay the fight cost C when meeting another Hawk. Move the <b>fight-cost slider</b> live. Under replicator dynamics the Hawk share drifts towards V/C when C exceeds V, and towards 100% when C is below V. Keep the <b>Hawk share under 30%</b> while spending as little as possible: fight cost is paid by you as an enforcement bill (cost x 0.2 per second). 40 seconds.'});
+const W=720,H=240;const cv=GT.el('canvas',{class:'gt-c'});G.body.appendChild(cv);const g=GT.fit(cv,W,H);
+const sl=GT.el('input',{type:'range',class:'gt-r',min:0,max:60,step:1,value:10});const lab=GT.el('div',{class:'gt-mu',style:'text-align:center'});G.body.append(lab,sl);
+let h=.8,t=40,last=performance.now(),score=0,over=false,hist=[],dots=[];for(let i=0;i<60;i++)dots.push({x:Math.random()*W,y:Math.random()*130+10,vx:GT.rnd(-30,30),vy:GT.rnd(-20,20)});
+sl.oninput=()=>lab.innerHTML='Fight cost C = <b>'+sl.value+'</b> (V = 10)';sl.oninput();
+function f(now){const dt=Math.min(.05,(now-last)/1000);last=now;if(!over){t-=dt;const C=+sl.value;
+ const fh=h*(10-C)/2+(1-h)*10,fd=(1-h)*5;const avg=h*fh+(1-h)*fd;h+=h*(fh-avg)*dt*.12;h=Math.min(.98,Math.max(.02,h));
+ const good=h<.3;if(good)score+=dt*20;score-=C*.2*dt;G.setScore(Math.max(0,Math.round(score)));hist.push(h);
+ if(t<=0){over=true;G.end('Final Hawk share '+Math.round(h*100)+'%. A population settles where no mutant strategy does better - an <b>evolutionarily stable</b> mix. Raising the cost of conflict shifts that mix, but enforcement is not free.',Math.max(0,Math.round(score)));return}
+ g.clearRect(0,0,W,H);g.fillStyle='#0b1220';g.fillRect(0,0,W,H);dots.forEach((d,i)=>{d.x+=d.vx*dt;d.y+=d.vy*dt;if(d.x<0||d.x>W)d.vx*=-1;if(d.y<10||d.y>140)d.vy*=-1;g.fillStyle=i/60<h?'#f43f5e':'#38bdf8';g.beginPath();g.arc(d.x,d.y,5,0,7);g.fill()});
+ g.strokeStyle='#10b981';g.beginPath();hist.forEach((v,i)=>{const x=20+i/(40*60)*(W-40),y=230-v*70;i?g.lineTo(x,y):g.moveTo(x,y)});g.stroke();g.strokeStyle='#475569';g.beginPath();g.moveTo(20,230-.3*70);g.lineTo(W-20,230-.3*70);g.stroke();
+ g.fillStyle='#e2e8f0';g.font='13px sans-serif';g.fillText('Hawks '+Math.round(h*100)+'% (red) / Doves (blue)   time '+Math.max(0,t|0)+'s   score '+Math.round(score),10,160);requestAnimationFrame(f)}}
+requestAnimationFrame(f);
+
+</script>
+</body>
+</html>

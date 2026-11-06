@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 04 Game 1</title>
+</head>
+<body>
+<script src="../game_storage.js"></script>
+<script src="../gt_kit.js"></script>
+<script>
+// Lesson 04 Game 1 - Best-Reply Relay (dynamic best-response chase to a Nash equilibrium).
+const G=GT.init({lesson:'04',n:1,kind:'video',title:'Best-Reply Relay',sub:'chase the best replies until nobody wants to move',
+ how:'You are the <b>Row</b> player; a bot plays <b>Column</b>. The bot has just moved. Tap the row that is your <b>best reply</b> to its current column (highest first number in that column) before the timer ends. The bot then best-replies to you. Keep going until neither side wants to move: that stable cell is the <b>Nash equilibrium</b>. Fewer wasted moves = more points.'});
+const N=3;let board=0,m,r,c,steps,wrong,tLeft,timer,locked,path;
+function br(who,other){let best=-1,idx=[];for(let k=0;k<N;k++){const v=who===0?m[k][other][0]:m[other][k][1];if(v>best){best=v;idx=[k]}else if(v===best)idx.push(k)}return idx}
+function gen(){for(let t=0;t<5000;t++){const mm=[];for(let i=0;i<N;i++){mm.push([]);for(let j=0;j<N;j++)mm[i].push([GT.ri(1,9),GT.ri(1,9)])}
+ m=mm;let ne=[];for(let i=0;i<N;i++)for(let j=0;j<N;j++)if(br(0,j)[0]===i&&br(0,j).length===1&&br(1,i).length===1&&br(1,i)[0]===j)ne.push([i,j]);
+ if(ne.length!==1)continue;
+ for(let s=0;s<9;s++){const i0=GT.ri(0,N-1),j0=GT.ri(0,N-1);let i=i0,j=j0,n=0;
+  for(;n<10;n++){const nj=br(1,i)[0];const ni=br(0,nj)[0];if(ni===i&&nj===j)break;i=ni;j=nj}
+  const need=(()=>{let i2=i0,j2=j0,k=0;for(;k<10;k++){const nj=br(1,i2)[0];const ni=br(0,nj)[0];if(ni===i2&&nj===j2)break;i2=ni;j2=nj;k+=0}return k})();
+  if(n<10&&need>=2&&need<=4){m=mm;return {ne:ne[0],i0,j0}}}}
+ return null}
+const ui=GT.el('div',{class:'gt-card'});G.body.appendChild(ui);
+function setup(){const g=gen();r=g.i0;c=g.j0;steps=0;wrong=0;path=[[r,c]];locked=false;botMove()}
+function botMove(){ // bot best-replies to current row
+ const nc=br(1,r)[0];if(nc!==c){c=nc;path.push([r,c]);}
+ if(br(0,c).includes(r)&&br(1,r).includes(c)){return resolveRound()}
+ tLeft=8-Math.min(board,3);draw('The bot moved to column '+'XYZ'[c]+'. Your best reply?');clearInterval(timer);
+ timer=setInterval(()=>{tLeft-=.1;const e=document.getElementById('tl');if(e)e.textContent=Math.max(0,tLeft).toFixed(1)+'s';if(tLeft<=0){clearInterval(timer);wrong++;G.add(-20);pick(-1)}},100)}
+function draw(msg,reveal){ui.innerHTML='';
+ ui.appendChild(GT.el('div',{class:'gt-row',style:'justify-content:space-between'},[GT.el('b',{html:'Matrix '+(board+1)+' of 5 &nbsp; moves '+steps}),GT.el('span',{class:'gt-gold',id:'tl'},[tLeft?tLeft.toFixed(1)+'s':''])]));
+ const tb=GT.el('table',{class:'gt-t',style:'margin:10px 0'});let h='<tr><th>You (Row) \\ Bot (Col)</th>';for(let j=0;j<N;j++)h+='<th>'+'XYZ'[j]+'</th>';tb.innerHTML=h+'</tr>';
+ for(let i=0;i<N;i++){const tr=GT.el('tr',{});tr.appendChild(GT.el('th',{},['ABC'[i]]));
+  for(let j=0;j<N;j++){const here=i===r&&j===c;const rb=br(0,j).includes(i),cb=br(1,i).includes(j);
+   const a=m[i][j][0],b=m[i][j][1];
+   tr.appendChild(GT.el('td',{style:here?'background:rgba(56,189,248,.25);outline:2px solid #38bdf8':'',html:'<span class="gt-ok" style="'+(reveal&&rb?'text-decoration:underline':'')+'">'+a+'</span> , <span class="gt-bad" style="'+(reveal&&cb?'text-decoration:underline':'')+'">'+b+'</span>'}))}
+  tb.appendChild(tr)}
+ ui.appendChild(tb);
+ const row=GT.el('div',{class:'gt-row'});for(let i=0;i<N;i++)row.appendChild(GT.el('button',{class:'gt-btn',disabled:locked?'disabled':null,onclick:()=>pick(i)},['Play row '+'ABC'[i]]));
+ ui.appendChild(row);ui.appendChild(GT.el('p',{class:'gt-mu',style:'margin-top:10px;min-height:22px',html:msg||''}))}
+function pick(i){if(locked)return;clearInterval(timer);steps++;
+ if(i>=0){if(br(0,c).includes(i)){G.add(Math.round(40+tLeft*5));r=i;path.push([r,c])}else{wrong++;G.add(-30);}}
+ locked=true;const msg=i<0?'Time out. A best reply was row '+'ABC'[br(0,c)[0]]+'.':br(0,c).includes(i)?'Best reply (underlined). The bot now responds.':'Not the best reply: row '+'ABC'[br(0,c)[0]]+' pays more against column '+'XYZ'[c]+'.';
+ draw(msg,true);setTimeout(()=>{ if(i>=0&&!br(0,c).includes(i)){r=br(0,c)[0];path.push([r,c])} else if(i<0){r=br(0,c)[0];path.push([r,c])} locked=false;botMove()},1300)}
+function resolveRound(){clearInterval(timer);G.add(Math.max(0,160-steps*25-wrong*40));
+ draw('Equilibrium reached: both numbers in the cell are underlined - nobody gains by moving alone. Cell ('+'ABC'[r]+','+'XYZ'[c]+').',true);
+ ui.querySelectorAll('button').forEach(b=>b.disabled=true);
+ setTimeout(()=>{board++;if(board>=5)G.end('Best-reply chasing converges on a cell where each number is the best in its column/row: that is how the underlining method finds a Nash equilibrium without any algebra.',G.score);else setup()},1800)}
+setup();
+
+</script>
+</body>
+</html>

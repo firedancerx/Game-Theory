@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 08 Game 1</title>
+</head>
+<body>
+<script src="../game_storage.js"></script>
+<script src="../gt_kit.js"></script>
+<script>
+// Lesson 08 Game 1 - Brinkmanship Highway (Chicken with a commitment power-up).
+const G=GT.init({lesson:'08',n:1,kind:'video',title:'Brinkmanship Highway',sub:'two cars, one road, who blinks first',
+ how:'Eight head-on rounds. Before impact choose <b>Swerve</b> or <b>Hold</b> (press <b>S</b>/<b>H</b>). Hold vs Swerve: you win <b>+10</b>, they lose <b>-3</b>. Both swerve: <b>0</b> each. Both hold: <b>crash, -15</b> each. Before the countdown ends you may <b>Rip out the steering wheel</b> (-2): a visible commitment that makes the rival far more likely to blink. Rival types are hidden.'});
+const W=720,H=300;const cv=GT.el('canvas',{class:'gt-c'});G.body.appendChild(cv);const g=GT.fit(cv,W,H);
+const row=GT.el('div',{class:'gt-row',style:'justify-content:center'});G.body.appendChild(row);
+const bS=GT.el('button',{class:'gt-btn pri',onclick:()=>decide('S')},['Swerve (S)']);const bH=GT.el('button',{class:'gt-btn gold',onclick:()=>decide('H')},['Hold (H)']);const bW=GT.el('button',{class:'gt-btn',onclick:()=>{if(!state.wheel&&state.ph==='run'){state.wheel=true;G.add(-2);}}},['Rip out the steering wheel (-2)']);row.append(bS,bH,bW);
+const log=GT.el('div',{class:'gt-card gt-mu',style:'min-height:70px'});G.body.appendChild(log);
+const state={r:0,ph:'run',t:0,wheel:false,choice:null,rivalType:'',rv:null};let last=performance.now(),total=0,hist=[];
+function newRound(){state.ph='run';state.t=0;state.wheel=false;state.choice=null;state.rivalType=GT.pick(['hawk','dove','mirror','hawk']);bS.disabled=bH.disabled=bW.disabled=false}
+newRound();
+function rivalMove(){const t=state.rivalType;let ph=t==='hawk'?.75:t==='dove'?.2:(hist.length&&hist[hist.length-1]==='H'?.7:.4);
+ if(state.wheel)ph=Math.max(0,ph-.55);if(state.choice==='H'&&t==='mirror')ph=.55;return Math.random()<ph?'H':'S'}
+function decide(c){if(state.ph!=='run')return;state.choice=c;state.ph='res';bS.disabled=bH.disabled=bW.disabled=true;
+ if(state.wheel)c='H';const r=rivalMove();let m=0,v=0,txt;
+ if(c==='H'&&r==='S'){m=10;v=-3;txt='Rival blinked'}else if(c==='S'&&r==='H'){m=-3;v=10;txt='You blinked'}else if(c==='H'&&r==='H'){m=-15;v=-15;txt='CRASH'}else{txt='Both swerved'}
+ total+=m;G.setScore(total+200);hist.push(c);state.rv=r;state.t=1;
+ log.innerHTML='Round '+(state.r+1)+': you <b>'+(state.wheel?'Held (no steering wheel)':c)+'</b>, rival <b>'+r+'</b> &rarr; '+txt+' ('+m+' for you, '+v+' for them).';
+ setTimeout(()=>{state.r++;if(state.r>=8){G.end('Net result '+total+' (200 base added). The classic move in Chicken is to <b>commit visibly</b> so the other side must blink - but if both do it, the wheel-less cars crash. Know your rival\'s type before burning your options.',G.score)}else newRound()},1500)}
+addEventListener('keydown',e=>{const k=e.key.toLowerCase();if(k==='s')decide('S');if(k==='h')decide('H')});
+G.setScore(200);
+function frame(now){const dt=(now-last)/1000;last=now;if(state.ph==='run'){state.t+=dt/4.5;if(state.t>=1){decide('S')}}
+ g.clearRect(0,0,W,H);g.fillStyle='#111827';g.fillRect(0,0,W,H);g.fillStyle='#374151';g.fillRect(0,110,W,80);g.strokeStyle='#fbbf24';g.setLineDash([20,16]);g.lineWidth=3;g.beginPath();g.moveTo(0,150);g.lineTo(W,150);g.stroke();g.setLineDash([]);
+ let p=state.ph==='run'?state.t:1;const xa=60+p*(W/2-70),xb=W-60-p*(W/2-70);
+ let ya=130,yb=170;if(state.ph==='res'){if(state.choice==='S'&&!state.wheel)ya=70;if(state.rv==='S')yb=230}
+ car(xa,ya,'#38bdf8',1);car(xb,yb,'#f43f5e',-1);
+ if(state.ph==='res'&&((state.choice==='H'||state.wheel)&&state.rv==='H')){g.fillStyle='rgba(239,68,68,.6)';g.beginPath();g.arc(W/2,150,60,0,7);g.fill();g.fillStyle='#fff';g.font='700 22px sans-serif';g.textAlign='center';g.fillText('CRASH',W/2,156)}
+ g.fillStyle='#e2e8f0';g.font='700 14px sans-serif';g.textAlign='left';g.fillText('Round '+Math.min(state.r+1,8)+' / 8',16,24);g.fillText(state.wheel?'STEERING WHEEL REMOVED - committed to Hold':'',16,46);
+ g.fillStyle='#0b1220';g.fillRect(W-216,14,200,10);g.fillStyle='#f59e0b';g.fillRect(W-216,14,200*(1-Math.min(1,state.ph==='run'?state.t:1)),10);
+ requestAnimationFrame(frame)}
+function car(x,y,c,dir){g.fillStyle=c;g.fillRect(x-30,y-12,60,24);g.fillStyle='#0f172a';g.fillRect(x-14*dir,y-9,18,18);g.fillStyle='#111';g.fillRect(x-24,y-15,12,5);g.fillRect(x+12,y-15,12,5);g.fillRect(x-24,y+10,12,5);g.fillRect(x+12,y+10,12,5)}
+requestAnimationFrame(frame);
+
+</script>
+</body>
+</html>

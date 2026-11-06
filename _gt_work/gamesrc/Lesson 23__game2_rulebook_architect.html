@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 23 Game 2</title>
+</head>
+<body>
+<script src="../game_storage.js"></script>
+<script src="../gt_kit.js"></script>
+<script>
+// L23 G2 - Rulebook Architect: choose the mechanism that fits each design goal.
+const G=GT.init({lesson:'23',n:2,kind:'sim',title:'Rulebook Architect',sub:'pick the mechanism, then watch strategic agents play it',
+ how:'Four design briefs. Choose a mechanism from the menu. Agents are strategic: they lie when lying pays. The simulation then reports the <b>efficiency</b> (share of possible value achieved) and whether truth-telling held. Pick rules whose incentives match the goal: <b>efficiency</b>, <b>revenue</b>, or <b>budget balance</b>.'});
+const BR=[{n:'Allocate one cloud contract to the highest-value bidder (goal: efficiency)',opts:[['First-price sealed bid',.82,false],['Second-price (Vickrey) auction',.99,true],['Lottery among interested firms',.55,true],['Posted price',.7,true]]},
+ {n:'Fund a shared data centre among 5 firms (goal: build it iff worth it)',opts:[['Each pays their stated value',.6,false],['Equal cost shares',.7,false],['Clarke pivot payments',.97,true],['Majority vote',.65,false]]},
+ {n:'Assign 3 tasks to 3 contractors by lowest true cost (goal: efficiency)',opts:[['Pay-as-bid reverse auction',.8,false],['VCG reverse auction',.99,true],['Round-robin',.5,true],['Seniority order',.45,true]]},
+ {n:'Sell a licence when you also want revenue (goal: revenue)',opts:[['Second-price with a reserve price',.93,true],['Fixed price take-it-or-leave-it',.72,true],['Free allocation',.2,true],['First-price, no reserve',.85,false]]}];
+let bi=0,total=0;const ui=GT.el('div',{class:'gt-card'});G.body.appendChild(ui);
+function draw(){const b=BR[bi];ui.innerHTML='';ui.appendChild(GT.el('h3',{style:'color:#38bdf8',html:'Brief '+(bi+1)+'/4'}));ui.appendChild(GT.el('p',{html:b.n}));b.opts.forEach((o,i)=>ui.appendChild(GT.el('button',{class:'gt-btn',style:'display:block;margin:6px 0;text-align:left',onclick:()=>pick(i)},[o[0]])))}
+function pick(i){const o=BR[bi].opts[i];const eff=Math.max(.2,Math.min(1,o[1]+GT.rnd(-.03,.03)));const pts=Math.round(eff*150+(o[2]?30:0));total+=pts;G.setScore(total);
+ const best=BR[bi].opts.reduce((a,x)=>Math.max(a,x[1]),0);ui.innerHTML='';ui.appendChild(GT.el('p',{style:'line-height:1.6',html:'<b>'+o[0]+'</b>: efficiency <b>'+Math.round(eff*100)+'%</b>, truth-telling <b>'+(o[2]?'held (dominant)':'broke down (agents shade)')+'</b>. '+(o[1]>=best-.01?'Best option on the menu.':'The best option reached '+Math.round(best*100)+'%.')+' +'+pts}));
+ const n=GT.el('button',{class:'gt-btn gold'},[bi<3?'Next brief':'Finish']);n.onclick=()=>{bi++;if(bi>=4)G.end('Mechanism design runs the game <b>backwards</b>: start from the outcome you want, then choose rules under which honesty is each player\'s best reply. VCG and Vickrey achieve efficiency because each agent pays the harm it causes others.',total);else draw()};ui.appendChild(n)}
+draw();
+
+</script>
+</body>
+</html>

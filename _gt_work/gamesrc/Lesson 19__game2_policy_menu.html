@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 19 Game 2</title>
+</head>
+<body>
+<script src="../game_storage.js"></script>
+<script src="../gt_kit.js"></script>
+<script>
+// L19 G2 - Policy Menu: insurance screening via premium/deductible plans.
+const G=GT.init({lesson:'19',n:2,kind:'sim',title:'Policy Menu',sub:'one cheap plan and one full plan, so risk types reveal themselves',
+ how:'You sell insurance to <b>high-risk</b> (claim chance 50%) and <b>low-risk</b> (10%) customers; loss if a claim occurs is 60; wealth 100; customers have concave utility (sqrt). Offer <b>Plan F</b> (full cover) at premium PF and <b>Plan D</b> (deductible 30) at premium PD. Each type picks the plan (or none) with the best expected utility. You earn premium minus expected payout. Three markets with different shares of high-risk. Aim for a menu where each type picks its own plan.'});
+const MK=[{n:'Urban motor',hi:.3},{n:'Health add-on',hi:.5},{n:'Small-business cover',hi:.2}];
+let mi=0,total=0;const ui=GT.el('div',{class:'gt-card'});G.body.appendChild(ui);
+const U=w=>Math.sqrt(Math.max(0,w));
+function eu(p,pf,pd,opt){// returns expected utility for option 'F','D','N'
+ if(opt==='N')return p*U(100-60)+(1-p)*U(100);if(opt==='F')return U(100-pf);return p*U(100-pd-30)+(1-p)*U(100-pd)}
+function pickOpt(p,pf,pd){const o=['F','D','N'];let b='N',bv=-1;o.forEach(k=>{const v=eu(p,pf,pd,k);if(v>bv+1e-9){bv=v;b=k}});return b}
+function draw(){const m=MK[mi];ui.innerHTML='';ui.appendChild(GT.el('h3',{style:'color:#38bdf8',html:'Market '+(mi+1)+'/3: '+m.n+' <span class="gt-mu">(share high-risk '+Math.round(m.hi*100)+'%)</span>'}));
+ const sf=GT.el('input',{type:'range',class:'gt-r',min:0,max:60,step:1,value:30}),sd=GT.el('input',{type:'range',class:'gt-r',min:0,max:40,step:1,value:12});const o=GT.el('div',{class:'gt-mu',style:'margin:8px 0'});
+ function up(){const pf=+sf.value,pd=+sd.value,h=pickOpt(.5,pf,pd),l=pickOpt(.1,pf,pd);const pay=(t,p)=>t==='F'?[pf,p*60]:t==='D'?[pd,p*30]:[0,0];const ph=pay(h,.5),pl=pay(l,.1);
+  const prof=m.hi*(ph[0]-ph[1])+(1-m.hi)*(pl[0]-pl[1]);o.innerHTML='Full-cover premium <b>'+pf+'</b>, deductible-plan premium <b>'+pd+'</b><br>High-risk picks <b>'+({F:'Plan F',D:'Plan D',N:'nothing'}[h])+'</b>; low-risk picks <b>'+({F:'Plan F',D:'Plan D',N:'nothing'}[l])+'</b><br>Expected profit per customer <b>'+prof.toFixed(1)+'</b> '+(h==='F'&&l==='D'?'<b class="gt-ok">(separating menu)</b>':'');o._p=prof;o._sep=(h==='F'&&l==='D')}
+ sf.oninput=sd.oninput=up;up();const b=GT.el('button',{class:'gt-btn gold'},['Offer this menu']);
+ b.onclick=()=>{const prof=o._p,sep=o._sep;const pts=Math.max(0,Math.round(prof*10+(sep?80:0)+50));total+=pts;G.setScore(total);ui.innerHTML='';ui.appendChild(GT.el('p',{style:'line-height:1.6',html:'Profit per customer '+prof.toFixed(1)+(sep?' with a separating menu':'')+' &rarr; +'+pts}));
+  const n=GT.el('button',{class:'gt-btn gold'},[mi<2?'Next market':'Finish']);n.onclick=()=>{mi++;if(mi>=3)G.end('Screening works when each type <b>prefers the menu item meant for it</b>. Price the full-cover plan so high-risk buyers take it and the low-risk prefer the cheaper partial plan; otherwise adverse selection drags the pool toward the costly customers.',total);else draw()};ui.appendChild(n)};
+ ui.append(GT.el('div',{class:'gt-mu',html:'Plan F premium'}),sf,GT.el('div',{class:'gt-mu',html:'Plan D premium'}),sd,o,b)}
+draw();
+
+</script>
+</body>
+</html>

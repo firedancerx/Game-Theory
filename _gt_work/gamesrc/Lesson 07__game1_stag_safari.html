@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 07 Game 1</title>
+</head>
+<body>
+<script src="../game_storage.js"></script>
+<script src="../gt_kit.js"></script>
+<script>
+// Lesson 07 Game 1 - Stag Safari (top-down hunt: partner trust decides whether the big prize is reachable).
+const G=GT.init({lesson:'07',n:1,kind:'video',title:'Stag Safari',sub:'hunt the stag together or settle for hares alone',
+ how:'Move with your finger or mouse. <b>Hares</b> (small dots) give you <b>10</b> alone. The <b>stag</b> (large animal) gives <b>150 to each of you</b> but only if you <b>and your partner</b> are both touching it. Your partner decides each moment whether to trust you: stay near it and chase the stag and its trust rises; grab hares and it wanders off for hares. 60 seconds.'});
+const W=720,H=440;const cv=GT.el('canvas',{class:'gt-c'});G.body.appendChild(cv);const g=GT.fit(cv,W,H);
+let me={x:120,y:H/2},pa={x:200,y:H/2+60},stag={x:W-160,y:H/2,vx:60,vy:40},hares=[],tg={x:me.x,y:me.y},trust=.5,time=60,last=performance.now(),over=false,msg='Stay close to your partner and herd the stag',flash=0,stagCool=0;
+function hare(){hares.push({x:GT.rnd(40,W-40),y:GT.rnd(40,H-40),vx:GT.rnd(-30,30),vy:GT.rnd(-30,30)})}
+for(let i=0;i<5;i++)hare();
+cv.addEventListener('pointermove',e=>{tg=GT.ptr(cv,W,H,e)});cv.addEventListener('pointerdown',e=>{tg=GT.ptr(cv,W,H,e)});
+const d=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+function step(a,t,sp,dt){const dx=t.x-a.x,dy=t.y-a.y,l=Math.hypot(dx,dy)||1;if(l>4){a.x+=dx/l*sp*dt;a.y+=dy/l*sp*dt}}
+function frame(now){const dt=Math.min(.05,(now-last)/1000);last=now;
+ if(!over){time-=dt;step(me,tg,230,dt);
+  // stag flees from nearest hunter
+  const nearest=d(me,stag)<d(pa,stag)?me:pa;const dd=d(nearest,stag);if(dd<150){const l=dd||1;stag.vx+=(stag.x-nearest.x)/l*180*dt;stag.vy+=(stag.y-nearest.y)/l*180*dt}
+  const sp=Math.hypot(stag.vx,stag.vy);if(sp>95){stag.vx*=95/sp;stag.vy*=95/sp}
+  stag.x+=stag.vx*dt;stag.y+=stag.vy*dt;if(stag.x<30||stag.x>W-30)stag.vx*=-1;if(stag.y<30||stag.y>H-30)stag.vy*=-1;stag.x=GT.clamp(stag.x,30,W-30);stag.y=GT.clamp(stag.y,30,H-30);
+  // partner decides
+  const toStag=d(me,stag)<d(me,hares[0]||{x:9999,y:9999})+120;
+  if(d(me,pa)<170&&toStag)trust=Math.min(1,trust+.18*dt);else if(!toStag)trust=Math.max(0,trust-.25*dt);else trust=Math.max(0,trust-.06*dt);
+  let tgt;if(trust>.45){tgt=stag}else{tgt=hares.slice().sort((a,b)=>d(pa,a)-d(pa,b))[0]||pa}
+  step(pa,tgt,175+trust*40,dt);
+  hares.forEach(h=>{h.x+=h.vx*dt;h.y+=h.vy*dt;if(h.x<10||h.x>W-10)h.vx*=-1;if(h.y<10||h.y>H-10)h.vy*=-1});
+  for(let i=hares.length-1;i>=0;i--){const h=hares[i];if(d(h,me)<22){G.add(10);hares.splice(i,1);hare();trust=Math.max(0,trust-.07);msg='Hare caught (+10) - your partner notices you went solo'}else if(d(h,pa)<22){hares.splice(i,1);hare()}}
+  stagCool-=dt;if(d(me,stag)<34&&d(pa,stag)<34&&stagCool<=0){G.add(150);flash=.5;msg='STAG TAKEN together (+150 each)!';stagCool=2.5;trust=Math.min(1,trust+.25);stag.x=GT.rnd(60,W-60);stag.y=GT.rnd(60,H-60)}
+  flash*=.92;if(time<=0){over=true;G.end('Stag payoffs are bigger but need <b>mutual commitment</b>; hares are safe but small. Trust at the end of play: <b>'+Math.round(trust*100)+'%</b>. In a Stag Hunt, building assurance matters more than being clever.',G.score)}}
+ g.clearRect(0,0,W,H);g.fillStyle='#0a1a12';g.fillRect(0,0,W,H);for(let i=0;i<30;i++){g.fillStyle='rgba(16,185,129,.05)';g.fillRect((i*97)%W,(i*53)%H,40,3)}
+ hares.forEach(h=>{g.fillStyle='#fbbf24';g.beginPath();g.arc(h.x,h.y,8,0,7);g.fill()});
+ g.fillStyle='#b45309';g.beginPath();g.arc(stag.x,stag.y,26,0,7);g.fill();g.strokeStyle='#fde68a';g.lineWidth=3;g.beginPath();g.moveTo(stag.x-10,stag.y-22);g.lineTo(stag.x-22,stag.y-42);g.moveTo(stag.x+10,stag.y-22);g.lineTo(stag.x+22,stag.y-42);g.stroke();
+ g.fillStyle='#38bdf8';g.beginPath();g.arc(me.x,me.y,14,0,7);g.fill();g.fillStyle='#f43f5e';g.beginPath();g.arc(pa.x,pa.y,14,0,7);g.fill();
+ g.fillStyle='#e2e8f0';g.font='700 13px sans-serif';g.fillText('YOU',me.x-12,me.y-20);g.fillText('PARTNER',pa.x-26,pa.y-20);
+ g.fillStyle='#0b1220';g.fillRect(14,12,220,12);g.fillStyle=trust>.45?'#10b981':'#f43f5e';g.fillRect(14,12,220*trust,12);g.fillStyle='#e2e8f0';g.font='12px sans-serif';g.fillText('partner trust '+Math.round(trust*100)+'%   time '+Math.max(0,time).toFixed(0)+'s',14,40);g.fillText(msg,14,H-12);
+ if(flash>.02){g.fillStyle='rgba(250,204,21,'+flash*.5+')';g.fillRect(0,0,W,H)}
+ if(!over)requestAnimationFrame(frame)}
+requestAnimationFrame(frame);
+
+</script>
+</body>
+</html>

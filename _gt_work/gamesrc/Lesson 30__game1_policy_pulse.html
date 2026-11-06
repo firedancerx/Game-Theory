@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 30 Game 1</title>
+</head>
+<body>
+<script src="../game_storage.js"></script>
+<script src="../gt_kit.js"></script>
+<script>
+// L30 G1 - Policy Pulse: steer a population of agents with a live penalty dial.
+const G=GT.init({lesson:'30',n:1,kind:'video',title:'Policy Pulse',sub:'a rule is only as good as the responses it provokes',
+ how:'A regulator sets a <b>penalty</b> for non-compliance with an audit rate fixed at 20%. 100 agents decide each moment whether to comply: honest agents always comply, calculating agents comply when expected penalty beats the gain from cheating, and defiant agents <b>rebel</b> when penalties feel excessive (backlash). Keep <b>compliance high</b> and <b>backlash low</b>. Drag the dial live for 40 seconds; harsher is not always better.'});
+const W=720,H=260;const cv=GT.el('canvas',{class:'gt-c'});G.body.appendChild(cv);const g=GT.fit(cv,W,H);
+const sl=GT.el('input',{type:'range',class:'gt-r',min:0,max:100,step:1,value:20});const lab=GT.el('div',{class:'gt-mu',style:'text-align:center'});G.body.append(lab,sl);
+let ag=[];for(let i=0;i<100;i++){ag.push({t:i<40?0:i<85?1:2,gain:GT.rnd(5,40),x:Math.random()*W,y:Math.random()*160+10,s:1})}
+let t=40,last=performance.now(),score=0,over=false,backlash=0,comp=1,hist=[];
+function f(now){const dt=Math.min(.05,(now-last)/1000);last=now;if(!over){t-=dt;const pen=+sl.value;
+ backlash+=((pen>65?(pen-65)/35:0)-backlash)*dt*.8;let c=0;ag.forEach(a=>{let comply;if(a.t===0)comply=true;else if(a.t===1)comply=.2*pen>=a.gain*.4;else comply=!(backlash>.25+Math.random()*.3||pen<30);a.s+=((comply?1:0)-a.s)*dt*2.5;c+=a.s});comp=c/100;
+ score+=dt*(comp*30-backlash*25-pen*.05);G.setScore(Math.max(0,Math.round(score+200)));hist.push([comp,backlash]);
+ lab.innerHTML='Penalty <b>'+pen+'</b> &nbsp; compliance <b>'+Math.round(comp*100)+'%</b> &nbsp; backlash <b>'+Math.round(backlash*100)+'%</b> &nbsp; time '+Math.max(0,t|0)+'s';
+ if(t<=0){over=true;G.end('Compliance '+Math.round(comp*100)+'%, backlash '+Math.round(backlash*100)+'%. Policies are games: calculating agents respond to expected penalties, but <b>excessive</b> penalties provoke defiance. Design for the whole population of responses, not the average agent.',Math.max(0,Math.round(score+200)));return}
+ g.clearRect(0,0,W,H);g.fillStyle='#0b1220';g.fillRect(0,0,W,H);ag.forEach(a=>{g.fillStyle=a.s>.5?'#10b981':'#f43f5e';g.globalAlpha=.4+a.s*.5;g.beginPath();g.arc(a.x,a.y,5,0,7);g.fill()});g.globalAlpha=1;
+ g.strokeStyle='#10b981';g.beginPath();hist.forEach((h,i)=>{const x=10+i/(40*60)*(W-20),y=250-h[0]*70;i?g.lineTo(x,y):g.moveTo(x,y)});g.stroke();g.strokeStyle='#f59e0b';g.beginPath();hist.forEach((h,i)=>{const x=10+i/(40*60)*(W-20),y=250-h[1]*70;i?g.lineTo(x,y):g.moveTo(x,y)});g.stroke();
+ g.fillStyle='#94a3b8';g.font='11px sans-serif';g.fillText('green: compliance  amber: backlash',10,190);requestAnimationFrame(f)}}
+requestAnimationFrame(f);
+
+</script>
+</body>
+</html>

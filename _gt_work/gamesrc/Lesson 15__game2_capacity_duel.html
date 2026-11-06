@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 15 Game 2</title>
+</head>
+<body>
+<script src="../game_storage.js"></script>
+<script src="../gt_kit.js"></script>
+<script>
+// L15 G2 - Capacity Duel: Stackelberg leader/follower in three industries.
+const G=GT.init({lesson:'15',n:2,kind:'sim',title:'Capacity Duel',sub:'lead with output or follow with precision',
+ how:'Two firms sell the same product; price = demand intercept <b>a</b> minus total output. Marginal cost is <b>c</b>. In each of 4 industries you either <b>Lead</b> (choose output first; the rival observes and best-replies) or <b>Follow</b> (the rival leads; you best-reply). Use the slider as leader. Simultaneous (Cournot) output a-c over 3 each is the benchmark.'});
+const IND=[{n:'Steel',a:100,c:10},{n:'Cloud storage',a:80,c:20},{n:'Cement',a:120,c:30},{n:'Streaming',a:90,c:10}];
+let ii=0,total=0;const ui=GT.el('div',{class:'gt-card'});G.body.appendChild(ui);
+function prof(q1,q2,I){const p=Math.max(0,I.a-q1-q2);return q1*(p-I.c)}
+function draw(){const I=IND[ii];ui.innerHTML='';ui.appendChild(GT.el('h3',{style:'color:#38bdf8',html:'Industry '+(ii+1)+'/4: '+I.n+' <span class="gt-mu">(a='+I.a+', c='+I.c+')</span>'}));
+ const cour=(I.a-I.c)/3;ui.appendChild(GT.el('p',{class:'gt-mu',html:'Cournot benchmark: each produces '+cour.toFixed(1)+' and earns '+prof(cour,cour,I).toFixed(0)+'.'}));
+ const row=GT.el('div',{class:'gt-row'});row.append(GT.el('button',{class:'gt-btn pri',onclick:()=>lead()},['Lead']),GT.el('button',{class:'gt-btn',onclick:()=>follow()},['Follow']));ui.appendChild(row)}
+function lead(){const I=IND[ii];ui.innerHTML='';ui.appendChild(GT.el('h3',{html:'You lead in '+I.n}));
+ const r=GT.el('input',{type:'range',class:'gt-r',min:0,max:I.a-I.c,step:1,value:Math.round((I.a-I.c)/3)});const o=GT.el('p',{class:'gt-mu'});
+ function up(){const q1=+r.value,q2=Math.max(0,(I.a-I.c-q1)/2);o.innerHTML='Your output <b>'+q1+'</b> &rarr; rival best reply <b>'+q2.toFixed(1)+'</b> &rarr; your profit <b>'+prof(q1,q2,I).toFixed(0)+'</b>, rival '+prof(q2,q1,I).toFixed(0)}
+ r.oninput=up;up();const b=GT.el('button',{class:'gt-btn gold'},['Commit']);b.onclick=()=>{const q1=+r.value,q2=Math.max(0,(I.a-I.c-q1)/2);fin(prof(q1,q2,I),prof(q2,q1,I),'You led with '+q1+'.')};ui.append(r,o,b)}
+function follow(){const I=IND[ii];const q1=Math.max(0,(I.a-I.c)/2+GT.rnd(-4,4));ui.innerHTML='';ui.appendChild(GT.el('h3',{html:'The rival leads in '+I.n+' with output '+q1.toFixed(1)}));
+ const r=GT.el('input',{type:'range',class:'gt-r',min:0,max:I.a-I.c,step:1,value:0});const o=GT.el('p',{class:'gt-mu'});
+ function up(){o.innerHTML='Your output <b>'+r.value+'</b> &rarr; profit <b>'+prof(+r.value,q1,I).toFixed(0)+'</b> (best reply would be '+Math.max(0,(I.a-I.c-q1)/2).toFixed(1)+')'}
+ r.oninput=up;up();const b=GT.el('button',{class:'gt-btn gold'},['Commit']);b.onclick=()=>fin(prof(+r.value,q1,I),prof(q1,+r.value,I),'You followed with '+r.value+'.');ui.append(r,o,b)}
+function fin(m,t,txt){total+=Math.round(m);G.setScore(total);ui.innerHTML='';ui.appendChild(GT.el('p',{style:'line-height:1.6',html:txt+' You earn <b>'+m.toFixed(0)+'</b>, rival '+t.toFixed(0)+'.'}));
+ const n=GT.el('button',{class:'gt-btn gold',style:'margin-top:10px'},[ii<3?'Next industry':'Finish']);n.onclick=()=>{ii++;if(ii>=4)G.end('In quantity competition the <b>leader</b> commits to a large output and the follower shrinks; leading earns more than following. The edge comes from <b>commitment</b>, which is why capacity, not talk, is the lever.',total);else draw()};ui.appendChild(n)}
+draw();
+
+</script>
+</body>
+</html>

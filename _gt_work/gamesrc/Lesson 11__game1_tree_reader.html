@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 11 Game 1</title>
+</head>
+<body>
+<script src="../game_storage.js"></script>
+<script src="../gt_kit.js"></script>
+<script>
+// L11 G1 - Tree Reader: rapid-fire questions on a freshly drawn game tree.
+const G=GT.init({lesson:'11',n:1,kind:'video',title:'Tree Reader',sub:'read the tree before the clock reads you',
+ how:'A game tree is drawn: squares are decision nodes (labelled by player), circles are terminal payoffs. Answer 12 rapid questions: who moves where, how many outcomes, what a path pays. <b>10 seconds</b> each; faster answers and streaks score more.'});
+const W=720,H=300;const cv=GT.el('canvas',{class:'gt-c'});G.body.appendChild(cv);const g=GT.fit(cv,W,H);
+const q=GT.el('div',{class:'gt-card',style:'font-size:1.05em'});const opts=GT.el('div',{class:'gt-row',style:'justify-content:center'});G.body.appendChild(q);G.body.appendChild(opts);
+let tree,qi=0,streak=0,tl=10,last=performance.now(),cur,over=false,correct=0;
+function mk(){const leaf=()=>({p:[GT.ri(0,9),GT.ri(0,9)]});const d=GT.ri(2,3);
+ const node=(lv,pl)=>lv===d?leaf():{pl,ch:[node(lv+1,1-pl),node(lv+1,1-pl),...(Math.random()<.35?[node(lv+1,1-pl)]:[])]};return node(0,GT.ri(0,1))}
+function lay(n,x0,x1,y,dy){n.x=(x0+x1)/2;n.y=y;if(n.ch){const w=(x1-x0)/n.ch.length;n.ch.forEach((c,i)=>lay(c,x0+i*w,x0+(i+1)*w,y+dy,dy))}}
+function walk(n,f){f(n);if(n.ch)n.ch.forEach(c=>walk(c,f))}
+function drawT(){g.clearRect(0,0,W,H);g.fillStyle='#0b1220';g.fillRect(0,0,W,H);
+ walk(tree,n=>{if(n.ch)n.ch.forEach(c=>{g.strokeStyle='#475569';g.beginPath();g.moveTo(n.x,n.y);g.lineTo(c.x,c.y);g.stroke()})});
+ walk(tree,n=>{if(n.ch){g.fillStyle=n.pl?'#f43f5e':'#38bdf8';g.fillRect(n.x-14,n.y-14,28,28);g.fillStyle='#fff';g.font='700 13px sans-serif';g.textAlign='center';g.fillText(n.pl?'B':'A',n.x,n.y+5)}else{g.fillStyle='#1e293b';g.beginPath();g.arc(n.x,n.y,22,0,7);g.fill();g.strokeStyle='#10b981';g.stroke();g.fillStyle='#e2e8f0';g.font='12px sans-serif';g.textAlign='center';g.fillText(n.p[0]+','+n.p[1],n.x,n.y+4)}});
+ g.fillStyle='#94a3b8';g.textAlign='left';g.fillText('Payoffs shown as A,B. Streak x'+streak,10,18)}
+function ask(){if(qi>=12){over=true;G.end('Reading a tree correctly means knowing <b>who moves, in what order, with what information</b>. '+correct+'/12 correct. Order is part of the game: the same payoffs can give different outcomes when the sequence changes.',G.score);return}
+ tree=mk();lay(tree,20,W-20,40,(H-100)/3.2);drawT();tl=10;
+ const leaves=[];walk(tree,n=>{if(!n.ch)leaves.push(n)});const dec=[];walk(tree,n=>{if(n.ch)dec.push(n)});
+ const t=GT.ri(0,2);let txt,ans,choices;
+ if(t===0){txt='How many terminal outcomes does this tree have?';ans=leaves.length;choices=[ans-1,ans,ans+1,ans+2]}
+ else if(t===1){txt='How many decision nodes does player B control?';ans=dec.filter(n=>n.pl===1).length;choices=[0,1,2,3,4,5].filter(v=>Math.abs(v-ans)<=2).slice(0,4);if(!choices.includes(ans))choices[0]=ans}
+ else{const l=GT.pick(leaves);txt='Maximum payoff Player A can get anywhere in the tree?';ans=Math.max(...leaves.map(x=>x.p[0]));choices=[ans,Math.max(0,ans-1),Math.min(9,ans+1),Math.max(0,ans-3)]}
+ choices=[...new Set(choices)];while(choices.length<4)choices.push(choices[choices.length-1]+1);
+ cur={ans};q.textContent='Q'+(qi+1)+'/12: '+txt;opts.innerHTML='';GT.shuffle(choices).forEach(c=>opts.appendChild(GT.el('button',{class:'gt-btn',onclick:()=>pick(c)},[String(c)])))}
+function pick(c){if(over)return;if(c===cur.ans){streak++;correct++;G.add(Math.round(50+tl*8+Math.min(streak,6)*10))}else streak=0;qi++;ask()}
+function loop(now){const dt=(now-last)/1000;last=now;if(!over){tl-=dt;if(tl<=0){streak=0;qi++;ask()}g.fillStyle='#f59e0b';g.fillRect(0,H-8,W*Math.max(0,tl)/10,8);if(!over)drawT2();requestAnimationFrame(loop)}}
+function drawT2(){g.fillStyle='#0b1220';g.fillRect(0,H-10,W,10);g.fillStyle='#f59e0b';g.fillRect(0,H-8,W*Math.max(0,tl)/10,8)}
+ask();requestAnimationFrame(loop);
+
+</script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 16 Game 2</title>
+</head>
+<body>
+<script src="../game_storage.js"></script>
+<script src="../gt_kit.js"></script>
+<script>
+// L16 G2 - Folk Frontier: click a cooperative payoff pair the discount factor can sustain.
+const G=GT.init({lesson:'16',n:2,kind:'sim',title:'Folk Frontier',sub:'which cooperative outcomes survive a given patience level?',
+ how:'The shaded region is every <b>feasible</b> average payoff pair (you on the x axis, partner on y) for the Prisoner\'s Dilemma with payoffs 3/5/1/0. Click a point. It is <b>sustainable</b> if both payoffs are at least 1 (the punishment level) and the discount factor <b>delta</b> is high enough that neither side gains from cheating: delta &ge; (5 - own payoff)/4. Sustainable points score x + y; unsustainable ones score 0. Six rounds with different delta.'});
+const W=420,H=420;const cv=GT.el('canvas',{class:'gt-c',style:'max-width:420px'});G.body.appendChild(cv);const g=GT.fit(cv,W,H);
+const msg=GT.el('div',{class:'gt-card'});G.body.appendChild(msg);
+const D=[.3,.5,.6,.75,.9,.95];let ri=0,total=0,pick=null,done=false;
+const X=v=>40+v/5.5*(W-60),Y=v=>H-40-v/5.5*(H-60);
+function hull(){return [[0,5],[3,3],[5,0],[1,1]]}
+function inside(x,y){// hull polygon (0,5),(5,0),(1,1) plus (3,3): convex region = triangle (0,5),(5,0),(1,1)? (3,3) lies on line x+y=6 beyond triangle edge x+y=5 so hull is quadrilateral
+ const P=[[1,1],[5,0],[3,3],[0,5]];let s=0;for(let i=0;i<4;i++){const a=P[i],b=P[(i+1)%4];const c=(b[0]-a[0])*(y-a[1])-(b[1]-a[1])*(x-a[0]);if(c!==0){if(s===0)s=Math.sign(c);else if(Math.sign(c)!==s)return false}}return true}
+function draw(){g.clearRect(0,0,W,H);g.fillStyle='#0b1220';g.fillRect(0,0,W,H);g.fillStyle='rgba(56,189,248,.2)';g.beginPath();[[1,1],[5,0],[3,3],[0,5]].forEach((p,i)=>i?g.lineTo(X(p[0]),Y(p[1])):g.moveTo(X(p[0]),Y(p[1])));g.closePath();g.fill();g.strokeStyle='#38bdf8';g.stroke();
+ g.strokeStyle='#f59e0b';g.setLineDash([5,4]);g.strokeRect(X(1),Y(5.5),X(5.5)-X(1),Y(1)-Y(5.5));g.setLineDash([]);
+ g.fillStyle='#e2e8f0';g.font='12px sans-serif';for(let v=0;v<=5;v++){g.fillText(v,X(v)-3,H-22);g.fillText(v,16,Y(v)+4)}g.fillText('your payoff',W/2-30,H-6);g.fillText('partner',2,18);
+ [[3,3,'C,C'],[5,0,'D,C'],[0,5,'C,D'],[1,1,'D,D']].forEach(p=>{g.fillStyle='#fbbf24';g.beginPath();g.arc(X(p[0]),Y(p[1]),4,0,7);g.fill()});
+ if(pick){g.fillStyle='#10b981';g.beginPath();g.arc(X(pick.x),Y(pick.y),7,0,7);g.fill()}
+ g.fillStyle='#f59e0b';g.fillText('dashed box = both at least 1',X(1)+6,Y(5.4))}
+function info(){msg.innerHTML='<b>Round '+(ri+1)+'/6: delta = '+D[ri]+'</b>. Click a point; required delta for you at x is (5-x)/4, for partner (5-y)/4.'}
+cv.addEventListener('pointerdown',e=>{if(done)return;const p=GT.ptr(cv,W,H,e);const x=(p.x-40)/(W-60)*5.5,y=(H-40-p.y)/(H-60)*5.5;pick={x,y};draw();
+ const ok=inside(x,y)&&x>=1&&y>=1&&D[ri]>=(5-x)/4&&D[ri]>=(5-y)/4;const pts=ok?Math.round((x+y)*20):0;total+=pts;G.setScore(total);
+ const need=Math.max((5-x)/4,(5-y)/4);msg.innerHTML='Point ('+x.toFixed(1)+', '+y.toFixed(1)+'): '+(!inside(x,y)?'<b class="gt-bad">outside the feasible region</b>':x<1||y<1?'<b class="gt-bad">below the punishment level</b>':D[ri]<need?'<b class="gt-bad">needs delta &ge; '+need.toFixed(2)+'</b>':'<b class="gt-ok">sustainable</b>')+' &rarr; +'+pts;
+ done=true;setTimeout(()=>{ri++;if(ri>=6){G.end('<b>Folk theorem</b>: with enough patience, almost every feasible outcome that beats the punishment payoff can be sustained as an equilibrium. Impatient parties are limited to the low end.',total)}else{done=false;pick=null;draw();info()}},1800)});
+draw();info();
+
+</script>
+</body>
+</html>

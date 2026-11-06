@@ -10,7 +10,7 @@
 <script src="../gt_kit.js"></script>
 <script>
 // Lesson 03 Game 1 - Cull the Dominated (speed-spotting under a shrinking clock).
-const G=GT.init({lesson:'03',n:1,kind:'video',title:'Cull the Dominated',sub:'spot the strictly dominated move before the clock runs out',
+const G=GT.init({time:240,lesson:'03',n:1,kind:'video',title:'Cull the Dominated',sub:'spot the strictly dominated move before the clock runs out',
  how:'A payoff matrix appears (first number = Row player, second = Column player). Tap the option that is <b>strictly dominated</b> for the player named: one that is <b>worse than another option against every rival move</b>. A tie anywhere means it is <b>not</b> strict. If nothing is strictly dominated, hit <b>None</b>. Three lives; the clock shrinks every round.'});
 const N=3;let lives=3,round=0,tLeft=0,tMax=0,timer=null,locked=false,cur;
 const ui=GT.el('div',{class:'gt-card'});G.body.appendChild(ui);

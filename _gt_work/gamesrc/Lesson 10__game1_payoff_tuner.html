@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 10 Game 1</title>
+</head>
+<body>
+<script src="../game_storage.js"></script>
+<script src="../gt_kit.js"></script>
+<script>
+// Lesson 10 Game 1 - Payoff Tuner (spend a budget on sliders so a target cell becomes the unique Nash).
+const G=GT.init({lesson:'10',n:1,kind:'video',title:'Payoff Tuner',sub:'retune the game until the right outcome is the equilibrium',
+ how:'Each puzzle shows a 2x2 game that traps both players. Use the <b>sliders</b> to add or remove payoff points in cells (a budget limits total change). Goal: make the <b>highlighted target cell</b> the <b>only</b> pure Nash equilibrium. Fewer points spent scores higher; a timer bonus rewards speed. Five puzzles.'});
+const PUZ=[
+ {m:[[[3,3],[0,5]],[[5,0],[1,1]]],t:[0,0],b:8,n:'Prisoner\'s dilemma: make mutual cooperation the only equilibrium'},
+ {m:[[[4,4],[0,3]],[[3,0],[2,2]]],t:[1,1],b:6,n:'Stag trap: make the safe outcome the only equilibrium'},
+ {m:[[[3,3],[0,2]],[[2,0],[1,1]]],t:[1,1],b:5,n:'Reverse engineer: make the low-low cell the only equilibrium'},
+ {m:[[[4,4],[1,6]],[[6,1],[2,2]]],t:[0,0],b:8,n:'Price war: make high-price/high-price stable'},
+ {m:[[[5,5],[0,6]],[[6,0],[1,1]]],t:[0,0],b:9,n:'Supplier squeeze: make the top-left cell the unique Nash'}];
+let pi=0,t0=performance.now();const ui=GT.el('div',{class:'gt-card'});G.body.appendChild(ui);
+let cur,delta;
+function load(){const p=PUZ[pi];cur=JSON.parse(JSON.stringify(p.m));delta=[[[0,0],[0,0]],[[0,0],[0,0]]];t0=performance.now();draw()}
+function spent(){let s=0;for(let i=0;i<2;i++)for(let j=0;j<2;j++)for(let k=0;k<2;k++)s+=Math.abs(delta[i][j][k]);return s}
+function eff(){return PUZ[pi].m.map((r,i)=>r.map((c,j)=>c.map((v,k)=>v+delta[i][j][k])))}
+function draw(){const p=PUZ[pi];ui.innerHTML='';ui.appendChild(GT.el('h3',{style:'color:#38bdf8',html:'Puzzle '+(pi+1)+' of 5: '+p.n}));
+ const m=eff();const nsh=GT.nash(m);
+ const tb=GT.mtable(m,['Row 1','Row 2'],['Col 1','Col 2'],[p.t]);ui.appendChild(tb);
+ ui.appendChild(GT.el('p',{class:'gt-mu',html:'Target cell: Row '+(p.t[0]+1)+', Col '+(p.t[1]+1)+' &nbsp;|&nbsp; pure Nash now: '+(nsh.length?nsh.map(x=>'R'+(x[0]+1)+'C'+(x[1]+1)).join(', '):'none')+' &nbsp;|&nbsp; budget used <b id=bu>'+spent()+'</b> / '+p.b}));
+ const grid=GT.el('div',{style:'display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:10px 0'});
+ for(let i=0;i<2;i++)for(let j=0;j<2;j++)for(let k=0;k<2;k++){const wrap=GT.el('div',{class:'gt-mu',html:'R'+(i+1)+'C'+(j+1)+(k?' column':' row')+' payoff: <b>'+m[i][j][k]+'</b>'});
+  const r=GT.el('input',{type:'range',class:'gt-r',min:-4,max:4,step:1,value:delta[i][j][k]});r.oninput=()=>{const old=delta[i][j][k];delta[i][j][k]=+r.value;if(spent()>p.b){delta[i][j][k]=old;r.value=old}draw2()};wrap.appendChild(r);grid.appendChild(wrap)}
+ ui.appendChild(grid);
+ const ok=nsh.length===1&&nsh[0][0]===p.t[0]&&nsh[0][1]===p.t[1];
+ const b=GT.el('button',{class:'gt-btn pri',disabled:!ok},[ok?'Lock in this design':'Target not yet the only Nash']);b.onclick=()=>{const secs=(performance.now()-t0)/1000;const pts=Math.round(100+Math.max(0,(p.b-spent()))*15+Math.max(0,60-secs)*2);G.add(pts);pi++;if(pi>=5)G.end('You solved the design problem without playing the game better: you <b>changed the payoffs</b>. Side payments, penalties and bonuses re-shape the matrix so the desired outcome becomes the equilibrium.',G.score);else load()};ui.appendChild(b)}
+function draw2(){draw()}
+load();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 29 Game 2</title>
+</head>
+<body>
+<script src="../game_storage.js"></script>
+<script src="../gt_kit.js"></script>
+<script>
+// L29 G2 - Boardroom Case: run the four steps on a live 2x2 case and fix the equilibrium.
+const G=GT.init({lesson:'29',n:2,kind:'sim',title:'Boardroom Case',sub:'apply all four steps and reshape the game',
+ how:'Three cases, four steps each. (1) Name the players (read the brief). (2) Check the payoffs in the matrix. (3) Click the <b>equilibrium cell(s)</b>. (4) Choose a <b>lever</b> that changes the payoffs so a better outcome becomes the unique equilibrium; the matrix is recomputed. Pick the cheapest lever that works.'});
+const CS=[{n:'Two rival airlines: keep fares high or cut?',r:['Stay high','Cut'],c:['Stay high','Cut'],m:[[[5,5],[1,7]],[[7,1],[3,3]]],target:[0,0],L:[['Price-matching guarantee (cost 2)',(m)=>{m[1][0][0]-=3;m[1][1][1]-=0},2],['Loyalty programme (cost 4)',(m)=>{m[0][0][0]+=2;m[0][0][1]+=2},4],['Retaliation clause: cut after a cut (cost 3)',(m)=>{m[1][0][0]-=4;m[0][1][1]-=4},3]]},
+ {n:'Buyer and vendor: deliver quality or cut corners; pay on time or late',r:['Quality','Cut corners'],c:['Pay on time','Pay late'],m:[[[6,6],[0,8]],[[8,0],[2,2]]],target:[0,0],L:[['Escrow payments (cost 3)',(m)=>{m[0][1][1]-=5;m[1][1][1]-=5},3],['Quality bond (cost 3)',(m)=>{m[1][0][0]-=5;m[1][1][0]-=5},3],['Handshake promise (cost 0)',(m)=>{},0]]},
+ {n:'Two departments: share data or hoard',r:['Share','Hoard'],c:['Share','Hoard'],m:[[[6,6],[1,7]],[[7,1],[2,2]]],target:[0,0],L:[['Shared KPI bonus (cost 5)',(m)=>{m[0][0][0]+=3;m[0][0][1]+=3;m[0][1][0]+=1;m[1][0][1]+=1},5],['Hoarding penalty (cost 2)',(m)=>{m[1][0][0]-=4;m[1][1][0]-=4;m[0][1][1]-=4;m[1][1][1]-=4},2],['Pep talk (cost 0)',(m)=>{},0]]}];
+let ci=0,total=0;const ui=GT.el('div',{class:'gt-card'});G.body.appendChild(ui);
+function draw(){const c=CS[ci];ui.innerHTML='';ui.appendChild(GT.el('h3',{style:'color:#38bdf8',html:'Case '+(ci+1)+'/3: '+c.n}));
+ ui.appendChild(GT.el('p',{class:'gt-mu',html:'Step 1: players = Row ('+c.r.join(' / ')+') and Column ('+c.c.join(' / ')+'). Step 2: payoffs below. Step 3: click every equilibrium cell, then submit.'}));
+ const sel=new Set();const tb=GT.mtable(c.m,c.r,c.c,[]);ui.appendChild(tb);
+ tb.querySelectorAll('td').forEach((td,idx)=>{td.style.cursor='pointer';td.onclick=()=>{const k=Math.floor(idx/2)+','+idx%2;sel.has(k)?sel.delete(k):sel.add(k);td.style.outline=sel.has(k)?'2px solid #f59e0b':''}});
+ const b=GT.el('button',{class:'gt-btn gold',style:'margin-top:8px'},['Submit equilibrium']);b.onclick=()=>{const ns=GT.nash(c.m).map(x=>x.join(','));const ok=ns.length===sel.size&&ns.every(x=>sel.has(x));total+=ok?80:20;G.setScore(total);step4(ok)};ui.appendChild(b)}
+function step4(ok){const c=CS[ci];ui.innerHTML='';ui.appendChild(GT.el('h3',{style:'color:#38bdf8',html:'Case '+(ci+1)+': Step 4, reshape'}));ui.appendChild(GT.el('p',{html:(ok?'<b class="gt-ok">Equilibrium identified.</b> ':'<b class="gt-bad">Equilibrium was '+GT.nash(c.m).map(x=>'R'+(x[0]+1)+'C'+(x[1]+1)).join(', ')+'.</b> ')+'Now pick a lever to make the top-left cell the unique equilibrium.'}));
+ c.L.forEach(([l,fn,cost])=>ui.appendChild(GT.el('button',{class:'gt-btn',style:'display:block;margin:6px 0',onclick:()=>{const m=JSON.parse(JSON.stringify(c.m));fn(m);const ns=GT.nash(m);const works=ns.length===1&&ns[0][0]===0&&ns[0][1]===0;const pts=works?Math.max(40,200-cost*20):10;total+=pts;G.setScore(total);ui.innerHTML='';ui.appendChild(GT.mtable(m,c.r,c.c,ns));ui.appendChild(GT.el('p',{html:(works?'<b class="gt-ok">Works: cooperation is now the unique equilibrium.</b>':'<b class="gt-bad">Does not fix it.</b>')+' Lever cost '+cost+' &rarr; +'+pts}));const n=GT.el('button',{class:'gt-btn gold'},[ci<2?'Next case':'Finish']);n.onclick=()=>{ci++;if(ci>=3)G.end('Four steps: <b>map, read, solve, reshape</b>. The cheapest lever that flips the equilibrium beats both wishful promises (free but empty) and over-engineered incentives.',total);else draw()};ui.appendChild(n)}},[l+' ']))) }
+draw();
+
+</script>
+</body>
+</html>

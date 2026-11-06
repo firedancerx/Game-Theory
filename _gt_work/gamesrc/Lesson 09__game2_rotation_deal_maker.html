@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 09 Game 2</title>
+</head>
+<body>
+<script src="../game_storage.js"></script>
+<script src="../gt_kit.js"></script>
+<script>
+// Lesson 09 Game 2 - Rotation Deal-Maker (repeated Battle of the Sexes: alternate, side-pay, or insist).
+const G=GT.init({lesson:'09',n:2,kind:'sim',title:'Rotation Deal-Maker',sub:'two firms, two standards, ten quarters of bargaining',
+ how:'You prefer <b>Standard A</b> (payoff 3 if matched, 1 if you adopt B and match). Your partner prefers <b>Standard B</b>. Mismatching pays <b>0</b> to both. Each quarter you may <b>Insist</b> on your standard, <b>Yield</b> to theirs, or <b>Propose a rotation</b> (A now, B next quarter). The partner remembers whether you keep your word and how often you insist. Ten quarters.'});
+const ui=GT.el('div',{class:'gt-card'});G.body.appendChild(ui);let q=0,total=0,rot=null,hist=[],patience=.7,trust=.5;
+function draw(msg){ui.innerHTML='';ui.appendChild(GT.el('h3',{style:'color:#38bdf8',html:'Quarter '+(q+1)+' of 10 &nbsp;<span class="gt-mu">your score '+total+'</span>'}));
+ ui.appendChild(GT.el('div',{class:'gt-mu',style:'margin:6px 0',html:'Partner patience <b>'+Math.round(patience*100)+'%</b> | trust in you <b>'+Math.round(trust*100)+'%</b>'+(rot?' | <span class="gt-gold">rotation pending: this quarter = '+rot+'</span>':'')}));
+ const tb=GT.mtable([[[3,1],[0,0]],[[0,0],[1,3]]],['You: A','You: B'],['Partner: A','Partner: B']);ui.appendChild(tb);
+ const row=GT.el('div',{class:'gt-row',style:'margin:12px 0'});
+ [['I','Insist on A','pri'],['Y','Yield to B',''],['R','Propose rotation (A now, B next)','gold']].forEach(([k,l,c])=>row.appendChild(GT.el('button',{class:'gt-btn '+c,onclick:()=>play(k)},[l])));ui.appendChild(row);
+ ui.appendChild(GT.el('p',{class:'gt-mu',style:'min-height:44px',html:msg||''}))}
+function play(k){let mine,thr;
+ if(rot){mine='B';thr='B';if(k==='I'&&rot){mine='A'}}else if(k==='I')mine='A';else if(k==='Y')mine='B';else mine='A';
+ // partner reaction
+ if(k==='R'&&!rot){const accept=Math.random()<.35+trust*.5+(1-patience)*.2;if(accept){thr='A';rot='B'}else{thr='B';}}
+ else if(!rot){const pInsist=patience*(k==='I'?.8:.5);thr=Math.random()<pInsist?'B':(Math.random()<.5+trust*.2?mine:'B')}
+ else{thr='B'}
+ let m=0,t=0;if(mine===thr){m=mine==='A'?3:1;t=mine==='A'?1:3}
+ let note='';
+ if(rot&&k==='I'){note='You broke the rotation deal: trust drops.';trust=Math.max(0,trust-.3)}else if(rot){note='Rotation honoured: your partner gets its turn on B.';trust=Math.min(1,trust+.2)}
+ if(k==='R'&&rot==='B'&&!hist.length){}
+ if(m===0)patience=Math.max(0,patience-.1);else patience=Math.min(1,patience+.05);
+ hist.push(k);total+=m;G.setScore(total);
+ const wasRot=rot;if(wasRot&&k!=='R'){rot=null}else if(wasRot&&k==='R'){rot=null}
+ q++;if(q>=10){G.end('Result '+total+'/30. In Battle of the Sexes both matches are equilibria; the contest is about <b>who gets their preferred one</b>. Long-run winners alternate and keep promises, because a rotation deal beats ten coin flips and ten stand-offs.',total);return}
+ draw('You '+(mine)+' / partner '+(thr)+' &rarr; you +'+m+', partner +'+t+'. '+note)}
+draw('Try proposing a rotation in the first quarter and see whether it holds.');
+
+</script>
+</body>
+</html>

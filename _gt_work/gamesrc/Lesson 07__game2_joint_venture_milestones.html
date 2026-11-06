@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 07 Game 2</title>
+</head>
+<body>
+<script src="../game_storage.js"></script>
+<script src="../gt_kit.js"></script>
+<script>
+// Lesson 07 Game 2 - Joint Venture Milestones (assurance sim: signal, pre-commit, and invest under belief).
+const G=GT.init({lesson:'07',n:2,kind:'sim',title:'Joint Venture Milestones',sub:'build assurance before you stake the big money',
+ how:'Six funding milestones with a partner. Each round choose <b>Big Bet (stag)</b> or <b>Safe Play (hare)</b>. Big Bet pays <b>100</b> each if the partner also bets big; if they play safe you get <b>0</b> and they get 40. Safe Play always pays <b>40</b>. The partner\'s <b>belief in you</b> drives its choice. Before betting you may buy assurance: a <b>public pledge</b> (cost 10) or an <b>escrowed deposit</b> (cost 20, much stronger).'});
+const ui=GT.el('div',{class:'gt-card'});G.body.appendChild(ui);let round=0,belief=.45,total=0,log=[];
+function draw(){ui.innerHTML='';ui.appendChild(GT.el('h3',{style:'color:#38bdf8',html:'Milestone '+(round+1)+' of 6'}));
+ ui.appendChild(GT.el('div',{class:'gt-mu',style:'margin:8px 0 4px',html:'Partner\'s belief that you will bet big: <b>'+Math.round(belief*100)+'%</b>  &rarr; partner bets big with probability ~'+Math.round(Math.pow(belief,1.4)*100)+'%'}));
+ ui.appendChild(GT.el('div',{class:'gt-bar'},[(()=>{const i=GT.el('i',{});i.style.width=belief*100+'%';return i})()]));
+ const row=GT.el('div',{class:'gt-row',style:'margin:12px 0'});let pledged=false,deposit=false;
+ const bp=GT.el('button',{class:'gt-btn',onclick:()=>{if(pledged||deposit)return;pledged=true;belief=Math.min(.97,belief+.14);total-=10;G.setScore(total);bp.disabled=true;draw2()}},['Public pledge (-10): +14% belief']);
+ const bd=GT.el('button',{class:'gt-btn',onclick:()=>{if(deposit)return;deposit=true;belief=Math.min(.97,belief+.32);total-=20;G.setScore(total);bd.disabled=true;draw2()}},['Escrowed deposit (-20): +32% belief']);
+ function draw2(){ui.querySelector('.gt-mu').innerHTML='Partner\'s belief that you will bet big: <b>'+Math.round(belief*100)+'%</b> &rarr; partner bets big with probability ~'+Math.round(Math.pow(belief,1.4)*100)+'%';ui.querySelector('.gt-bar>i').style.width=belief*100+'%'}
+ row.append(bp,bd);ui.appendChild(row);
+ const ev=GT.el('p',{class:'gt-mu',html:'Expected value now: Big Bet <b>'+(100*Math.pow(belief,1.4)).toFixed(0)+'</b> vs Safe Play <b>40</b>.'});ui.appendChild(ev);
+ const act=GT.el('div',{class:'gt-row'});const out=GT.el('p',{style:'margin-top:12px;min-height:40px'});
+ const go=(big)=>{act.querySelectorAll('button').forEach(b=>b.disabled=true);bp.disabled=bd.disabled=true;const pBig=Math.random()<Math.pow(belief,1.4);
+  let my=0,th=0;if(big&&pBig){my=100;th=100}else if(big&&!pBig){my=0;th=40}else if(!big&&pBig){my=40;th=0}else{my=40;th=40}
+  total+=my;G.setScore(total);
+  out.innerHTML='You: <b>'+(big?'Big Bet':'Safe')+'</b>; partner: <b>'+(pBig?'Big Bet':'Safe')+'</b> &rarr; you <b>+'+my+'</b>, partner +'+th+'.';
+  belief=GT.clamp(belief+(big?.1:-.12)+(pBig&&big?.08:0),.05,.95);
+  const n=GT.el('button',{class:'gt-btn gold',style:'margin-top:10px'},[round<5?'Next milestone':'Finish']);n.onclick=()=>{if(round<5){round++;draw()}else G.end('The partner is not irrational for playing safe: it is protecting itself against <b>your</b> doubt. Pledges and escrow convert a hope into an observable commitment, which is how assurance turns a stag outcome into an equilibrium you can reach.',total)};out.appendChild(document.createElement('br'));out.appendChild(n)};
+ act.append(GT.el('button',{class:'gt-btn pri',onclick:()=>go(true)},['Big Bet (stag)']),GT.el('button',{class:'gt-btn',onclick:()=>go(false)},['Safe Play (hare)']));
+ ui.append(act,out)}
+draw();
+
+</script>
+</body>
+</html>
