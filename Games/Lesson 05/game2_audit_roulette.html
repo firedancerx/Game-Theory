@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 05 Game 2</title>
+</head>
+<body>
+<script src="../game_storage.js"></script>
+<script src="../gt_kit.js"></script>
+<script>
+// Lesson 05 Game 2 - Audit Roulette (set the audit probability that makes the evader indifferent: p* = (G+C)/(G+F)).
+const G=GT.init({lesson:'05',n:2,kind:'sim',title:'Audit Roulette',sub:'find the mixing odds that remove the incentive to cheat',
+ how:'You are the regulator. A firm either <b>Complies</b> (cost C) or <b>Evades</b> (gain G if unaudited, fine F if audited). Drag the slider to set the <b>audit probability</b>. The two lines show the firm\'s expected payoff from each choice. The equilibrium mix is where they <b>cross</b> - the firm is indifferent. Land within a few points of it. Five cases.'});
+const CASES=[{G:60,F:140,C:20,n:'Tax filing'},{G:90,F:210,C:30,n:'Emissions reporting'},{G:50,F:50,C:10,n:'Expense claims'},{G:120,F:80,C:40,n:'Import customs'},{G:40,F:260,C:20,n:'Safety certification'}];
+let ci=0,total=0;const ui=GT.el('div',{class:'gt-card'});G.body.appendChild(ui);const W=720,H=300;
+function render(){const c=CASES[ci];const ps=(c.G+c.C)/(c.G+c.F);ui.innerHTML='';
+ ui.appendChild(GT.el('h3',{style:'color:#38bdf8;margin-bottom:6px',html:'Case '+(ci+1)+' of 5: '+c.n}));
+ ui.appendChild(GT.el('p',{class:'gt-mu',html:'Firm payoffs ($k): <b>Comply</b> = -'+c.C+' always. <b>Evade</b> = +'+c.G+' if not audited, -'+c.F+' if audited.'}));
+ const cv=GT.el('canvas',{class:'gt-c',style:'margin:10px 0'});ui.appendChild(cv);const g=GT.fit(cv,W,H);
+ const r=GT.el('input',{type:'range',class:'gt-r',min:0,max:100,value:50,step:1});ui.appendChild(r);
+ const rd=GT.el('div',{class:'gt-row',style:'justify-content:space-between;margin:6px 0'});const lab=GT.el('b',{});rd.append(GT.el('span',{class:'gt-mu'},['audit 0%']),lab,GT.el('span',{class:'gt-mu'},['audit 100%']));ui.appendChild(rd);
+ const fb=GT.el('p',{class:'gt-mu',style:'min-height:44px;margin:8px 0'});const b=GT.el('button',{class:'gt-btn pri'},['Lock in audit rate']);ui.append(fb,b);
+ const ymin=-Math.max(c.F,c.C)-10,ymax=c.G+10;const Y=v=>10+(ymax-v)/(ymax-ymin)*(H-30);
+ function paint(){const p=+r.value/100;g.clearRect(0,0,W,H);g.fillStyle='#070c1a';g.fillRect(0,0,W,H);
+  g.strokeStyle='#334155';g.beginPath();g.moveTo(40,Y(0));g.lineTo(W-10,Y(0));g.stroke();g.fillStyle='#64748b';g.font='11px sans-serif';g.fillText('0',24,Y(0)+4);
+  const X=q=>40+q*(W-50);
+  g.lineWidth=3;g.strokeStyle='#10b981';g.beginPath();g.moveTo(X(0),Y(-c.C));g.lineTo(X(1),Y(-c.C));g.stroke();
+  g.strokeStyle='#f43f5e';g.beginPath();g.moveTo(X(0),Y(c.G));g.lineTo(X(1),Y(-c.F));g.stroke();
+  g.fillStyle='#10b981';g.fillText('Comply',X(.02),Y(-c.C)-6);g.fillStyle='#f43f5e';g.fillText('Evade',X(.02),Y(c.G)+14);
+  g.strokeStyle='#38bdf8';g.setLineDash([5,4]);g.beginPath();g.moveTo(X(p),8);g.lineTo(X(p),H-20);g.stroke();g.setLineDash([]);
+  const ev=(1-p)*c.G-p*c.F;g.fillStyle='#f8fafc';g.fillText('x-axis: audit probability',W/2-60,H-4);
+  lab.innerHTML='audit '+Math.round(p*100)+'% &nbsp;|&nbsp; firm: evade '+ev.toFixed(1)+' vs comply '+(-c.C);}
+ r.oninput=paint;paint();
+ b.onclick=()=>{const p=+r.value;const diff=Math.abs(p-ps*100);const pts=Math.max(0,Math.round(150-diff*8));total+=pts;G.setScore(total);b.disabled=true;r.disabled=true;
+  const below=p<ps*100;fb.innerHTML='Indifference point: <b>'+(ps*100).toFixed(1)+'%</b>. You chose '+p+'% (off by '+diff.toFixed(1)+') &rarr; <b>+'+pts+'</b>. '+(diff<1.5?'Spot on.':below?'Below the mix the firm strictly prefers to evade.':'Above the mix auditing is wasteful: the firm complies and you overspend.');
+  const n=GT.el('button',{class:'gt-btn gold',style:'margin-left:10px'},[ci<4?'Next case':'Finish']);n.onclick=()=>{if(ci<4){ci++;render()}else G.end('Mixing is not randomness for its own sake: the regulator picks odds that make the other side <b>indifferent</b>, so no pattern of behaviour can be exploited. Formula used: p* = (G + C) / (G + F).',total)};b.after(n)}}
+render();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 13 Game 1</title>
+</head>
+<body>
+<script src="../game_storage.js"></script>
+<script src="../gt_kit.js"></script>
+<script>
+// L13 G1 - Burn the Bridge: canvas retreat bridge; the burning is the move.
+const G=GT.init({lesson:'13',n:1,kind:'video',title:'Burn the Bridge',sub:'deny yourself the exit and watch the rival re-plan',
+ how:'Ten border standoffs. Your army stands on one side of a bridge. <b>Burn the bridge</b> (B) to prove you cannot retreat, or <b>Keep it</b> (K). A rival scout decides whether to attack: it attacks a keep-able position with probability depending on its type, but rarely attacks a committed army. If it attacks, burned armies fight to the death (win 60%, lose big); kept ones retreat (lose a little). Burning costs 15. Read the rival then decide.'});
+const W=720,H=260;const cv=GT.el('canvas',{class:'gt-c'});G.body.appendChild(cv);const g=GT.fit(cv,W,H);
+const row=GT.el('div',{class:'gt-row',style:'justify-content:center'});G.body.appendChild(row);
+const log=GT.el('div',{class:'gt-card gt-mu'});G.body.appendChild(log);
+let r=0,total=100,burn=false,res=null,t=0,last=performance.now(),rv,busy=false,over=false;G.setScore(100);
+const bB=GT.el('button',{class:'gt-btn gold',onclick:()=>go(true)},['Burn (B)']),bK=GT.el('button',{class:'gt-btn pri',onclick:()=>go(false)},['Keep (K)']);row.append(bB,bK);
+function newR(){busy=false;burn=false;res=null;t=0;rv=GT.pick([{n:'Reckless',a:.7,d:.45},{n:'Cautious',a:.4,d:.08},{n:'Opportunist',a:.85,d:.12},{n:'Bluffer',a:.5,d:.3}]);bB.disabled=bK.disabled=false}
+function go(b){if(busy||over)return;busy=true;burn=b;bB.disabled=bK.disabled=true;
+ const pa=b?rv.d:rv.a;const att=Math.random()<pa;let d=0;
+ if(b)d-=15;
+ if(att){if(b){if(Math.random()<.6){d+=90}else d-=80}else{d-=25}}else{d+=b?55:15}
+ total+=d;G.setScore(Math.max(0,total));res={att,d};t=0;
+ log.innerHTML='Round '+(r+1)+' vs <b>'+rv.n+'</b> rival: you '+(b?'burned':'kept')+' the bridge; rival '+(att?'attacked':'backed off')+' &rarr; '+(d>=0?'+':'')+d+'.';
+ setTimeout(()=>{r++;if(r>=10){over=true;G.end('Burning the bridge changes the rival\'s best reply: attack becomes less attractive, so the threat becomes <b>credible</b>. But it only pays when the rival is deterrable and the cost of fighting to the death is bearable. Total '+total+'.',Math.max(0,total))}else newR()},1800)}
+addEventListener('keydown',e=>{const k=e.key.toLowerCase();if(k==='b')go(true);if(k==='k')go(false)});
+function frame(now){t+=(now-last)/1000;last=now;g.clearRect(0,0,W,H);g.fillStyle='#0a1a2b';g.fillRect(0,0,W,H);g.fillStyle='#134e4a';g.fillRect(0,180,W,80);g.fillStyle='#064e3b';g.fillRect(0,0,260,260);g.fillRect(460,0,260,260);
+ g.fillStyle='#7c5a2b';if(!burn||!res||t<.5)g.fillRect(260,110,200,18);
+ if(burn&&res){for(let i=0;i<10;i++){g.fillStyle=i%2?'#f97316':'#fbbf24';g.beginPath();g.arc(270+i*20,110-Math.abs(Math.sin(t*8+i))*16,8+Math.sin(t*9+i)*3,0,7);g.fill()}}
+ g.fillStyle='#38bdf8';for(let i=0;i<6;i++)g.fillRect(40+(i%3)*30,100+Math.floor(i/3)*30,20,20);
+ let rx=600;if(res&&res.att)rx=Math.max(330,600-t*220);g.fillStyle='#f43f5e';for(let i=0;i<6;i++)g.fillRect(rx+(i%3)*24,100+Math.floor(i/3)*30,18,20);
+ g.fillStyle='#e2e8f0';g.font='13px sans-serif';g.fillText('YOU',60,80);g.fillText('RIVAL ('+(rv?rv.n:'')+')',560,80);g.fillText('Round '+Math.min(r+1,10)+'/10  total '+total,10,20);
+ if(!over)requestAnimationFrame(frame)}
+newR();requestAnimationFrame(frame);
+
+</script>
+</body>
+</html>

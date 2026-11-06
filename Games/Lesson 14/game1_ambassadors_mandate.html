@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 14 Game 1</title>
+</head>
+<body>
+<script src="../game_storage.js"></script>
+<script src="../gt_kit.js"></script>
+<script>
+// L14 G1 - Ambassador's Mandate: set the agent's walk-away line before each negotiation.
+const G=GT.init({lesson:'14',n:1,kind:'video',title:'Ambassador\'s Mandate',sub:'tie your agent\'s hands just tightly enough',
+ how:'You delegate a price negotiation (buyer side) to an agent. Before each of 10 rounds, drag the <b>mandate ceiling</b> (the most your agent may pay). The seller\'s hidden minimum is random. A tight ceiling makes the seller concede more but risks <b>no deal</b>; a loose one guarantees a deal at a high price. Value to you is 100; savings = 100 minus price.'});
+const W=720,H=240;const cv=GT.el('canvas',{class:'gt-c'});G.body.appendChild(cv);const g=GT.fit(cv,W,H);
+const r=GT.el('input',{type:'range',class:'gt-r',min:30,max:100,step:1,value:80});G.body.appendChild(r);
+const row=GT.el('div',{class:'gt-row',style:'justify-content:center'});const b=GT.el('button',{class:'gt-btn pri'},['Send the agent in']);row.appendChild(b);G.body.appendChild(row);
+const log=GT.el('div',{class:'gt-card gt-mu'});G.body.appendChild(log);
+let n=0,total=0,res=null,t=0,last=performance.now(),over=false;
+b.onclick=()=>{if(res||over)return;const cap=+r.value;const smin=GT.ri(35,85);
+ // seller sees mandate and concedes toward it: agreed price between smin and cap, pulled toward smin when cap is tight
+ let price=null;if(cap>=smin){const tight=(100-cap)/65;const pull=.35+tight*.5;price=Math.round(cap-(cap-smin)*pull*0.8-(Math.random()*4));price=Math.max(smin,Math.min(cap,price))}
+ const sav=price===null?0:100-price;total+=sav;G.setScore(total);res={cap,smin,price};t=0;b.disabled=true;
+ log.innerHTML='Round '+(n+1)+': mandate '+cap+'; seller minimum '+smin+' &rarr; '+(price===null?'<b class="gt-bad">no deal</b> (0)':'deal at <b>'+price+'</b>, savings <b>'+sav+'</b>')+'.';
+ setTimeout(()=>{res=null;n++;b.disabled=false;if(n>=10){over=true;G.end('A constrained agent bargains harder because the counterpart knows concessions beyond the mandate are impossible. But the line must sit <b>just above the plausible walk-away zone</b>: too tight and the deal dies.',total)}},1700)};
+function f(now){t+=(now-last)/1000;last=now;g.clearRect(0,0,W,H);g.fillStyle='#0b1220';g.fillRect(0,0,W,H);
+ const X=v=>40+(v-30)/70*(W-80);g.strokeStyle='#334155';g.beginPath();g.moveTo(40,120);g.lineTo(W-40,120);g.stroke();g.fillStyle='#94a3b8';g.font='12px sans-serif';for(let v=30;v<=100;v+=10){g.fillText(v,X(v)-8,140)}
+ const cap=+r.value;g.fillStyle='#38bdf8';g.fillRect(X(cap)-4,80,8,80);g.fillText('your mandate '+cap,X(cap)-40,70);
+ if(res){g.fillStyle='#f43f5e';g.fillRect(X(res.smin)-4,90,8,60);g.fillText('seller min '+res.smin,X(res.smin)-36,170);if(res.price!==null){g.fillStyle='#10b981';g.beginPath();g.arc(X(res.price),120,Math.min(14,t*30),0,7);g.fill()}}
+ g.fillText('Round '+Math.min(n+1,10)+'/10   total savings '+total,10,18);if(!over)requestAnimationFrame(f)}
+requestAnimationFrame(f);
+
+</script>
+</body>
+</html>

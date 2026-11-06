@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 03 Game 1</title>
+</head>
+<body>
+<script src="../game_storage.js"></script>
+<script src="../gt_kit.js"></script>
+<script>
+// Lesson 03 Game 1 - Cull the Dominated (speed-spotting under a shrinking clock).
+const G=GT.init({lesson:'03',n:1,kind:'video',title:'Cull the Dominated',sub:'spot the strictly dominated move before the clock runs out',
+ how:'A payoff matrix appears (first number = Row player, second = Column player). Tap the option that is <b>strictly dominated</b> for the player named: one that is <b>worse than another option against every rival move</b>. A tie anywhere means it is <b>not</b> strict. If nothing is strictly dominated, hit <b>None</b>. Three lives; the clock shrinks every round.'});
+const N=3;let lives=3,round=0,tLeft=0,tMax=0,timer=null,locked=false,cur;
+const ui=GT.el('div',{class:'gt-card'});G.body.appendChild(ui);
+function gen(){const m=[];for(let i=0;i<N;i++){m.push([]);for(let j=0;j<N;j++)m[i].push([GT.ri(1,9),GT.ri(1,9)])}
+ const mode=Math.random();
+ if(mode<.55){const who=GT.ri(0,1),d=GT.ri(0,N-1),o=(d+GT.ri(1,N-1))%N;for(let k=0;k<N;k++){const dv=GT.ri(1,6);
+   if(who===0){m[d][k][0]=dv;m[o][k][0]=dv+GT.ri(1,3)}else{m[k][d][1]=dv;m[k][o][1]=dv+GT.ri(1,3)}}}
+ else if(mode<.75){const d=GT.ri(0,N-1),o=(d+1)%N;for(let k=0;k<N;k++){m[d][k][0]=GT.ri(2,6);m[o][k][0]=m[d][k][0]+(k===0?0:GT.ri(1,2))}} // weak-dominance trap
+ return m}
+function dom(m,who){const out=[];for(let a=0;a<N;a++)for(let b=0;b<N;b++){if(a===b)continue;let all=true;
+  for(let k=0;k<N;k++){const va=who===0?m[a][k][0]:m[k][a][1],vb=who===0?m[b][k][0]:m[k][b][1];if(!(vb>va)){all=false;break}}
+  if(all&&!out.includes(a))out.push(a)}return out}
+function draw(msg){ui.innerHTML='';const who=cur.who,m=cur.m;
+ ui.appendChild(GT.el('div',{class:'gt-row',style:'justify-content:space-between'},[GT.el('b',{html:'Round '+(round+1)+' of 12 &nbsp; Lives '+'●'.repeat(lives)}),GT.el('span',{class:'gt-gold',id:'tl'},[tLeft.toFixed(1)+'s'])]));
+ ui.appendChild(GT.el('div',{class:'gt-bar',style:'margin:8px 0'},[GT.el('i',{id:'tb'})]));
+ ui.appendChild(GT.el('p',{html:'Which option is <b>strictly dominated</b> for the <b>'+(who===0?'Row player (rows A-C)':'Column player (columns X-Z)')+'</b>?',style:'margin-bottom:8px'}));
+ const tb=GT.el('table',{class:'gt-t'});let h='<tr><th></th>';for(let j=0;j<N;j++)h+='<th>'+(who===1?'':'')+'XYZ'[j]+'</th>';tb.innerHTML=h+'</tr>';
+ for(let i=0;i<N;i++){const tr=GT.el('tr',{});tr.appendChild(GT.el('th',{},['ABC'[i]]));for(let j=0;j<N;j++)tr.appendChild(GT.el('td',{html:'<span class="gt-ok">'+m[i][j][0]+'</span> , <span class="gt-bad">'+m[i][j][1]+'</span>'}));tb.appendChild(tr)}
+ ui.appendChild(tb);
+ const row=GT.el('div',{class:'gt-row',style:'margin-top:12px'});
+ for(let a=0;a<N;a++)row.appendChild(GT.el('button',{class:'gt-btn',onclick:()=>pick(a)},[(who===0?'Row ':'Column ')+(who===0?'ABC'[a]:'XYZ'[a])]));
+ row.appendChild(GT.el('button',{class:'gt-btn gold',onclick:()=>pick(-1)},['None is strictly dominated']));
+ ui.appendChild(row);ui.appendChild(GT.el('p',{class:'gt-mu',style:'margin-top:10px;min-height:20px',html:msg||''}))}
+function next(){if(round>=12||lives<=0){clearInterval(timer);G.end('You cleared <b>'+G.score+'</b> points of dominance spotting. Rule of thumb: a move that loses (or ties) to another in <i>every</i> column is a candidate to delete; ties make it weak, not strict.',G.score);return}
+ cur={m:gen(),who:GT.ri(0,1)};cur.d=dom(cur.m,cur.who);tMax=tLeft=Math.max(4,10-round*.5);locked=false;draw();
+ clearInterval(timer);timer=setInterval(()=>{tLeft-=.1;const e=document.getElementById('tl');if(e){e.textContent=Math.max(0,tLeft).toFixed(1)+'s';document.getElementById('tb').style.width=(100*tLeft/tMax)+'%'}if(tLeft<=0)resolve(-2)},100)}
+function pick(a){if(!locked)resolve(a)}
+function resolve(a){if(locked)return;locked=true;clearInterval(timer);
+ const ok=a===-2?false:(a===-1?cur.d.length===0:cur.d.includes(a));
+ if(ok){const b=Math.round(100+tLeft*10);G.add(b)}else{lives--}
+ const what=cur.d.length?('Strictly dominated: '+cur.d.map(x=>(cur.who===0?'Row '+'ABC'[x]:'Column '+'XYZ'[x])).join(', ')):'Nothing was strictly dominated (ties or crossings)';
+ draw((a===-2?'Time out. ':ok?'Correct. ':'Not quite. ')+what);round++;
+ ui.querySelectorAll('button').forEach(b=>b.disabled=true);
+ setTimeout(next,1400)}
+next();
+
+</script>
+</body>
+</html>

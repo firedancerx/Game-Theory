@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 22 Game 1</title>
+</head>
+<body>
+<script src="../game_storage.js"></script>
+<script src="../gt_kit.js"></script>
+<script>
+// L22 G1 - Arrival Order: compute marginal contributions as players arrive.
+const G=GT.init({lesson:'22',n:1,kind:'video',title:'Arrival Order',sub:'what does each player add the moment they walk in?',
+ how:'Three players A, B, C create value by joining a project. The table shows the value of every group. They arrive in a random order, one at a time. For each arrival, pick the <b>marginal contribution</b> (value with them minus value without) within 8 seconds. Twelve arrivals; streaks add bonus.'});
+const W=720,H=110;const cv=GT.el('canvas',{class:'gt-c'});G.body.appendChild(cv);const g=GT.fit(cv,W,H);
+const box=GT.el('div',{class:'gt-card'});const opts=GT.el('div',{class:'gt-row',style:'justify-content:center'});G.body.appendChild(box);G.body.appendChild(opts);
+let V,order,k=0,n=0,streak=0,tl=8,last=performance.now(),ans,over=false;
+function newV(){const a=GT.ri(0,20),b=GT.ri(0,20),c=GT.ri(0,20);V={'':0,A:a,B:b,C:c};V.AB=a+b+GT.ri(0,25);V.AC=a+c+GT.ri(0,25);V.BC=b+c+GT.ri(0,25);V.ABC=Math.max(V.AB,V.AC,V.BC)+GT.ri(5,30);order=GT.shuffle(['A','B','C']);k=0}
+function key(a){return [...a].sort().join('')}
+function ask(){if(n>=12){over=true;G.end('The <b>Shapley value</b> averages each player\'s marginal contribution across <b>all</b> arrival orders. Every order gives a different view; the fair share is the average.',G.score);return}
+ if(k>=3)newV();const joined=order.slice(0,k);const p=order[k];const before=V[key(joined)]||0,after=V[key([...joined,p])];ans=after-before;tl=8;
+ const vt=Object.entries(V).filter(([a])=>a).map(([a,b])=>'v('+a+')='+b).join(' &nbsp; ');
+ box.innerHTML='<div class="gt-mu">'+vt+'</div><div style="margin-top:8px">Arrival order: <b>'+order.join(' &rarr; ')+'</b>. Already in: <b>'+(joined.join(',')||'nobody')+'</b>. <b>'+p+'</b> arrives now. Marginal contribution of '+p+'?</div>';
+ opts.innerHTML='';let c=[ans,ans+GT.ri(1,6),Math.max(0,ans-GT.ri(1,6)),after];c=[...new Set(c)];while(c.length<4)c.push(ans+c.length+7);GT.shuffle(c.slice(0,4).includes(ans)?c.slice(0,4):[ans,...c.slice(0,3)]).forEach(v=>opts.appendChild(GT.el('button',{class:'gt-btn',onclick:()=>choose(v)},[String(v)])))}
+function choose(v){if(over)return;if(v===ans){streak++;G.add(Math.round(40+tl*6+Math.min(streak,6)*8))}else streak=0;k++;n++;ask()}
+function f(now){const dt=(now-last)/1000;last=now;if(!over){tl-=dt;if(tl<=0){streak=0;k++;n++;ask()}g.clearRect(0,0,W,H);g.fillStyle='#0b1220';g.fillRect(0,0,W,H);order&&order.forEach((p,i)=>{g.fillStyle=i<k?'#10b981':i===k?'#f59e0b':'#334155';g.beginPath();g.arc(120+i*200,50,24,0,7);g.fill();g.fillStyle='#fff';g.font='700 18px sans-serif';g.textAlign='center';g.fillText(p,120+i*200,57)});g.fillStyle='#f59e0b';g.fillRect(0,H-8,W*Math.max(0,tl)/8,8);g.textAlign='left';g.fillStyle='#94a3b8';g.font='12px sans-serif';g.fillText('arrival '+Math.min(n+1,12)+'/12  streak x'+streak,10,100);requestAnimationFrame(f)}}
+newV();ask();requestAnimationFrame(f);
+
+</script>
+</body>
+</html>

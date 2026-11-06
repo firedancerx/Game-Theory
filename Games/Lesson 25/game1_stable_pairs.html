@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 25 Game 1</title>
+</head>
+<body>
+<script src="../game_storage.js"></script>
+<script src="../gt_kit.js"></script>
+<script>
+// L25 G1 - Stable Pairs: match both sides, remove all blocking pairs.
+const G=GT.init({lesson:'25',n:1,kind:'video',title:'Stable Pairs',sub:'no pair should prefer each other to their partners',
+ how:'Four firms (left) and four graduates (right) each rank the other side (1 = best). Click a firm, then a graduate, to pair them (re-click to unpair). A <b>blocking pair</b> is a firm and graduate who prefer each other to their current partners; blocking pairs are shown in red. Remove every blocking pair before time runs out. Four rounds, 40 seconds each.'});
+const W=720,H=300;const cv=GT.el('canvas',{class:'gt-c'});G.body.appendChild(cv);const g=GT.fit(cv,W,H);
+const info=GT.el('div',{class:'gt-card'});G.body.appendChild(info);
+let pf,pg,m,sel=null,round=0,tl=40,last=performance.now(),over=false,done=false;
+const N=4;function perm(){return GT.shuffle([0,1,2,3])}
+function newR(){pf=[0,1,2,3].map(perm);pg=[0,1,2,3].map(perm);m=[-1,-1,-1,-1];sel=null;tl=40;done=false}
+function rank(pl,a,b){return pl[a].indexOf(b)}
+function blocks(){const out=[];const gm=[-1,-1,-1,-1];m.forEach((g2,f)=>{if(g2>=0)gm[g2]=f});for(let f=0;f<N;f++)for(let q=0;q<N;q++){if(m[f]===q)continue;const fw=m[f]<0||rank(pf,f,q)<rank(pf,f,m[f]);const gw=gm[q]<0||rank(pg,q,f)<rank(pg,q,gm[q]);if(fw&&gw)out.push([f,q])}return out}
+const FX=140,GX=W-140,Y=i=>50+i*72;
+cv.addEventListener('pointerdown',e=>{if(done||over)return;const p=GT.ptr(cv,W,H,e);for(let i=0;i<N;i++){if(Math.abs(p.x-FX)<40&&Math.abs(p.y-Y(i))<26){sel=i;return}if(Math.abs(p.x-GX)<40&&Math.abs(p.y-Y(i))<26&&sel!==null){const f=sel;if(m[f]===i)m[f]=-1;else{m.forEach((g2,k)=>{if(g2===i)m[k]=-1});m[f]=i}sel=null;check()}}});
+function check(){if(m.every(x=>x>=0)&&blocks().length===0){done=true;G.add(Math.round(150+tl*5));info.innerHTML='<b class="gt-ok">Stable matching!</b>';setTimeout(adv,1200)}}
+function adv(){round++;if(round>=4){over=true;G.end('A matching is <b>stable</b> when no firm and graduate would both rather be together. The Gale-Shapley deferred-acceptance algorithm always finds one and favours the proposing side.',G.score)}else newR()}
+function f(now){const dt=(now-last)/1000;last=now;if(!over){if(!done){tl-=dt;if(tl<=0){done=true;setTimeout(adv,300)}}
+ g.clearRect(0,0,W,H);g.fillStyle='#0b1220';g.fillRect(0,0,W,H);const bl=blocks();
+ bl.forEach(([a,b])=>{g.strokeStyle='rgba(244,63,94,.7)';g.setLineDash([6,5]);g.beginPath();g.moveTo(FX+30,Y(a));g.lineTo(GX-30,Y(b));g.stroke()});g.setLineDash([]);
+ m.forEach((q,f)=>{if(q>=0){g.strokeStyle='#10b981';g.lineWidth=4;g.beginPath();g.moveTo(FX+30,Y(f));g.lineTo(GX-30,Y(q));g.stroke()}});g.lineWidth=1;
+ for(let i=0;i<N;i++){g.fillStyle=sel===i?'#f59e0b':'#38bdf8';g.fillRect(FX-30,Y(i)-18,60,36);g.fillStyle='#0b1220';g.font='700 13px sans-serif';g.textAlign='center';g.fillText('Firm '+(i+1),FX,Y(i)+4);g.fillStyle='#e2e8f0';g.font='11px sans-serif';g.fillText('prefers: '+pf[i].map(x=>'G'+(x+1)).join('>'),FX-100,Y(i)+4);
+  g.fillStyle='#a78bfa';g.fillRect(GX-30,Y(i)-18,60,36);g.fillStyle='#0b1220';g.font='700 13px sans-serif';g.fillText('Grad '+(i+1),GX,Y(i)+4);g.fillStyle='#e2e8f0';g.font='11px sans-serif';g.fillText(pg[i].map(x=>'F'+(x+1)).join('>'),GX+105,Y(i)+4)}
+ g.textAlign='left';g.fillStyle='#94a3b8';g.font='12px sans-serif';g.fillText('round '+Math.min(round+1,4)+'/4  time '+Math.max(0,tl|0)+'s',10,18);
+ if(!done)info.innerHTML='Blocking pairs: <b>'+bl.length+'</b>'+(m.some(x=>x<0)?' (unmatched firms exist)':'');requestAnimationFrame(f)}}
+newR();requestAnimationFrame(f);
+
+</script>
+</body>
+</html>

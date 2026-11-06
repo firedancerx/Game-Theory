@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 11 Game 2</title>
+</head>
+<body>
+<script src="../game_storage.js"></script>
+<script src="../gt_kit.js"></script>
+<script>
+// L11 G2 - Redraw the Tree: choose the order of moves for each scenario.
+const G=GT.init({lesson:'11',n:2,kind:'sim',title:'Redraw the Tree',sub:'same payoffs, different order, different outcome',
+ how:'Four bargaining scenarios. Before each, choose the structure: <b>Move first</b>, <b>Move second</b> (see the rival\'s move), or <b>Simultaneous</b> (hidden). Your payoffs come from the same matrix each time but a rival\'s best reply to what it can observe changes the result. Learn which scenarios reward moving first and which reward waiting.'});
+const SC=[
+ {n:'Capacity race (Cournot-like): high output vs low output',m:[[[3,3],[1,5]],[[5,1],[2,2]]],a:['Low','High']},
+ {n:'Product launch: launch vs wait (follower copies)',m:[[[4,4],[2,2]],[[2,2],[5,1]]],a:['Launch','Wait']},
+ {n:'Standards war: standard X vs standard Y',m:[[[4,2],[0,0]],[[0,0],[2,4]]],a:['X','Y']},
+ {n:'Pricing duel: hold price vs cut price',m:[[[4,4],[1,6]],[[6,1],[2,2]]],a:['Hold','Cut']}];
+let si=0,total=0;const ui=GT.el('div',{class:'gt-card'});G.body.appendChild(ui);
+function best(m,role,fixedOther){// role 0 row,1 col; return best reply index
+ const c=[0,1].map(k=>fixedOther===undefined?0:(role===0?m[k][fixedOther][0]:m[fixedOther][k][1]));return c[0]>=c[1]?0:1}
+function draw(){const s=SC[si];ui.innerHTML='';ui.appendChild(GT.el('h3',{style:'color:#38bdf8',html:'Scenario '+(si+1)+' of 4: '+s.n}));
+ ui.appendChild(GT.mtable(s.m,['You: '+s.a[0],'You: '+s.a[1]],['Rival: '+s.a[0],'Rival: '+s.a[1]],GT.nash(s.m)));
+ ui.appendChild(GT.el('p',{class:'gt-mu',style:'margin:8px 0',html:'Choose the order of play:'}));
+ const row=GT.el('div',{class:'gt-row'});[['F','Move first'],['S','Move second'],['M','Simultaneous']].forEach(([k,l])=>row.appendChild(GT.el('button',{class:'gt-btn',onclick:()=>run(k)},[l])));ui.appendChild(row)}
+function run(k){const s=SC[si],m=s.m;let my,th,txt;
+ const rivalBR=(youA)=>best(m,1,youA); const youBR=(rivA)=>best(m,0,rivA);
+ if(k==='F'){// you pick the action maximizing outcome given rival best reply
+  let bestv=-9,ba=0;for(let a=0;a<2;a++){const r=m[a][best2(a)];if(r[0]>bestv){bestv=r[0];ba=a}}const rb=best2(ba);my=m[ba][rb][0];th=m[ba][rb][1];txt='You committed to <b>'+s.a[ba]+'</b>; the rival observed and replied <b>'+s.a[rb]+'</b>.'}
+ else if(k==='S'){// rival moves first optimally anticipating your reply
+  let bestv=-9,rb=0;for(let b=0;b<2;b++){const a=m[0][b][0]>=m[1][b][0]?0:1;if(m[a][b][1]>bestv){bestv=m[a][b][1];rb=b}}const a=m[0][rb][0]>=m[1][rb][0]?0:1;my=m[a][rb][0];th=m[a][rb][1];txt='The rival moved first with <b>'+s.a[rb]+'</b>; you replied <b>'+s.a[a]+'</b>.'}
+ else{const ns=GT.nash(s.m);let c=ns.length?GT.pick(ns):[GT.ri(0,1),GT.ri(0,1)];my=m[c[0]][c[1]][0];th=m[c[0]][c[1]][1];txt='Simultaneous play settled at a Nash cell: you <b>'+s.a[c[0]]+'</b>, rival <b>'+s.a[c[1]]+'</b>.'}
+ const pts=my*20;total+=pts;G.setScore(total);ui.innerHTML='';ui.appendChild(GT.el('p',{html:txt+'<br>You get <b>'+my+'</b> (rival '+th+') &rarr; +'+pts+' points.',style:'line-height:1.6'}));
+ const n=GT.el('button',{class:'gt-btn gold',style:'margin-top:10px'},[si<3?'Next scenario':'Finish']);n.onclick=()=>{si++;if(si>=4)G.end('Order is a strategic variable. Commitment helps when the follower must accommodate (capacity, pricing); waiting helps when imitation is cheap; in coordination games the first mover simply picks the equilibrium.',total);else draw()};ui.appendChild(n);
+ function best2(a){return m[a][0][1]>=m[a][1][1]?0:1}}
+draw();
+
+</script>
+</body>
+</html>

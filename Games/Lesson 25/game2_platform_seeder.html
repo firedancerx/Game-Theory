@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 25 Game 2</title>
+</head>
+<body>
+<script src="../game_storage.js"></script>
+<script src="../gt_kit.js"></script>
+<script>
+// L25 G2 - Platform Seeder: subsidise sides of a two-sided market over ten periods.
+const G=GT.init({lesson:'25',n:2,kind:'sim',title:'Platform Seeder',sub:'each side only joins if the other side is there',
+ how:'You run a marketplace platform for 10 periods. Each period you have a <b>budget of 60</b> to subsidise <b>buyers</b> and <b>sellers</b> (the slider sets the split). A side joins in proportion to the other side\'s size plus its own subsidy. Each match earns 0.5 per buyer-seller pair, and the subsidy is a cost. Seed the thin side first, then let the network effect compound. Random shocks sometimes cut one side.'});
+const ui=GT.el('div',{class:'gt-card'});G.body.appendChild(ui);const cv=GT.el('canvas',{class:'gt-c'});G.body.appendChild(cv);const g=GT.fit(cv,640,180);
+let t=0,B=5,S=5,total=0,hist=[[5,5]];
+function draw(msg){ui.innerHTML='';ui.appendChild(GT.el('h3',{style:'color:#38bdf8',html:'Period '+(t+1)+'/10 &nbsp;<span class="gt-mu">buyers '+B.toFixed(0)+' | sellers '+S.toFixed(0)+' | profit '+Math.round(total)+'</span>'}));ui.appendChild(GT.el('p',{class:'gt-mu',html:msg||''}));
+ const r=GT.el('input',{type:'range',class:'gt-r',min:0,max:60,step:1,value:30});const l=GT.el('div',{class:'gt-mu',html:'Buyers subsidy 30 | Sellers subsidy 30'});r.oninput=()=>{l.innerHTML='Buyers subsidy '+r.value+' | Sellers subsidy '+(60-r.value)};
+ const b=GT.el('button',{class:'gt-btn gold'},['Run this period']);b.onclick=()=>{const sb=+r.value,ss=60-sb;let nb=B*.7+0.9*S*.5+sb*.45+GT.rnd(-1,1),ns=S*.7+0.9*B*.5+ss*.45+GT.rnd(-1,1);
+  if(Math.random()<.15){if(Math.random()<.5)nb*=.6;else ns*=.6}B=Math.max(1,Math.min(150,nb));S=Math.max(1,Math.min(150,ns));const rev=B*S*.004;total+=rev-60*.35;hist.push([B,S]);G.setScore(Math.max(0,Math.round(total*2)));t++;if(t>=10){up();G.end('Final profit '+Math.round(total)+'. Two-sided markets grow when you subsidise the <b>side that attracts the other</b> and then let cross-side network effects pay. Subsidising the wrong side, or both evenly, wastes the budget.',Math.max(0,Math.round(total*2)));return}draw(B<S?'Sellers outnumber buyers: demand is thin.':'Buyers outnumber sellers: supply is thin.')};
+ ui.append(r,l,b);up()}
+function up(){g.clearRect(0,0,640,180);g.fillStyle='#0b1220';g.fillRect(0,0,640,180);const mx=Math.max(20,...hist.flat());['#38bdf8','#f59e0b'].forEach((c,k)=>{g.strokeStyle=c;g.beginPath();hist.forEach((h,i)=>{const x=20+i*60,y=165-h[k]/mx*140;i?g.lineTo(x,y):g.moveTo(x,y)});g.stroke()});g.fillStyle='#38bdf8';g.font='11px sans-serif';g.fillText('buyers',20,14);g.fillStyle='#f59e0b';g.fillText('sellers',70,14)}
+draw('Which side attracts the other? Start with the thin one.');
+
+</script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 06 Game 1</title>
+</head>
+<body>
+<script src="../game_storage.js"></script>
+<script src="../gt_kit.js"></script>
+<script>
+// Lesson 06 Game 1 - Tug of Trust (real-time iterated Prisoner's Dilemma with a shifting opponent).
+const G=GT.init({lesson:'06',n:1,kind:'video',title:'Tug of Trust',sub:'cooperate, defect or hesitate - the clock is on',
+ how:'Eighteen rounds against a rival whose style changes without warning. Press <b>C (Cooperate)</b> or <b>D (Defect)</b> before the bar empties (hesitating counts as Defect). Payoffs: both C = <b>3</b> each; both D = <b>1</b> each; D against C = <b>5</b> for you and <b>0</b> for them. The rope shows who is winning the tug; the pot grows only when both cooperate.'});
+const W=720,H=260;const cv=GT.el('canvas',{class:'gt-c'});G.body.appendChild(cv);const g=GT.fit(cv,W,H);
+const row=GT.el('div',{class:'gt-row',style:'justify-content:center'});const bc=GT.el('button',{class:'gt-btn pri',style:'min-width:160px',onclick:()=>move('C')},['Cooperate (C)']);const bd=GT.el('button',{class:'gt-btn gold',style:'min-width:160px',onclick:()=>move('D')},['Defect (D)']);row.append(bc,bd);G.body.appendChild(row);
+const info=GT.el('div',{class:'gt-card gt-mu',style:'min-height:60px'});G.body.appendChild(info);
+const STY=[{n:'Tit-for-Tat',f:(h)=>h.length?h[h.length-1].me:'C'},{n:'Always Defect',f:()=>'D'},{n:'Grim Trigger',f:(h)=>h.some(x=>x.me==='D')?'D':'C'},{n:'Generous Tit-for-Tat',f:(h)=>h.length&&h[h.length-1].me==='D'&&Math.random()<.65?'D':'C'}];
+let round=0,me=0,rv=0,pot=0,hist=[],style=STY[0],tleft=1,locked=false,last=performance.now(),rope=0,lastTxt='',styleSeq=GT.shuffle([0,2,3,1,0,3]);
+function newStyle(){style=STY[styleSeq[Math.floor(round/6)%styleSeq.length]]}
+newStyle();
+function move(m){if(locked||round>=18)return;locked=true;const o=style.f(hist.map(x=>({me:x.me,rv:x.rv})));// rival sees my history as 'me'
+ const mine=m;const theirs=o;const P={CC:[3,3],CD:[0,5],DC:[5,0],DD:[1,1]}[mine+theirs];
+ me+=P[0];rv+=P[1];if(mine==='C'&&theirs==='C')pot+=2;hist.push({me:mine,rv:theirs});rope=GT.clamp(rope+(P[0]-P[1])*8,-120,120);
+ G.setScore((me)*10+pot*5);round++;lastTxt='Round '+round+': you <b>'+mine+'</b>, rival <b>'+theirs+'</b> &rarr; you +'+P[0]+', rival +'+P[1];
+ if(round%6===0&&round<18){newStyle();lastTxt+=' &nbsp;<span class="gt-gold">(rival\'s style may have changed)</span>'}
+ if(round>=18){setTimeout(fin,600)}else setTimeout(()=>{locked=false;tleft=1},450)}
+function fin(){const names=[...new Set(hist.map(h=>h.rv))];G.end('You: <b>'+me+'</b> points, rival: <b>'+rv+'</b>, shared pot: <b>'+pot+'</b>. The twist of the dilemma: defecting wins any single round, yet the highest totals come from mutual cooperation sustained by the <b>shadow of the future</b> - the rival can punish you next round.',G.score)}
+addEventListener('keydown',e=>{if(e.key.toLowerCase()==='c')move('C');if(e.key.toLowerCase()==='d')move('D')});
+function frame(now){const dt=(now-last)/1000;last=now;if(!locked&&round<18){tleft-=dt/2.4;if(tleft<=0)move('D')}
+ g.clearRect(0,0,W,H);g.fillStyle='#070c1a';g.fillRect(0,0,W,H);
+ g.fillStyle='#e2e8f0';g.font='700 15px sans-serif';g.textAlign='left';g.fillText('YOU  '+me,20,28);g.textAlign='right';g.fillText('RIVAL  '+rv,W-20,28);g.textAlign='center';g.fillStyle='#f59e0b';g.fillText('Round '+Math.min(round+1,18)+' / 18',W/2,28);
+ g.strokeStyle='#a16207';g.lineWidth=8;g.beginPath();g.moveTo(60,130);g.lineTo(W-60,130);g.stroke();
+ const cx=W/2+rope;g.fillStyle='#ef4444';g.fillRect(cx-8,108,16,44);g.fillStyle='#38bdf8';g.beginPath();g.arc(60,130,22,0,7);g.fill();g.fillStyle='#f43f5e';g.beginPath();g.arc(W-60,130,22,0,7);g.fill();
+ g.fillStyle='#0b1220';g.fillRect(60,190,W-120,18);g.fillStyle='#10b981';g.fillRect(60,190,Math.min(1,pot/36)*(W-120),18);g.fillStyle='#94a3b8';g.font='12px sans-serif';g.fillText('shared pot (grows only when both cooperate)',W/2,224);
+ g.fillStyle='#0b1220';g.fillRect(60,238,W-120,10);g.fillStyle=tleft>.35?'#38bdf8':'#f43f5e';g.fillRect(60,238,Math.max(0,tleft)*(W-120),10);
+ info.innerHTML=lastTxt||'Rival styles rotate every 6 rounds. Work out how it responds to you.';
+ if(round<18)requestAnimationFrame(frame)}
+requestAnimationFrame(frame);
+
+</script>
+</body>
+</html>

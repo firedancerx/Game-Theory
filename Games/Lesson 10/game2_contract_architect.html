@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 10 Game 2</title>
+</head>
+<body>
+<script src="../game_storage.js"></script>
+<script src="../gt_kit.js"></script>
+<script>
+// Lesson 10 Game 2 - Contract Architect (choose clauses with costs; matrix updates live).
+const G=GT.init({lesson:'10',n:2,kind:'sim',title:'Contract Architect',sub:'draft clauses that flip a supplier-buyer trap',
+ how:'Two firms are stuck: the Supplier can <b>Deliver Quality</b> or <b>Cut Corners</b>; the Buyer can <b>Pay Fair</b> or <b>Pay Late</b>. Pick contract clauses from the menu. Each clause alters payoffs and costs money to draft. Aim for a design where <b>Quality / Fair</b> is the <b>unique Nash</b> and total welfare is high, at the lowest drafting cost. Three scenarios, each with its own menu.'});
+const SC=[
+ {n:'Component supply',m:[[[6,6],[0,8]],[[8,0],[2,2]]],cl:[
+  {t:'Quality penalty on Cut Corners',c:3,d:(m)=>{m[1][0][0]-=5;m[1][1][0]-=5}},
+  {t:'Late-payment interest on Pay Late',c:3,d:(m)=>{m[0][1][1]-=5;m[1][1][1]-=5}},
+  {t:'Bonus for Quality',c:4,d:(m)=>{m[0][0][0]+=3;m[0][1][0]+=3}},
+  {t:'Exclusive 3-year term',c:5,d:(m)=>{m[0][0][0]+=2;m[0][0][1]+=2}},
+  {t:'Unlimited warranty (backfires)',c:2,d:(m)=>{m[0][0][0]-=4;m[0][1][0]-=4}}]},
+ {n:'Software outsourcing',m:[[[5,5],[-1,7]],[[7,-1],[1,1]]],cl:[
+  {t:'Milestone payments',c:2,d:(m)=>{m[0][1][1]-=4;m[1][1][1]-=4}},
+  {t:'Code escrow',c:3,d:(m)=>{m[1][0][0]-=3;m[1][1][0]-=3}},
+  {t:'Performance bonus',c:4,d:(m)=>{m[0][0][0]+=3;m[0][1][0]+=3}},
+  {t:'Public ratings',c:2,d:(m)=>{m[1][0][0]-=2;m[1][1][0]-=2;m[0][1][1]-=2;m[1][1][1]-=2}},
+  {t:'Exclusivity (reduces your flexibility)',c:3,d:(m)=>{m[0][0][1]-=2}}]},
+ {n:'Distribution agreement',m:[[[4,4],[-2,6]],[[6,-2],[0,0]]],cl:[
+  {t:'Territory protection',c:3,d:(m)=>{m[0][0][0]+=2;m[0][0][1]+=2}},
+  {t:'Termination right on Cut Corners',c:4,d:(m)=>{m[1][0][0]-=6;m[1][1][0]-=6}},
+  {t:'Security deposit from Buyer',c:3,d:(m)=>{m[0][1][1]-=6;m[1][1][1]-=6}},
+  {t:'Annual review',c:1,d:(m)=>{m[0][0][0]+=1;m[0][0][1]+=1}},
+  {t:'Joint marketing fund',c:5,d:(m)=>{m[0][0][0]+=2;m[0][0][1]+=2;m[0][1][0]+=1;m[1][0][1]+=1}}]}];
+let si=0;const ui=GT.el('div',{class:'gt-card'});G.body.appendChild(ui);let sel=new Set(),total=0;
+function eff(){const m=JSON.parse(JSON.stringify(SC[si].m));SC[si].cl.forEach((c,i)=>{if(sel.has(i))c.d(m)});return m}
+function cost(){let c=0;sel.forEach(i=>c+=SC[si].cl[i].c);return c}
+function draw(){const s=SC[si];ui.innerHTML='';ui.appendChild(GT.el('h3',{style:'color:#38bdf8',html:'Contract '+(si+1)+' of 3: '+s.n}));
+ const m=eff(),ns=GT.nash(m);ui.appendChild(GT.mtable(m,['Supplier: Quality','Supplier: Cut Corners'],['Buyer: Pay Fair','Buyer: Pay Late'],[[0,0]]));
+ ui.appendChild(GT.el('p',{class:'gt-mu',style:'margin:8px 0',html:'Pure Nash: <b>'+(ns.length?ns.map(x=>['Q','C'][x[0]]+'/'+['Fair','Late'][x[1]]).join(', '):'none')+'</b> &nbsp;|&nbsp; drafting cost <b>'+cost()+'</b>'}));
+ const list=GT.el('div',{style:'display:grid;gap:6px;margin:8px 0'});
+ s.cl.forEach((c,i)=>{const b=GT.el('button',{class:'gt-btn '+(sel.has(i)?'sel':''),style:'text-align:left',onclick:()=>{sel.has(i)?sel.delete(i):sel.add(i);draw()}},[(sel.has(i)?'[x] ':'[ ] ')+c.t+' (cost '+c.c+')']);list.appendChild(b)});ui.appendChild(list);
+ const ok=ns.length===1&&ns[0][0]===0&&ns[0][1]===0;
+ const go=GT.el('button',{class:'gt-btn gold',disabled:!ok},[ok?'Sign this contract':'Quality/Fair is not yet the unique Nash']);
+ go.onclick=()=>{const w=m[0][0][0]+m[0][0][1];const pts=Math.max(20,Math.round(w*8-cost()*6+80));total+=pts;G.setScore(total);sel=new Set();si++;if(si>=3)G.end('A contract is a payoff-editing tool. The best clauses make cheating cost more than honesty gains <b>without</b> destroying the surplus; heavy-handed or costly clauses can fix incentives yet leave both firms poorer.',total);else draw()};ui.appendChild(go)}
+draw();
+
+</script>
+</body>
+</html>

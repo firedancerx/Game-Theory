@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 09 Game 1</title>
+</head>
+<body>
+<script src="../game_storage.js"></script>
+<script src="../gt_kit.js"></script>
+<script>
+// Lesson 09 Game 1 - Schelling Map (find the focal point to meet a partner with no communication).
+const G=GT.init({lesson:'09',n:1,kind:'video',title:'Schelling Map',sub:'meet your partner without talking: find the obvious place',
+ how:'You and a partner must meet but cannot communicate. Each map has landmarks. <b>Drop your pin</b> where you think your partner will drop theirs. The closer the two pins, the more you score; a near-perfect match scores most. Partners favour what <b>stands out</b>: the centre, a unique shape, a named landmark. Eight maps; later maps are harder.'});
+const W=720,H=420;const cv=GT.el('canvas',{class:'gt-c'});G.body.appendChild(cv);const g=GT.fit(cv,W,H);
+const MAPS=[
+ {n:'Empty field with one tree',L:[{x:520,y:120,t:'Lone tree',w:6,c:'#16a34a'},{x:200,y:300,t:'',w:0.2,c:'#334155'}],cw:2},
+ {n:'Town square',L:[{x:360,y:210,t:'Clock tower',w:8,c:'#f59e0b'},{x:120,y:90,t:'Cafe',w:2,c:'#a855f7'},{x:600,y:330,t:'Bank',w:2,c:'#38bdf8'}],cw:1},
+ {n:'Two bridges',L:[{x:200,y:210,t:'Old bridge',w:4,c:'#94a3b8'},{x:520,y:210,t:'New bridge',w:4,c:'#38bdf8'},{x:360,y:60,t:'Hill',w:1,c:'#16a34a'}],cw:2},
+ {n:'Five identical towers',L:[0,1,2,3,4].map(i=>({x:100+i*130,y:210,t:'Tower '+(i+1),w:i===2?5:2,c:'#a78bfa'})),cw:1},
+ {n:'Station and airport',L:[{x:110,y:340,t:'Airport',w:3,c:'#38bdf8'},{x:600,y:100,t:'Central station',w:6,c:'#f59e0b'}],cw:1},
+ {n:'Crossroads, no names',L:[{x:360,y:210,t:'',w:5,c:'#64748b'},{x:130,y:210,t:'',w:1,c:'#64748b'},{x:590,y:210,t:'',w:1,c:'#64748b'},{x:360,y:60,t:'',w:1,c:'#64748b'}],cw:2},
+ {n:'Market, harbour, park',L:[{x:150,y:120,t:'Market',w:3,c:'#f59e0b'},{x:360,y:330,t:'Harbour',w:3,c:'#38bdf8'},{x:580,y:150,t:'Park',w:3,c:'#16a34a'}],cw:1},
+ {n:'Rows of boxes: one is red',L:[0,1,2,3,4,5].map(i=>({x:100+i*100,y:100+(i%2)*160,t:'',w:i===4?7:1,c:i===4?'#ef4444':'#475569'})),cw:1}];
+let mi=0,placed=false,partner=null,pin=null,rec=[];
+function ppick(m){const w=m.L.map(l=>l.w+(rec.some(r=>Math.hypot(r.x-l.x,r.y-l.y)<30)?m.cw:0));const t=w.reduce((a,b)=>a+b);let x=Math.random()*t,k=0;for(;k<w.length-1;k++){x-=w[k];if(x<=0)break}return {x:m.L[k].x+GT.rnd(-8,8),y:m.L[k].y+GT.rnd(-8,8)}}
+function draw(){const m=MAPS[mi];g.clearRect(0,0,W,H);g.fillStyle='#0e1a2b';g.fillRect(0,0,W,H);g.strokeStyle='#1c2c46';for(let x=0;x<W;x+=40){g.beginPath();g.moveTo(x,0);g.lineTo(x,H);g.stroke()}for(let y=0;y<H;y+=40){g.beginPath();g.moveTo(0,y);g.lineTo(W,y);g.stroke()}
+ m.L.forEach(l=>{g.fillStyle=l.c;g.beginPath();g.arc(l.x,l.y,l.w>=5?20:13,0,7);g.fill();g.fillStyle='#e2e8f0';g.font='13px sans-serif';g.textAlign='center';g.fillText(l.t,l.x,l.y+34)});
+ g.fillStyle='#f8fafc';g.font='700 15px sans-serif';g.textAlign='left';g.fillText('Map '+(mi+1)+' of 8: '+m.n,14,24);
+ if(pin){g.fillStyle='#38bdf8';g.beginPath();g.arc(pin.x,pin.y,9,0,7);g.fill();g.fillStyle='#fff';g.fillText('YOU',pin.x+12,pin.y+4)}
+ if(partner){g.fillStyle='#f43f5e';g.beginPath();g.arc(partner.x,partner.y,9,0,7);g.fill();g.fillStyle='#fff';g.fillText('PARTNER',partner.x+12,partner.y+4)}}
+cv.addEventListener('pointerdown',e=>{if(placed)return;placed=true;const p=GT.ptr(cv,W,H,e);pin=p;const m=MAPS[mi];partner=ppick(m);rec.push(partner);
+ const dist=Math.hypot(p.x-partner.x,p.y-partner.y);const pts=Math.max(0,Math.round(200*Math.exp(-dist/60)));G.add(pts);draw();
+ g.fillStyle='#fde68a';g.font='700 18px sans-serif';g.textAlign='center';g.fillText(pts>=150?'MEETING! +'+pts:pts>=40?'Close: +'+pts:'Missed each other: +'+pts,W/2,H-20);
+ setTimeout(()=>{mi++;if(mi>=8){G.end('A <b>focal point</b> is any option that is conspicuous without needing agreement. When many equilibria exist (Battle of the Sexes, standards), shared salience coordinates people better than argument.',G.score)}else{placed=false;pin=null;partner=null;draw()}},1500)});
+draw();
+
+</script>
+</body>
+</html>

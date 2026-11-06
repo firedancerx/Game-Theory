@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 17 Game 1</title>
+</head>
+<body>
+<script src="../game_storage.js"></script>
+<script src="../gt_kit.js"></script>
+<script>
+// L17 G1 - Forgive or Retaliate: noisy repeated play where you choose how to answer defections.
+const G=GT.init({lesson:'17',n:1,kind:'video',title:'Forgive or Retaliate',sub:'was that betrayal, or just noise?',
+ how:'Four partners, 15 rounds each. 12% of moves are accidental slips (a cooperative player shows D by mistake). After each partner defection choose <b>Retaliate (R)</b> or <b>Forgive (F)</b> within 3 seconds; otherwise you forgive. Partners differ: <b>Grim</b> never cooperates again after you defect; <b>Tit-for-Tat</b> mirrors you; <b>Generous</b> forgives a defection one time in three; <b>Opportunist</b> defects when you seem weak. Payoffs 3/5/1/0.'});
+const P=[{n:'Grim',t:'grim'},{n:'Tit-for-Tat',t:'tft'},{n:'Generous',t:'gen'},{n:'Opportunist',t:'opp'}];
+const W=720,H=110;const cv=GT.el('canvas',{class:'gt-c'});G.body.appendChild(cv);const g=GT.fit(cv,W,H);
+const row=GT.el('div',{class:'gt-row',style:'justify-content:center'});const bR=GT.el('button',{class:'gt-btn gold',onclick:()=>ans('D')},['Retaliate (R)']),bF=GT.el('button',{class:'gt-btn pri',onclick:()=>ans('C')},['Forgive (F)']);row.append(bR,bF);G.body.appendChild(row);
+const log=GT.el('div',{class:'gt-card gt-mu',style:'max-height:200px;overflow:auto'});G.body.appendChild(log);
+let pi=0,rd=0,tot=0,st={},pend=false,tl=3,last=performance.now(),over=false,mymove='C',histMe=[];
+function np(){st={grim:false,mylast:'C',theirslip:false};rd=0;histMe=[];log.innerHTML+='<br><b>Partner '+(pi+1)+': '+P[pi].n+'</b><br>';next()}
+function theirs(){const t=P[pi].t;let m='C';if(t==='grim'&&st.grim)m='D';else if(t==='tft')m=st.mylast;else if(t==='gen')m=(st.mylast==='D'&&Math.random()>.33)?'D':'C';else if(t==='opp')m=(Math.random()<.35||st.mylast==='C'&&Math.random()<.3)?'D':'C';
+ st.slip=false;if(m==='C'&&Math.random()<.12){m='D';st.slip=true}return m}
+let their='C';
+function next(){rd++;if(rd>15){pi++;if(pi>=4){over=true;G.end('Total '+tot+'. Harsh strategies protect against exploiters but turn one slip into a permanent war; forgiving ones recover from noise but can be milked. The trade-off is <b>deterrence vs recoverability</b>.',tot)}else np();return}
+ their=theirs();if(their==='D'&&rd>1){pend=true;tl=3;log.innerHTML+='R'+rd+': partner played D'+(st.slip?' (slip?)':'')+'. Decide...<br>';log.scrollTop=1e5}else{play('C')}}
+function play(m){pend=false;const pay={CC:3,DC:5,DD:1,CD:0}[m+their];tot+=pay;G.setScore(tot);st.mylast=m;if(m==='D'&&P[pi].t==='grim')st.grim=true;
+ log.innerHTML+='&nbsp;&nbsp;you '+m+' / they '+their+' &rarr; '+pay+'<br>';log.scrollTop=1e5;next()}
+function ans(m){if(!pend||over)return;play(m)}
+addEventListener('keydown',e=>{const k=e.key.toLowerCase();if(k==='r')ans('D');if(k==='f')ans('C')});
+function f(now){const dt=(now-last)/1000;last=now;if(!over){if(pend){tl-=dt;if(tl<=0)ans('C')}
+ g.clearRect(0,0,W,H);g.fillStyle='#0b1220';g.fillRect(0,0,W,H);g.fillStyle='#e2e8f0';g.font='13px sans-serif';g.fillText('Partner '+(Math.min(pi+1,4))+'/4  round '+Math.min(rd,15)+'/15  total '+tot,12,22);g.fillStyle=pend?'#f43f5e':'#334155';g.fillRect(12,50,(W-24)*Math.max(0,tl)/3,16);requestAnimationFrame(f)}}
+np();requestAnimationFrame(f);
+
+</script>
+</body>
+</html>

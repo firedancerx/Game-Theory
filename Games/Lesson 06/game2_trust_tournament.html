@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 06 Game 2</title>
+</head>
+<body>
+<script src="../game_storage.js"></script>
+<script src="../gt_kit.js"></script>
+<script>
+// Lesson 06 Game 2 - Trust Tournament + Rule Lab (play five personalities, then redesign the payoffs).
+const G=GT.init({lesson:'06',n:2,kind:'sim',title:'Trust Tournament',sub:'beat five personalities, then redesign the game',
+ how:'<b>Part 1:</b> play 6 rounds against each of five rivals with different personalities (C = cooperate, D = defect). <b>Part 2 - Rule Lab:</b> you are the regulator. Choose the <b>smallest penalty on defection</b> that makes cooperation the dominant choice, in three industries. Change the payoffs, not the players.'});
+const ui=GT.el('div',{class:'gt-card'});G.body.appendChild(ui);
+const B=[{n:'The Opportunist',d:'Always defects',f:()=>'D'},{n:'The Mirror',d:'Copies your last move',f:h=>h.length?h[h.length-1].o:'C'},{n:'The Grudge',d:'Cooperates until you defect once',f:h=>h.some(x=>x.o==='D')?'D':'C'},{n:'The Gambler',d:'Random',f:()=>Math.random()<.5?'C':'D'},{n:'The Creature of Habit',d:'Repeats a win, switches after a loss',f:h=>{if(!h.length)return'C';const x=h[h.length-1];const win=(x.m==='D'&&x.o==='C')||(x.m==='C'&&x.o==='C');return win?x.m:(x.m==='C'?'D':'C')}}];
+let bi=0,hist=[],mine=0,theirs=0,total=0,t0=0,pot=[];
+const PAY={CC:[3,3],CD:[0,5],DC:[5,0],DD:[1,1]};
+function part1(){ui.innerHTML='';const b=B[bi];hist=[];mine=0;theirs=0;
+ const head=GT.el('h3',{style:'color:#38bdf8',html:'Part 1 &nbsp;<span class="gt-mu">rival '+(bi+1)+' of 5</span>'});
+ const prof=GT.el('p',{class:'gt-mu',style:'margin:6px 0',html:'Opponent profile: <b>'+b.n+'</b>. (Its personality is hidden - infer it from how it responds to you.)'});
+ const tb=GT.el('table',{class:'gt-t',style:'margin:8px 0'});tb.innerHTML='<tr><th>Round</th><th>You</th><th>Rival</th><th>You +</th><th>Rival +</th></tr>';
+ const btns=GT.el('div',{class:'gt-row'});const fb=GT.el('p',{class:'gt-mu',style:'margin-top:10px;min-height:20px'});
+ const play=m=>{const o=B[bi].f(hist.map(x=>({m:x.o,o:x.m})));const P=PAY[m+o];hist.push({m,o});mine+=P[0];theirs+=P[1];
+  tb.insertAdjacentHTML('beforeend','<tr><td>'+hist.length+'</td><td>'+m+'</td><td>'+o+'</td><td class="gt-ok">'+P[0]+'</td><td class="gt-bad">'+P[1]+'</td></tr>');
+  if(hist.length>=6){btns.querySelectorAll('button').forEach(x=>x.disabled=true);const pts=mine*10;total+=pts;G.setScore(total);fb.innerHTML='Done: you '+mine+' vs rival '+theirs+' (+'+pts+'). Reveal: <b>'+b.n+'</b> - '+b.d+'.';
+   const n=GT.el('button',{class:'gt-btn gold',style:'margin-left:10px'},[bi<4?'Next rival':'To the Rule Lab']);n.onclick=()=>{if(bi<4){bi++;part1()}else part2()};btns.appendChild(n)}};
+ btns.append(GT.el('button',{class:'gt-btn pri',onclick:()=>play('C')},['Cooperate']),GT.el('button',{class:'gt-btn',onclick:()=>play('D')},['Defect']));
+ ui.append(head,prof,tb,btns,fb)}
+const LAB=[{n:'Cartel pricing',T:5,R:3,P:1,S:0},{n:'Shared cloud costs',T:8,R:5,P:2,S:0},{n:'Fishing quota',T:6,R:4,P:2,S:1}];
+let li=0;
+function part2(){ui.innerHTML='';const L=LAB[li];const need=Math.max(L.T-L.R,L.P-L.S);
+ ui.appendChild(GT.el('h3',{style:'color:#38bdf8',html:'Part 2 - Rule Lab &nbsp;<span class="gt-mu">'+(li+1)+' of 3: '+L.n+'</span>'}));
+ ui.appendChild(GT.el('p',{class:'gt-mu',style:'margin:6px 0',html:'Payoffs: Temptation (D vs C) <b>'+L.T+'</b>, Reward (CC) <b>'+L.R+'</b>, Punishment (DD) <b>'+L.P+'</b>, Sucker (C vs D) <b>'+L.S+'</b>. A penalty f is deducted from anyone who defects. Cooperation is dominant when defecting is worse than cooperating <b>whatever the rival does</b>.'}));
+ const r=GT.el('input',{type:'range',class:'gt-r',min:0,max:100,step:1,value:0});const lab=GT.el('div',{style:'margin:6px 0;font-weight:700'});const tb=GT.el('table',{class:'gt-t'});
+ const upd=()=>{const f=r.value/10;lab.innerHTML='Penalty on defection: <span class="gt-gold">'+f.toFixed(1)+'</span>';
+  const a=L.T-f,b2=L.P-f;tb.innerHTML='<tr><th>If rival...</th><th>You cooperate</th><th>You defect (after penalty)</th><th>Better for you</th></tr><tr><td>Cooperates</td><td>'+L.R+'</td><td>'+a.toFixed(1)+'</td><td class="'+(L.R>a?'gt-ok':'gt-bad')+'">'+(L.R>a?'Cooperate':'Defect')+'</td></tr><tr><td>Defects</td><td>'+L.S+'</td><td>'+b2.toFixed(1)+'</td><td class="'+(L.S>b2?'gt-ok':'gt-bad')+'">'+(L.S>b2?'Cooperate':'Defect')+'</td></tr>'};
+ r.oninput=upd;upd();const fb=GT.el('p',{class:'gt-mu',style:'margin:10px 0;min-height:36px'});const b=GT.el('button',{class:'gt-btn pri'},['Set the penalty']);
+ b.onclick=()=>{const f=r.value/10;const works=f>need;const over=f-need;let pts=0;if(works)pts=Math.max(40,Math.round(170-over*35));b.disabled=true;r.disabled=true;total+=pts;G.setScore(total);
+  fb.innerHTML=(works?'Cooperation is now dominant (+'+pts+'). Minimum penalty needed: just above <b>'+need+'</b>; extra penalty = extra enforcement cost.':'<span class="gt-bad">Not enough</span> - defecting still beats cooperating against at least one rival move. Threshold: above <b>'+need+'</b>. (+0)');
+  const n=GT.el('button',{class:'gt-btn gold',style:'margin-left:10px'},[li<2?'Next industry':'Finish']);n.onclick=()=>{if(li<2){li++;part2()}else G.end('You met five personalities, then stopped playing the game and <b>changed it</b>: with the right penalty, defection no longer pays and trust becomes rational. That is the inversion at the heart of the Prisoner\'s Dilemma.',total)};b.after(n)};
+ ui.append(lab,r,tb,fb,b)}
+part1();
+
+</script>
+</body>
+</html>

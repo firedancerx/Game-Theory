@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 30 Game 2</title>
+</head>
+<body>
+<script src="../game_storage.js"></script>
+<script src="../gt_kit.js"></script>
+<script>
+// L30 G2 - Loophole Hunt: draft a rule, adversaries probe it, patch over five rounds.
+const G=GT.init({lesson:'30',n:2,kind:'sim',title:'Loophole Hunt',sub:'design a rule that survives gaming',
+ how:'You regulate a subsidy scheme for 5 rounds. Set the <b>eligibility threshold</b>, <b>audit rate</b> and <b>penalty</b> each round. Three groups respond: <b>honest</b> applicants, <b>opportunists</b> who cheat when the expected penalty is lower than the gain, and <b>gamers</b> who structure their affairs just under the threshold. Each round the groups adapt to your last rule. Score = fraud prevented and fair access, minus enforcement cost.'});
+const ui=GT.el('div',{class:'gt-card'});G.body.appendChild(ui);let r=0,total=0,th=50,au=.2,pe=30,gamers=.1,opp=.3;
+function draw(msg){ui.innerHTML='';ui.appendChild(GT.el('h3',{style:'color:#38bdf8',html:'Round '+(r+1)+'/5 &nbsp;<span class="gt-mu">score '+total+' | gamers '+Math.round(gamers*100)+'% | opportunists cheating '+Math.round(opp*100)+'%</span>'}));ui.appendChild(GT.el('p',{class:'gt-mu',html:msg||'Set the rule for this round.'}));
+ const mk=(lab,mn,mx,v,fmt,set)=>{const s=GT.el('input',{type:'range',class:'gt-r',min:mn,max:mx,step:1,value:v});const l=GT.el('span',{class:'gt-mu',html:' '+fmt(v)});s.oninput=()=>{set(+s.value);l.textContent=' '+fmt(+s.value)};ui.appendChild(GT.el('div',{},[GT.el('span',{html:lab+' '}),s,l]))};
+ mk('Eligibility threshold',20,80,th,v=>v,v=>th=v);mk('Audit rate %',0,60,Math.round(au*100),v=>v+'%',v=>au=v/100);mk('Penalty',0,100,pe,v=>v,v=>pe=v);
+ const b=GT.el('button',{class:'gt-btn gold',style:'margin-top:10px'},['Enforce this rule']);b.onclick=()=>{
+  // groups respond: opportunists cheat if expected penalty (au*pe) < gain 12; gamers cluster below threshold more when threshold is sharp and audit low
+  const gainC=12;const expPen=au*pe;opp=GT.clamp(.8-(expPen-gainC)*.04,0,.9);
+  const edge=1-(Math.abs(th-50)/60);gamers=GT.clamp(gamers+(au<.3?.12:-.05)+(th>=60||th<=35?.05:-.04)*(1),.02,.7);
+  const fraud=opp*.35+gamers*.3;const access=Math.max(0,1-(th>65?(th-65)/30:0)-(pe>80?.1:0));const cost=au*40+pe*.05;const pts=Math.round(Math.max(0,(1-fraud)*120+access*80-cost*2));total+=pts;G.setScore(total);
+  r++;if(r>=5){G.end('Final score '+total+'. A rule survives gaming when audits and penalties make cheating unattractive <b>and</b> thresholds do not create cliffs gamers can hug. Over-enforcement costs money and access; under-enforcement invites fraud.',total);return}
+  draw('Result: cheating by opportunists '+Math.round(opp*100)+'%, gamers hugging the threshold '+Math.round(gamers*100)+'%, fair access '+Math.round(access*100)+'%, enforcement cost '+cost.toFixed(1)+' &rarr; +'+pts)};ui.appendChild(b)}
+draw();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 15 Game 1</title>
+</head>
+<body>
+<script src="../game_storage.js"></script>
+<script src="../gt_kit.js"></script>
+<script>
+// L15 G1 - Launch Window: click when to launch against a rival; market type decides if early or late pays.
+const G=GT.init({lesson:'15',n:1,kind:'video',title:'Launch Window',sub:'the clock is ticking: first, second or last?',
+ how:'Six market launches. A timeline runs 0 to 10 seconds. Click <b>LAUNCH</b> (or press space) at any moment; the rival launches at a hidden time. Read the market note: in <b>network</b> markets the first launcher locks in users, in <b>fragile-tech</b> markets pioneers eat the bugs and followers win, in <b>patent-race</b> markets a close finish splits the prize. Score = profit.'});
+const W=720,H=200;const cv=GT.el('canvas',{class:'gt-c'});G.body.appendChild(cv);const g=GT.fit(cv,W,H);
+const note=GT.el('div',{class:'gt-card'});G.body.appendChild(note);
+const btn=GT.el('button',{class:'gt-btn gold',style:'font-size:1.2em;padding:12px 28px'},['LAUNCH']);const row=GT.el('div',{class:'gt-row',style:'justify-content:center'},[btn]);G.body.appendChild(row);
+const M=[{k:'network',n:'Network market: users lock in with whoever arrives first.',f:(me,rv)=>me<rv-.4?120:me>rv+.4?25:60},
+ {k:'fragile',n:'Fragile technology: pioneers hit unseen bugs; late launches enjoy fixes.',f:(me,rv)=>{const lag=me-rv;return lag>1&&lag<5?95:me<rv-1?20:60}},
+ {k:'patent',n:'Patent race: launch within 1 second of the rival and the prize splits; a bigger gap goes to the earlier.',f:(me,rv)=>Math.abs(me-rv)<1?55:me<rv?105:20},
+ {k:'network',n:'Another network market, but the rival is faster this time.',f:(me,rv)=>me<rv-.4?120:me>rv+.4?25:60},
+ {k:'fragile',n:'Fragile technology again: a wait-and-see strategy may pay.',f:(me,rv)=>{const lag=me-rv;return lag>1&&lag<5?95:me<rv-1?20:60}},
+ {k:'patent',n:'Patent race, last round: the rival is aggressive.',f:(me,rv)=>Math.abs(me-rv)<1?55:me<rv?105:20}];
+let i=0,t=0,rv=0,mine=null,last=performance.now(),state='run',total=0,over=false;
+function start(){t=0;mine=null;rv=GT.rnd(1.5,8);state='run';note.innerHTML='<b>Round '+(i+1)+'/6.</b> '+M[i].n;btn.disabled=false}
+function launch(){if(state!=='run')return;mine=t;resolve()}
+function resolve(){state='res';btn.disabled=true;if(mine===null)mine=11;const p=M[i].f(mine,rv);total+=p;G.setScore(total);
+ note.innerHTML+='<br>You launched at <b>'+(mine>10?'never':mine.toFixed(1)+'s')+'</b>, rival at <b>'+rv.toFixed(1)+'s</b> &rarr; profit <b>'+p+'</b>.';
+ setTimeout(()=>{i++;if(i>=6){over=true;G.end('There is no universal rule. First-mover advantage needs <b>lock-in</b> (networks, scale, learning curves); second-mover advantage appears when the pioneer pays for <b>discovery and mistakes</b>. Total profit '+total+'.',total)}else start()},1800)}
+btn.onclick=launch;addEventListener('keydown',e=>{if(e.code==='Space'){e.preventDefault();launch()}});
+function f(now){const dt=(now-last)/1000;last=now;if(state==='run'){t+=dt;if(t>=10)resolve()}
+ g.clearRect(0,0,W,H);g.fillStyle='#0b1220';g.fillRect(0,0,W,H);g.strokeStyle='#334155';g.beginPath();g.moveTo(30,110);g.lineTo(W-30,110);g.stroke();
+ const X=v=>30+v/10*(W-60);g.fillStyle='#94a3b8';g.font='12px sans-serif';for(let v=0;v<=10;v+=2)g.fillText(v+'s',X(v)-6,135);
+ g.fillStyle='#38bdf8';g.beginPath();g.arc(X(Math.min(t,10)),110,10,0,7);g.fill();
+ if(state==='res'){g.fillStyle='#f43f5e';g.fillRect(X(rv)-3,70,6,80);g.fillText('rival',X(rv)-12,62);if(mine<=10){g.fillStyle='#10b981';g.fillRect(X(mine)-3,70,6,80);g.fillText('you',X(mine)-8,164)}}
+ if(!over)requestAnimationFrame(f)}
+start();requestAnimationFrame(f);
+
+</script>
+</body>
+</html>

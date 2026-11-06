@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 20 Game 2</title>
+</head>
+<body>
+<script src="../game_storage.js"></script>
+<script src="../gt_kit.js"></script>
+<script>
+// L20 G2 - Trust Ledger: eight deals, a scandal event and a recovery choice.
+const G=GT.init({lesson:'20',n:2,kind:'sim',title:'Trust Ledger',sub:'manage the record buyers read before they deal with you',
+ how:'Eight deals. Buyers pay according to your public <b>rating</b> (0-100): price = 40 + rating/2. Each round choose <b>Deliver fully</b> (cost 25, rating +5), <b>Cut corners</b> (cost 10, rating -20 if inspected, chance 45%) or <b>Invest in transparency</b> (cost 35, rating +9, helps recovery). After round 4 a scandal may hit (not your fault) and cut rating by 30: choose to <b>apologise openly</b> (cost 20, regain 20) or <b>stay silent</b>. Profit = price - cost.'});
+let r=0,rating=60,total=0,scandal=false,tr=0;const ui=GT.el('div',{class:'gt-card'});G.body.appendChild(ui);
+function price(){return 40+rating/2}
+function draw(msg){ui.innerHTML='';ui.appendChild(GT.el('h3',{style:'color:#38bdf8',html:'Deal '+(r+1)+'/8 &nbsp;<span class="gt-mu">rating '+Math.round(rating)+' | price '+price().toFixed(0)+' | profit '+Math.round(total)+'</span>'}));
+ ui.appendChild(GT.el('div',{class:'gt-bar'},[(()=>{const i=GT.el('i',{});i.style.width=rating+'%';return i})()]));
+ ui.appendChild(GT.el('p',{class:'gt-mu',html:msg||''}));
+ if(r===4&&!scandal){scandal=true;rating=Math.max(0,rating-30);ui.appendChild(GT.el('p',{class:'gt-bad',html:'<b>Scandal:</b> a supplier of yours was exposed; your rating falls to '+Math.round(rating)+'. Respond:'}));
+  const row=GT.el('div',{class:'gt-row'});row.append(GT.el('button',{class:'gt-btn pri',onclick:()=>{total-=20;rating=Math.min(100,rating+20);draw('You apologised openly (-20), rating +20.')}},['Apologise openly (-20)']),GT.el('button',{class:'gt-btn',onclick:()=>{draw('You stayed silent; rumours linger.')}},['Stay silent']));ui.appendChild(row);return}
+ const row=GT.el('div',{class:'gt-row'});[['D','Deliver fully (cost 25)','pri'],['C','Cut corners (cost 10)','gold'],['T','Invest in transparency (cost 35)','']].forEach(([k,l,c])=>row.appendChild(GT.el('button',{class:'gt-btn '+c,onclick:()=>go(k)},[l])));ui.appendChild(row)}
+function go(k){let cost=0,txt='';const p=price();
+ if(k==='D'){cost=25;rating=Math.min(100,rating+5);txt='Delivered fully.'}
+ else if(k==='C'){cost=10;if(Math.random()<.45){rating=Math.max(0,rating-20);txt='Inspector found the shortcut: rating -20.'}else txt='You got away with it this time.'}
+ else{cost=35;rating=Math.min(100,rating+9);txt='Transparency report published.'}
+ total+=p-cost;G.setScore(Math.max(0,Math.round(total*4)));r++;if(r>=8){G.end('Profit '+Math.round(total)+'. Ratings are priced into every future deal; one exposed shortcut costs far more than it saved, and an honest response to a scandal rebuilds faster than silence.',Math.max(0,Math.round(total*4)));return}
+ draw(txt+' Earned '+(p-cost).toFixed(0)+'.')}
+draw();
+
+</script>
+</body>
+</html>

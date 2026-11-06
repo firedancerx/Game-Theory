@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 29 Game 1</title>
+</head>
+<body>
+<script src="../game_storage.js"></script>
+<script src="../gt_kit.js"></script>
+<script>
+// L29 G1 - Playbook Sprint: classify case snippets into the four playbook steps.
+const G=GT.init({lesson:'29',n:1,kind:'video',title:'Playbook Sprint',sub:'which step of the executive playbook is this?',
+ how:'The playbook has four steps: <b>1 Map the players</b> (who acts, with what options), <b>2 Read the payoffs</b> (what each side truly values), <b>3 Find the equilibrium</b> (where choices settle), <b>4 Reshape incentives</b> (change the game in your favour). Snippets fly in; press <b>1-4</b> or click the matching step within 7 seconds. 15 snippets.'});
+const W=720,H=100;const cv=GT.el('canvas',{class:'gt-c'});G.body.appendChild(cv);const g=GT.fit(cv,W,H);
+const q=GT.el('div',{class:'gt-card',style:'font-size:1.1em;min-height:60px'});const row=GT.el('div',{class:'gt-row',style:'justify-content:center'});G.body.append(q,row);
+const S=['1 Map the players','2 Read the payoffs','3 Find the equilibrium','4 Reshape incentives'];S.forEach((s,i)=>row.appendChild(GT.el('button',{class:'gt-btn',onclick:()=>ans(i)},[s])));
+const C=[['List every competitor, regulator and supplier who can change the outcome.',0],['Which choices does the rival actually have next quarter?',0],['Who decides, and who only reacts?',0],['What does the rival really want: share, margin or survival?',1],['Rank the four outcomes from best to worst for each side.',1],['Quantify the cost to them of losing the contract.',1],['Underline each side\'s best reply in every column.',2],['Check whether anyone gains by changing their move alone.',2],['Both sides will cut price whatever the other does; that is where it settles.',2],['Add a penalty clause so cheating no longer pays.',3],['Offer a side payment that makes cooperation their best reply.',3],['Change the timing so we commit first.',3],['Propose a most-favoured-customer pledge to deter price cuts.',3],['Identify the supplier\'s outside option.',1],['Draw the decision tree with the order of moves.',0]];
+let order=GT.shuffle(C.slice()),k=0,tl=7,last=performance.now(),streak=0,over=false;
+function show(){if(k>=15){over=true;G.end('The playbook turns a messy situation into four questions: <b>who, what do they want, where does it settle, and how do we change that</b>. Skipping steps 1-3 and jumping to tactics is the executive\'s classic error.',G.score);return}q.textContent=(k+1)+'/15: '+order[k][0];tl=7}
+function ans(i){if(over)return;if(i===order[k][1]){streak++;G.add(Math.round(40+tl*7+Math.min(streak,6)*8))}else streak=0;k++;show()}
+addEventListener('keydown',e=>{if(['1','2','3','4'].includes(e.key))ans(+e.key-1)});
+function f(now){const dt=(now-last)/1000;last=now;if(!over){tl-=dt;if(tl<=0){streak=0;k++;show()}g.clearRect(0,0,W,H);g.fillStyle='#0b1220';g.fillRect(0,0,W,H);S.forEach((s,i)=>{g.fillStyle=['#38bdf8','#10b981','#f59e0b','#a78bfa'][i];g.fillRect(20+i*175,30,160,30);g.fillStyle='#0b1220';g.font='700 12px sans-serif';g.fillText(s,28+i*175,50)});g.fillStyle='#f59e0b';g.fillRect(0,H-8,W*Math.max(0,tl)/7,8);g.fillStyle='#94a3b8';g.fillText('streak x'+streak,10,18);requestAnimationFrame(f)}}
+show();requestAnimationFrame(f);
+
+</script>
+</body>
+</html>

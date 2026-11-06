@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 21 Game 2</title>
+</head>
+<body>
+<script src="../game_storage.js"></script>
+<script src="../gt_kit.js"></script>
+<script>
+// L21 G2 - Merger Matchmaker: choose a partner and a profit share that clears their outside option.
+const G=GT.init({lesson:'21',n:2,kind:'sim',title:'Merger Matchmaker',sub:'form coalitions that nobody wants to leave',
+ how:'Six rounds. You are a firm looking for a partner. Each candidate would create a <b>synergy</b> with you, but also has an <b>outside option</b> (what they could earn with someone else, partly hidden). Choose a partner and offer them a <b>share of the synergy</b>. They accept if their share beats their outside option. You keep the rest. Offer too little and you are refused; too much and the deal is hollow. After a refusal you may try one more partner.'});
+const ui=GT.el('div',{class:'gt-card'});G.body.appendChild(ui);let r=0,total=0,tries=0,cands;
+function gen(){tries=0;cands=['Aurora Labs','Borneo Freight','Cendana Pay','Delta Grid'].map(n=>{const syn=GT.ri(40,120);return {n,syn,out:Math.round(syn*GT.rnd(.25,.8)),hint:''}});cands.forEach(c=>{c.hint=c.out>c.syn*.6?'courted by many':c.out<c.syn*.4?'few other options':'moderately courted'});draw()}
+function draw(msg){ui.innerHTML='';ui.appendChild(GT.el('h3',{style:'color:#38bdf8',html:'Round '+(r+1)+'/6 &nbsp;<span class="gt-mu">total '+Math.round(total)+'</span>'}));ui.appendChild(GT.el('p',{class:'gt-mu',html:msg||'Pick a partner and set the share you offer them.'}));
+ cands.forEach((c,i)=>{if(c.done)return;const box=GT.el('div',{style:'border:1px solid #2a3a5a;border-radius:8px;padding:10px;margin:6px 0'});box.appendChild(GT.el('div',{html:'<b>'+c.n+'</b> synergy <b>'+c.syn+'</b> &middot; <span class="gt-mu">'+c.hint+'</span>'}));
+  const s=GT.el('input',{type:'range',class:'gt-r',min:0,max:100,step:1,value:50});const l=GT.el('span',{class:'gt-mu',html:' offer 50% ('+Math.round(c.syn*.5)+')'});s.oninput=()=>{l.innerHTML=' offer '+s.value+'% ('+Math.round(c.syn*s.value/100)+')'};
+  const b=GT.el('button',{class:'gt-btn gold',style:'margin-top:4px'},['Propose']);b.onclick=()=>{const off=c.syn*s.value/100;if(off>=c.out){const mine=c.syn-off;total+=mine;G.setScore(Math.round(total*3));r++;if(r>=6){G.end('Total '+Math.round(total)+'. In coalition formation each member needs a share at least equal to its <b>outside option</b>; the stable deal lives between the partner\'s alternative and your surplus. Scarce partners extract more.',Math.round(total*3));return}gen()}else{c.done=true;tries++;if(tries>=2){total+=0;r++;if(r>=6){G.end('Total '+Math.round(total)+'. Offers below the outside option are refused: coalition members only join if they beat what they could earn elsewhere.',Math.round(total*3));return}gen()}else draw('Refused: '+c.n+' needed more than '+Math.round(off)+'. One more try.')}};
+  box.append(s,l,GT.el('br'),b);ui.appendChild(box)})}
+gen();
+
+</script>
+</body>
+</html>

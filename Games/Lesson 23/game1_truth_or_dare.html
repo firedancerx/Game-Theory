@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 23 Game 1</title>
+</head>
+<body>
+<script src="../game_storage.js"></script>
+<script src="../gt_kit.js"></script>
+<script>
+// L23 G1 - Truth or Dare: decide how much to misreport under different mechanisms.
+const G=GT.init({lesson:'23',n:1,kind:'video',title:'Truth or Dare',sub:'should you report your true value to the mechanism?',
+ how:'A town decides whether to fund a bridge costing 90, split between 3 residents (you and two bots). Everyone reports their value; if the reports sum to at least 90 the bridge is built. Under the <b>naive rule</b> each person pays their own report. Under the <b>Clarke rule</b> you pay only if you swing the decision (the amount others fall short by). Drag your report within 10 seconds, then see the result and the payoff you would have got by telling the truth. Eight rounds alternate the rules.'});
+const W=720,H=140;const cv=GT.el('canvas',{class:'gt-c'});G.body.appendChild(cv);const g=GT.fit(cv,W,H);
+const sl=GT.el('input',{type:'range',class:'gt-r',min:0,max:90,step:1,value:30});const lab=GT.el('div',{class:'gt-mu',style:'text-align:center'});
+const b=GT.el('button',{class:'gt-btn gold'},['Submit report']);const row=GT.el('div',{class:'gt-row',style:'justify-content:center'},[b]);G.body.append(lab,sl,row);
+const log=GT.el('div',{class:'gt-card gt-mu'});G.body.appendChild(log);
+let r=0,rule,v,o1,o2,tl=10,last=performance.now(),over=false,locked=false;
+function nr(){locked=false;rule=r%2===0?'naive':'clarke';v=GT.ri(10,60);o1=GT.ri(10,40);o2=GT.ri(10,40);tl=10;sl.value=v;b.disabled=false;lab.innerHTML='Round '+(r+1)+'/8 &nbsp; rule: <b>'+(rule==='naive'?'pay your report':'Clarke pivot payment')+'</b> &nbsp; your true value <b>'+v+'</b>; others report '+o1+' and '+o2+'. Your report: <b id=rv>'+sl.value+'</b>'}
+sl.oninput=()=>{const e=document.getElementById('rv');if(e)e.textContent=sl.value};
+function outcome(rep){const built=rep+o1+o2>=90;let pay=0;if(built){if(rule==='naive')pay=rep;else{const others=o1+o2;pay=others>=90?0:90-others}}return built?v-pay:0}
+function go(){if(locked||over)return;locked=true;b.disabled=true;const rep=+sl.value;const mine=outcome(rep),truth=outcome(v);const pts=Math.round(mine*2+30);G.add(Math.max(0,pts));
+ log.innerHTML='Round '+(r+1)+' ('+rule+'): you reported '+rep+' &rarr; payoff <b>'+mine+'</b>; truthful report would have paid <b>'+truth+'</b>. '+(mine>truth?'Lying paid.':mine<truth?'Lying hurt.':'Same either way.');
+ setTimeout(()=>{r++;if(r>=8){over=true;G.end('Under the naive rule shading your report pays (free-riding) but if everyone does it the bridge fails. Under the <b>Clarke / VCG</b> payment, truth-telling is a dominant strategy: you pay your externality, not your report.',G.score)}else nr()},2200)}
+b.onclick=go;
+function f(now){const dt=(now-last)/1000;last=now;if(!over){if(!locked){tl-=dt;if(tl<=0)go()}g.clearRect(0,0,W,H);g.fillStyle='#0b1220';g.fillRect(0,0,W,H);const tot=+sl.value+o1+o2;g.fillStyle='#334155';g.fillRect(20,50,W-40,30);g.fillStyle=tot>=90?'#10b981':'#f59e0b';g.fillRect(20,50,Math.min(1,tot/90)*(W-40),30);g.fillStyle='#e2e8f0';g.font='13px sans-serif';g.fillText('reports total '+tot+' / cost 90',24,100);g.fillStyle='#f59e0b';g.fillRect(20,H-12,(W-40)*Math.max(0,tl)/10,6);requestAnimationFrame(f)}}
+nr();requestAnimationFrame(f);
+
+</script>
+</body>
+</html>

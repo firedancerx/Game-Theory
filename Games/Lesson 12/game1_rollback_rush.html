@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 12 Game 1</title>
+</head>
+<body>
+<script src="../game_storage.js"></script>
+<script src="../gt_kit.js"></script>
+<script>
+// L12 G1 - Rollback Rush: click the best branch at each node, deepest level first.
+const G=GT.init({lesson:'12',n:1,kind:'video',title:'Rollback Rush',sub:'start at the leaves and fold the tree back to the root',
+ how:'Each tree has three levels of decisions. Work <b>backwards</b>: first click the branch each deepest mover will take (highest payoff for them), then the next level, then the root. Wrong clicks cost a life. Each tree has a timer; faster wins more. Five trees.'});
+const W=720,H=360;const cv=GT.el('canvas',{class:'gt-c'});G.body.appendChild(cv);const g=GT.fit(cv,W,H);
+let T,lives=3,ti=0,level=2,tl=40,last=performance.now(),over=false,msg='';
+function mk(){const lf=()=>({p:[GT.ri(0,9),GT.ri(0,9)]});const n2=()=>({pl:0,ch:[lf(),lf()]}),n1=()=>({pl:1,ch:[n2(),n2()]});return {pl:0,ch:[n1(),n1()]}}// root pl0 level0; level1 pl1; level2 pl0
+function build(){T=mk();T.lv=0;T.ch.forEach(a=>{a.lv=1;a.ch.forEach(b=>{b.lv=2;b.pl=0})});T.pl=0;T.ch.forEach(a=>a.pl=1);
+ // note: level2 mover = A (0), level1 = B (1), root = A (0)
+ lay(T,20,W-20,40,95);level=2;tl=40}
+function lay(n,x0,x1,y,dy){n.x=(x0+x1)/2;n.y=y;if(n.ch){const w=(x1-x0)/n.ch.length;n.ch.forEach((c,i)=>lay(c,x0+i*w,x0+(i+1)*w,y+(n.ch[0].ch?dy:dy*.9),dy))}}
+function val(n){if(!n.ch)return n.p;if(n.sel===undefined)n.sel=bestIdx(n);return val(n.ch[n.sel])}
+function bestIdx(n){const v=n.ch.map(c=>val(c));return v[0][n.pl]>=v[1][n.pl]?0:1}
+function nodes(n,lv,a){if(lv===n.lv&&n.ch)a.push(n);if(n.ch)n.ch.forEach(c=>nodes(c,lv,a));return a}
+function clearSel(n){delete n.sel;if(n.ch)n.ch.forEach(clearSel)}
+function draw(){g.clearRect(0,0,W,H);g.fillStyle='#0b1220';g.fillRect(0,0,W,H);
+ (function e(n){if(n.ch)n.ch.forEach((c,i)=>{g.strokeStyle=n.chosen===i?'#10b981':'#475569';g.lineWidth=n.chosen===i?4:1.5;g.beginPath();g.moveTo(n.x,n.y);g.lineTo(c.x,c.y);g.stroke();e(c)})})(T);g.lineWidth=1;
+ (function d(n){if(n.ch){g.fillStyle=n.pl?'#f43f5e':'#38bdf8';g.fillRect(n.x-13,n.y-13,26,26);g.fillStyle='#fff';g.font='700 12px sans-serif';g.textAlign='center';g.fillText(n.pl?'B':'A',n.x,n.y+4);n.ch.forEach(d)}else{g.fillStyle='#1e293b';g.beginPath();g.arc(n.x,n.y,18,0,7);g.fill();g.fillStyle='#e2e8f0';g.font='11px sans-serif';g.textAlign='center';g.fillText(n.p[0]+','+n.p[1],n.x,n.y+4)}})(T);
+ g.fillStyle='#e2e8f0';g.font='13px sans-serif';g.textAlign='left';g.fillText('Tree '+(ti+1)+'/5  lives '+lives+'  time '+Math.max(0,tl|0)+'s  level to decide: '+(level===2?'deepest (A)':level===1?'middle (B)':'root (A)'),10,H-10);g.fillStyle='#fbbf24';g.fillText(msg,10,18)}
+cv.addEventListener('pointerdown',e=>{if(over)return;const p=GT.ptr(cv,W,H,e);let hit=null;
+ (function f(n){if(n.ch&&n.lv===level){n.ch.forEach((c,i)=>{const mx=(n.x+c.x)/2,my=(n.y+c.y)/2;if(Math.hypot(p.x-mx,p.y-my)<26)hit=[n,i]})}if(n.ch)n.ch.forEach(f)})(T);
+ if(!hit)return;const [n,i]=hit;if(n.chosen!==undefined)return;
+ // correct if i equals optimum under completed subtrees
+ const want=bestIdx(n);if(i===want){n.chosen=i;n.sel=i;msg='Good.';G.add(10);const lvNodes=nodes(T,level,[]);if(lvNodes.every(x=>x.chosen!==undefined)){if(level===0){G.add(Math.round(60+tl*3));ti++;if(ti>=5){fin();return}build()}else level--}}
+ else{lives--;msg='Wrong: that mover prefers the other branch.';if(lives<=0){fin()}}});
+function fin(){over=true;G.end('<b>Backward induction</b>: solve the last mover first, fold that choice into the parent, repeat. Branches nobody rational would take are pruned, so threats that depend on them are empty.',G.score)}
+function loop(now){const dt=(now-last)/1000;last=now;if(!over){tl-=dt;if(tl<=0){ti++;if(ti>=5)fin();else build()}draw();requestAnimationFrame(loop)}}
+build();requestAnimationFrame(loop);
+
+</script>
+</body>
+</html>

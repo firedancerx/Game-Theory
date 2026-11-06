@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 17 Game 2</title>
+</head>
+<body>
+<script src="../game_storage.js"></script>
+<script src="../gt_kit.js"></script>
+<script>
+// L17 G2 - Strategy Foundry: tune a strategy and run a noisy tournament against classics.
+const G=GT.init({lesson:'17',n:2,kind:'sim',title:'Strategy Foundry',sub:'design the strategy, then let it fight eight classics',
+ how:'Tune your strategy with three dials: <b>Opening</b> (cooperate or defect), <b>Retaliation length</b> (rounds of D after a partner defection; 0 = none, 10 = effectively grim) and <b>Forgiveness</b> (chance to cooperate anyway during retaliation). Run the tournament: 100 rounds against each of eight classic strategies with 5% noise. You have <b>three attempts</b>; your best average counts.'});
+const ui=GT.el('div',{class:'gt-card'});G.body.appendChild(ui);let att=0,best=0,open='C',ret=1,forg=.1;
+const CL=[{n:'Always C',f:(h)=>'C'},{n:'Always D',f:(h)=>'D'},{n:'Tit-for-Tat',f:(h)=>h.length?h[h.length-1][0]:'C'},{n:'Grim',f:(h)=>h.some(x=>x[0]==='D')?'D':'C'},{n:'Suspicious TFT',f:(h)=>h.length?h[h.length-1][0]:'D'},{n:'Generous TFT',f:(h)=>h.length&&h[h.length-1][0]==='D'&&Math.random()>.3?'D':'C'},{n:'Random',f:(h)=>Math.random()<.5?'C':'D'},{n:'Pavlov',f:(h)=>{if(!h.length)return 'C';const l=h[h.length-1];return (l[0]===l[1])?'C':'D'}}];
+function noise(m){return Math.random()<.05?(m==='C'?'D':'C'):m}
+function runOne(opp){let hist=[],my=[],sc=0,retleft=0;// hist items: [theirmove, mymove] from opponent's view for opp; from my view tracked separately
+ const hO=[],hM=[];for(let r=0;r<100;r++){
+  let mm;if(r===0)mm=open;else{const lastOpp=hM.length?hO[hO.length-1]:'C';if(retleft>0){retleft--;mm=Math.random()<forg?'C':'D'}else if(lastOpp==='D'){if(ret>0){retleft=ret-1;mm=Math.random()<forg?'C':'D'}else mm='C'}else mm='C'}
+  const oh=hO.map((x,i)=>[hM[i],x]);// opp sees [my move, its move]
+  let om=opp.f(oh);mm=noise(mm);om=noise(om);const pay={CC:3,DC:5,DD:1,CD:0}[mm+om];sc+=pay;hM.push(mm);hO.push(om)}return sc/100}
+function draw(res){ui.innerHTML='';ui.appendChild(GT.el('h3',{style:'color:#38bdf8',html:'Attempt '+(att+1)+' of 3 &nbsp;<span class="gt-mu">best average '+best.toFixed(2)+'</span>'}));
+ const mk=(lab,el)=>ui.appendChild(GT.el('div',{style:'margin:8px 0'},[GT.el('div',{class:'gt-mu',html:lab}),el]));
+ const o=GT.el('select',{class:'gt-sel'});['C','D'].forEach(v=>o.appendChild(GT.el('option',{value:v},[v==='C'?'Open cooperating':'Open defecting'])));o.value=open;o.onchange=()=>open=o.value;mk('Opening move',o);
+ const r1=GT.el('input',{type:'range',class:'gt-r',min:0,max:10,step:1,value:ret});const l1=GT.el('span',{class:'gt-mu',html:' '+ret});r1.oninput=()=>{ret=+r1.value;l1.textContent=' '+ret};mk('Retaliation length (rounds)',GT.el('div',{},[r1,l1]));
+ const r2=GT.el('input',{type:'range',class:'gt-r',min:0,max:100,step:5,value:forg*100});const l2=GT.el('span',{class:'gt-mu',html:' '+Math.round(forg*100)+'%'});r2.oninput=()=>{forg=+r2.value/100;l2.textContent=' '+r2.value+'%'};mk('Forgiveness chance',GT.el('div',{},[r2,l2]));
+ const b=GT.el('button',{class:'gt-btn gold'},['Run the tournament']);b.onclick=()=>{const rs=CL.map(c=>[c.n,runOne(c)]);const avg=rs.reduce((a,x)=>a+x[1],0)/rs.length;best=Math.max(best,avg);G.setScore(Math.round(best*100));att++;
+  let h='<table class="gt-t"><tr><th>Opponent</th><th>Your average per round</th></tr>'+rs.map(x=>'<tr><td>'+x[0]+'</td><td>'+x[1].toFixed(2)+'</td></tr>').join('')+'</table><p>Overall <b>'+avg.toFixed(2)+'</b> (best '+best.toFixed(2)+')</p>';
+  if(att>=3){G.end('Robust strategies are <b>nice, retaliatory, forgiving and clear</b>. Pure harshness is brittle under noise; pure niceness is exploitable. Best average: '+best.toFixed(2)+' per round.',Math.round(best*100));return}
+  draw();ui.insertAdjacentHTML('beforeend',h)};ui.appendChild(b)}
+draw();
+
+</script>
+</body>
+</html>

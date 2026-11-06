@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 24 Game 1</title>
+</head>
+<body>
+<script src="../game_storage.js"></script>
+<script src="../gt_kit.js"></script>
+<script>
+// L24 G1 - Bid Blitz: ascending clock auctions, private and common value.
+const G=GT.init({lesson:'24',n:1,kind:'video',title:'Bid Blitz',sub:'stay in as the price rises, drop out before you overpay',
+ how:'Eight ascending-clock auctions. The price rises each tick; press <b>Drop out</b> (or space) to stop bidding. The last bidder wins and pays the price at which the second-last dropped. In <b>private-value</b> rounds your value is known exactly. In <b>common-value</b> rounds (jar of coins) you see only a noisy estimate - the true value is the average of all bidders\' signals, so winners tend to <b>overpay</b> (winner\'s curse). Profit = value - price.'});
+const W=720,H=180;const cv=GT.el('canvas',{class:'gt-c'});G.body.appendChild(cv);const g=GT.fit(cv,W,H);
+const row=GT.el('div',{class:'gt-row',style:'justify-content:center'});const bd=GT.el('button',{class:'gt-btn gold',onclick:()=>drop()},['Drop out']);row.appendChild(bd);G.body.appendChild(row);
+const log=GT.el('div',{class:'gt-card gt-mu'});G.body.appendChild(log);
+let r=0,price=0,sig,common,trueV,bots,inn=true,state='run',last=performance.now(),acc=0,tot=0,over=false;
+function nr(){common=r%2===1;trueV=GT.ri(60,120);bots=[0,1,2,3].map(()=>common?trueV+GT.ri(-25,25):GT.ri(40,130));sig=common?trueV+GT.ri(-25,25):GT.ri(50,125);price=10;inn=true;state='run';bd.disabled=false;
+ log.innerHTML='Auction '+(r+1)+'/8: <b>'+(common?'COMMON value':'PRIVATE value')+'</b>. Your '+(common?'estimate of the jar value':'value')+': <b>'+sig+'</b>'}
+function drop(){if(state!=='run'||!inn)return;inn=false;bd.disabled=true}
+addEventListener('keydown',e=>{if(e.code==='Space'){e.preventDefault();drop()}});
+function finish(){state='done';// compute winner
+ const dropAt=bots.map(b=>b);const best=Math.max(...dropAt);let myDrop=inn?Infinity:price;let winner,pay;
+ const vals=bots.map(b=>b);const allDrops=[...vals,inn?9999:myDrop];
+ const sorted=[...allDrops].sort((a,b)=>b-a);const meWins=inn||myDrop>=sorted[0];
+ let p2=sorted[1];if(meWins){pay=Math.min(p2,price);const v=common?(bots.reduce((a,x)=>a+x,sig)/5):sig;const prof=v-pay;tot+=prof;G.setScore(Math.max(0,Math.round(tot*3+200)));log.innerHTML+='<br>You <b>won</b> at '+pay.toFixed(0)+'. '+(common?'True value '+v.toFixed(0)+'.':'')+' Profit <b>'+prof.toFixed(0)+'</b>'+(prof<0&&common?' (winner\'s curse!)':'')}else{log.innerHTML+='<br>You lost; the winner paid about '+sorted[1].toFixed(0)}
+ setTimeout(()=>{r++;if(r>=8){over=true;G.end('Total profit '+Math.round(tot)+'. In private-value auctions bid up to your value. In <b>common-value</b> auctions, the winner is the most optimistic estimator, so you must <b>shade</b> your bid to avoid the winner\'s curse.',Math.max(0,Math.round(tot*3+200)))}else nr()},2200)}
+function f(now){const dt=(now-last)/1000;last=now;if(!over){if(state==='run'){acc+=dt;while(acc>.07){acc-=.07;price+=2;const stillIn=bots.filter(b=>b>price).length+(inn?1:0);if(stillIn<=1||price>200){finish();break}}}
+ g.clearRect(0,0,W,H);g.fillStyle='#0b1220';g.fillRect(0,0,W,H);g.fillStyle='#f59e0b';g.font='700 40px sans-serif';g.textAlign='center';g.fillText('price '+price,W/2,80);g.font='13px sans-serif';g.fillStyle='#e2e8f0';g.fillText('bidders still in: '+(bots.filter(b=>b>price).length+(inn?1:0))+(inn?' (you are in)':' (you dropped)'),W/2,120);g.textAlign='left';g.fillText('total profit '+Math.round(tot),10,18);requestAnimationFrame(f)}}
+nr();requestAnimationFrame(f);
+
+</script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 28 Game 2</title>
+</head>
+<body>
+<script src="../game_storage.js"></script>
+<script src="../gt_kit.js"></script>
+<script>
+// L28 G2 - Price of Anarchy Predictor: estimate optimum shares in Pigou and Braess networks.
+const G=GT.init({lesson:'28',n:2,kind:'sim',title:'Price of Anarchy Predictor',sub:'predict the planner, then compare with selfish routing',
+ how:'Pigou networks: a road with cost <b>x^p</b> (x = share of traffic on it) versus a road with constant cost 1. Selfish drivers all use the first road (cost &le; 1). Predict the share on the first road that <b>minimises total cost</b> for each exponent p. Then a Braess question: adding a free link to a network can raise or lower the equilibrium time. Score is based on accuracy; the price of anarchy is then revealed.'});
+const PS=[1,2,4,8];let qi=0,total=0;const ui=GT.el('div',{class:'gt-card'});G.body.appendChild(ui);
+function cost(p,x){return x*Math.pow(x,p)+(1-x)}
+function draw(){ui.innerHTML='';if(qi<4){const p=PS[qi];ui.appendChild(GT.el('h3',{style:'color:#38bdf8',html:'Pigou '+(qi+1)+'/4: first road cost = x^'+p}));ui.appendChild(GT.el('p',{class:'gt-mu',html:'Selfish equilibrium: everyone on road 1 (x=1) giving total cost 1.00. Guess the optimal share x*.'}));
+  const s=GT.el('input',{type:'range',class:'gt-r',min:0,max:100,step:1,value:50});const l=GT.el('span',{class:'gt-mu',html:' 0.50'});s.oninput=()=>l.textContent=' '+(s.value/100).toFixed(2);
+  const b=GT.el('button',{class:'gt-btn gold'},['Check']);b.onclick=()=>{const xs=Math.pow(1/(p+1),1/p);const g=s.value/100;const pts=Math.max(0,Math.round(150-Math.abs(g-xs)*400));total+=pts;G.setScore(total);const opt=cost(p,xs),poa=1/opt;
+   ui.innerHTML='';ui.appendChild(GT.el('p',{style:'line-height:1.6',html:'Optimal share <b>'+xs.toFixed(2)+'</b> (you: '+g.toFixed(2)+'); optimal cost <b>'+opt.toFixed(3)+'</b>; equilibrium cost 1.000; <b>price of anarchy '+poa.toFixed(2)+'</b>. +'+pts}));const n=GT.el('button',{class:'gt-btn gold'},['Next']);n.onclick=()=>{qi++;draw()};ui.appendChild(n)};ui.append(s,l,GT.el('br'),b)}
+ else if(qi<6){const q=[{t:'Braess network: two routes each = one variable-cost edge (cost = share) plus one fixed edge (cost 1). Equilibrium time is 1.5. Adding a free zero-cost link between the middle nodes gives equilibrium time...',a:['Lower than 1.5','Stays at 1.5','Rises to 2.0'],c:2},{t:'Now the free link costs 0.5 to use. With cost 0.5 the all-through route costs x+0.5+x. Does anyone use it at equilibrium (share 0.5 on each original route)?',a:['Yes, it still hurts everyone','No: the link is ignored and time stays 1.5','It lowers the time to 1.25'],c:1}][qi-4];
+  ui.appendChild(GT.el('h3',{style:'color:#38bdf8',html:'Braess '+(qi-3)+'/2'}));ui.appendChild(GT.el('p',{html:q.t}));q.a.forEach((a,i)=>ui.appendChild(GT.el('button',{class:'gt-btn',style:'display:block;margin:6px 0',onclick:()=>{const ok=i===q.c;if(ok){total+=150}G.setScore(total);ui.innerHTML='';ui.appendChild(GT.el('p',{html:(ok?'<b class="gt-ok">Correct</b>':'<b class="gt-bad">Not quite</b>')+'. Correct answer: <b>'+q.a[q.c]+'</b>. '+(qi===4?'With the free link everyone takes the zig-zag route, so both variable edges are fully loaded: time 2.0 versus the optimal 1.5 (price of anarchy 4/3).':'A link costing 0.5 makes the zig-zag route cost 1+0.5 = 1.5 only when loads are split; at the split equilibrium it is no better, so nobody switches.')}));const n=GT.el('button',{class:'gt-btn gold'},[qi<5?'Next':'Finish']);n.onclick=()=>{qi++;if(qi>=6)G.end('Selfish equilibrium is not socially optimal. The <b>price of anarchy</b> measures the gap; tolls, capacity limits or removing links (Braess) can close it.',total);else draw()};ui.appendChild(n)}},[a])))}}
+draw();
+
+</script>
+</body>
+</html>

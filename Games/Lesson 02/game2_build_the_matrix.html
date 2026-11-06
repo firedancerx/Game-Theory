@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 02 Game 2</title>
+</head>
+<body>
+<script src="../game_storage.js"></script>
+<script src="../gt_kit.js"></script>
+<script>
+// Lesson 02 Game 2 - Build the Matrix (simulation): convert cash outcomes into ordinal 4..1 ranks for both players.
+const G=GT.init({lesson:'02',n:2,kind:'sim',title:'Build the Matrix',sub:'turn raw outcomes into a 4-3-2-1 payoff matrix',
+ how:'Each cell shows what happens to <b>you</b> and your <b>rival</b> in money terms. Convert the numbers into <b>ordinal ranks</b>: for each player, the best of the four cells is <b>4</b>, the worst is <b>1</b>. Rank every cell for both players, then check. Three scenarios.'});
+const SC=[
+ {t:'Port expansion',r:'Harbour Co (you)',c:'DeltaPort (rival)',rs:['Expand','Hold'],cs:['Expand','Hold'],p:[[[2,2],[7,1]],[[1,6],[4,4]]],u:'$M profit'},
+ {t:'Product launch window',r:'NovaSoft (you)',c:'Apex Labs (rival)',rs:['Launch now','Wait'],cs:['Launch now','Wait'],p:[[[-3,-2],[9,-5]],[[-6,10],[3,2]]],u:'$M profit'},
+ {t:'Retail discounting',r:'MegaMart (you)',c:'ValueHub (rival)',rs:['Discount','Full price'],cs:['Discount','Full price'],p:[[[1,1],[8,0]],[[0,8],[5,5]]],u:'$M margin'}];
+let k=0,total=0,tStart=performance.now();
+const box=GT.el('div',{});G.body.appendChild(box);
+function rankOf(vals){const s=vals.slice().sort((a,b)=>a-b);return vals.map(v=>s.indexOf(v)+1)}
+function render(){const s=SC[k];box.innerHTML='';
+ const rk=rankOf([s.p[0][0][0],s.p[0][1][0],s.p[1][0][0],s.p[1][1][0]]),ck=rankOf([s.p[0][0][1],s.p[0][1][1],s.p[1][0][1],s.p[1][1][1]]);
+ s.ans=[];let sel=[];
+ const card=GT.el('div',{class:'gt-card'});
+ card.appendChild(GT.el('h3',{html:'Scenario '+(k+1)+' of 3: '+s.t+' <span class="gt-mu">('+s.u+')</span>',style:'margin-bottom:10px;color:#38bdf8'}));
+ const tb=GT.el('table',{class:'gt-t'});
+ tb.innerHTML='<tr><th>'+s.r+' \\ '+s.c+'</th><th>'+s.cs[0]+'</th><th>'+s.cs[1]+'</th></tr>';
+ for(let i=0;i<2;i++){const tr=GT.el('tr',{});tr.appendChild(GT.el('th',{},[s.rs[i]]));
+  for(let j=0;j<2;j++){const td=GT.el('td',{});const idx=i*2+j;
+   td.innerHTML='<div style="margin-bottom:6px"><span class="gt-ok">You '+s.p[i][j][0]+'</span> / <span class="gt-bad">Rival '+s.p[i][j][1]+'</span></div>';
+   const a=GT.el('select',{class:'gt-sel'},[0,1,2,3,4].map(v=>GT.el('option',{value:v},[v?String(v):'You?'])));
+   const b=GT.el('select',{class:'gt-sel',style:'margin-left:6px'},[0,1,2,3,4].map(v=>GT.el('option',{value:v},[v?String(v):'Rival?'])));
+   sel.push([a,b]);td.append(a,b);tr.appendChild(td)}
+  tb.appendChild(tr)}
+ card.appendChild(tb);
+ const fb=GT.el('div',{style:'margin:12px 0;line-height:1.5',class:'gt-mu'});
+ const btn=GT.el('button',{class:'gt-btn pri'},['Check my matrix']);
+ btn.onclick=()=>{const ys=sel.map(x=>+x[0].value),rv=sel.map(x=>+x[1].value);
+  if(ys.includes(0)||rv.includes(0)){fb.textContent='Rank all eight boxes first.';return}
+  if(new Set(ys).size<4||new Set(rv).size<4){fb.textContent='Each player must use 4, 3, 2 and 1 exactly once.';return}
+  let ok=0;for(let i=0;i<4;i++){if(ys[i]===rk[i])ok++;if(rv[i]===ck[i])ok++}
+  const secs=(performance.now()-tStart)/1000;const bonus=ok===8?Math.max(0,Math.round(60-secs/2)):0;
+  const pts=ok*20+bonus;total+=pts;G.setScore(total);
+  fb.innerHTML='<b>'+ok+' of 8 correct</b> (+'+pts+'). Correct ranks (You / Rival): '+[0,1,2,3].map(i=>rk[i]+'/'+ck[i]).join(' &nbsp; ')+(ok===8?' - perfect.':' - the rank is the cell\'s position among four, not the cash amount.');
+  btn.disabled=true;nxt.style.display='';sel.forEach(x=>{x[0].disabled=x[1].disabled=true});};
+ const nxt=GT.el('button',{class:'gt-btn gold',style:'display:none'},[k<2?'Next scenario':'Finish']);
+ nxt.onclick=()=>{if(k<2){k++;tStart=performance.now();render()}else G.end('You built three ordinal matrices. Notice that rank 4 for you and rank 4 for the rival never sit in the same cell here: that tension is what makes it a game.',total)};
+ card.append(fb,GT.el('div',{class:'gt-row'},[btn,nxt]));box.appendChild(card)}
+render();
+
+</script>
+</body>
+</html>

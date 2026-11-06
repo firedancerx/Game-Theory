@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 02 Game 1</title>
+</head>
+<body>
+<script src="../game_storage.js"></script>
+<script src="../gt_kit.js"></script>
+<script>
+// Lesson 02 Game 1 - Payoff Sorter (falling-card arcade). Skill: ordinal ranking 4=best..1=worst.
+const G=GT.init({lesson:'02',n:1,kind:'video',title:'Payoff Sorter',sub:'rank outcomes 4 = Best to 1 = Worst before they hit the floor',
+ how:'Outcome cards fall. Judge each from <b>your</b> point of view in the scenario shown, then tap its lane (or press <b>1-4</b>): lane <b>4 = best</b>, lane <b>1 = worst</b>. Right answers build a combo, wrong answers or dropped cards cost a life. Three lives.'});
+const S=[
+ {t:'Airline fare move - you are Horizon Air',o:['You cut fares, rival holds: you win share','Both hold fares: steady profit','Both cut fares: margins collapse','You hold, rival cuts: you lose share']},
+ {t:'Talent war - you are the CTO',o:['You poach their star, they stay passive','Nobody poaches: stable payroll','Both poach: salary spiral','They poach yours, you stay passive']},
+ {t:'Regulatory filing - you are General Counsel',o:['Rival files and pays the cost, you free-ride','Both file: costs shared, rules clear','Nobody files: rule stays vague','You file alone and carry all the cost']},
+ {t:'Supplier contract - you are the Procurement Head',o:['Supplier discounts, you keep flexibility','Both honour the standard contract','Both go to spot pricing: volatile costs','You commit volume, supplier walks away']}];
+const W=720,H=460,LANES=4,LW=W/LANES;
+const cv=GT.el('canvas',{class:'gt-c'});G.body.appendChild(cv);const g=GT.fit(cv,W,H);
+let lives=3,combo=0,cards=[],sIdx=0,done=0,t0=performance.now(),last=t0,spawn=0,speed=70,over=false,flash=0,msg='';
+function banner(){return S[sIdx].t}
+function spawnCard(){const s=S[sIdx];const r=GT.ri(0,3);cards.push({txt:s.o[r],rank:4-r,y:-30})}
+function answer(l){ // l = rank chosen 4..1
+ if(over||!cards.length)return;
+ cards.sort((a,b)=>b.y-a.y);const c=cards[0];
+ if(c.rank===l){combo++;G.add(10*Math.min(combo,8));cards.shift();done++;flash=.25;msg='Correct (rank '+c.rank+')';speed+=3;
+  if(done%8===0){sIdx=(sIdx+1)%S.length;cards=[];msg='New scenario - re-read your position'}}
+ else{lives--;combo=0;cards.shift();flash=-.35;msg='Wrong: that outcome is rank '+c.rank;if(lives<=0)finish();}
+}
+cv.addEventListener('pointerdown',e=>{const p=GT.ptr(cv,W,H,e);answer(4-Math.floor(p.x/LW))});
+addEventListener('keydown',e=>{const k=parseInt(e.key);if(k>=1&&k<=4)answer(k)});
+function finish(){over=true;G.end('You sorted <b>'+done+'</b> outcomes. Ordinal ranking is the base skill of every payoff matrix: a 4 is not "twice" a 2, it is simply preferred. Next, put these ranks into a real matrix.',G.score)}
+function frame(now){const dt=Math.min(.05,(now-last)/1000);last=now;
+ if(!over){spawn-=dt;if(spawn<=0&&cards.length<3){spawnCard();spawn=Math.max(1.1,2.4-done*.04)}
+  cards.forEach(c=>c.y+=speed*dt);
+  const miss=cards.filter(c=>c.y>H-70);if(miss.length){lives--;combo=0;cards=cards.filter(c=>c.y<=H-70);msg='Card dropped';flash=-.35;if(lives<=0)finish()}}
+ flash*=.9;
+ g.clearRect(0,0,W,H);g.fillStyle='#070c1a';g.fillRect(0,0,W,H);
+ for(let i=0;i<LANES;i++){g.fillStyle=i%2?'#0c1530':'#0a1228';g.fillRect(i*LW,0,LW,H);
+  g.fillStyle=['#10b981','#38bdf8','#f59e0b','#f43f5e'][i];g.fillRect(i*LW,H-60,LW,60);
+  g.fillStyle='#04101c';g.font='700 24px sans-serif';g.textAlign='center';g.fillText(String(4-i)+(i===0?'  BEST':i===3?'  WORST':''),i*LW+LW/2,H-22)}
+ g.fillStyle='#e2e8f0';g.font='700 15px sans-serif';g.textAlign='left';g.fillText(banner(),12,22);
+ g.fillStyle='#94a3b8';g.font='13px sans-serif';g.fillText('Lives '+'●'.repeat(Math.max(lives,0))+'   Combo x'+combo+'   '+msg,12,42);
+ cards.forEach(c=>{const x=W/2-190,w=380;g.fillStyle='#1e293b';g.strokeStyle='#38bdf8';g.lineWidth=2;g.beginPath();g.roundRect(x,c.y,w,46,8);g.fill();g.stroke();
+  g.fillStyle='#f8fafc';g.font='600 14px sans-serif';g.textAlign='center';g.fillText(c.txt,W/2,c.y+28)});
+ if(flash)g.fillStyle=flash>0?'rgba(16,185,129,'+flash*.6+')':'rgba(244,63,94,'+(-flash)*.6+')',g.fillRect(0,0,W,H);
+ if(!over)requestAnimationFrame(frame)}
+requestAnimationFrame(frame);
+
+</script>
+</body>
+</html>

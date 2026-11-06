@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 05 Game 1</title>
+</head>
+<body>
+<script src="../game_storage.js"></script>
+<script src="../gt_kit.js"></script>
+<script>
+// Lesson 05 Game 1 - Penalty Shootout (mixed strategies vs a keeper that learns your pattern).
+const G=GT.init({lesson:'05',n:1,kind:'video',title:'Penalty Shootout',sub:'win by being unpredictable, not by being strong',
+ how:'Tap Left, Centre or Right of the goal to shoot (or press <b>A / S / D</b>). The keeper watches your <b>last kicks</b> and dives to where you are most likely to shoot - and spots simple patterns like alternating. Ten kicks: score a goal when the keeper guesses wrong. A random-looking mix beats any habit.'});
+const W=720,H=420;const cv=GT.el('canvas',{class:'gt-c'});G.body.appendChild(cv);const g=GT.fit(cv,W,H);
+const hist=[];let kicks=0,goals=0,busy=false,anim=null,msg='Pick your corner',gk=1,ball={x:W/2,y:H-60,s:1},keeperX=W/2;
+const Z=[W*.2,W*.5,W*.8];const bar=GT.el('div',{class:'gt-card gt-mu',style:'font-size:.85rem'});G.body.appendChild(bar);
+function guess(){if(!hist.length)return GT.ri(0,2);
+ const rec=hist.slice(-6);const w=[1,1,1].map(x=>x*.5);rec.forEach((h,i)=>w[h]+=(i+1)*.7);
+ if(hist.length>=3){const a=hist[hist.length-1],b=hist[hist.length-2],c=hist[hist.length-3];if(a===c&&a!==b)w[b]+=3.5;if(a===b&&b===c)w[a]+=3.5}
+ const t=w.reduce((x,y)=>x+y);let x=Math.random()*t;for(let k=0;k<3;k++){x-=w[k];if(x<=0)return k}return 1}
+function shoot(z){if(busy||kicks>=10)return;busy=true;const gz=guess();hist.push(z);
+ const t0=performance.now();const sx=Z[z],gx=Z[gz];
+ const save=gz===z;anim={t0,z,gz,save,sx,gx};msg=''}
+function loop(now){g.clearRect(0,0,W,H);g.fillStyle='#0b2a14';g.fillRect(0,0,W,H);g.fillStyle='#0e3a1c';for(let i=0;i<8;i++)g.fillRect(0,i*52,W,26);
+ g.strokeStyle='#e2e8f0';g.lineWidth=6;g.strokeRect(60,40,W-120,200);g.lineWidth=1;g.strokeStyle='rgba(226,232,240,.25)';for(let x=60;x<W-60;x+=24){g.beginPath();g.moveTo(x,40);g.lineTo(x,240);g.stroke()}for(let y=40;y<240;y+=20){g.beginPath();g.moveTo(60,y);g.lineTo(W-60,y);g.stroke()}
+ // zones
+ for(let k=0;k<3;k++){g.fillStyle=anim?'transparent':'rgba(56,189,248,.08)';g.fillRect(60+k*(W-120)/3,40,(W-120)/3,200);}
+ let p=0;if(anim){p=Math.min(1,(now-anim.t0)/700);keeperX=W/2+(anim.gx-W/2)*Math.min(1,p*1.6);ball={x:W/2+(anim.sx-W/2)*p,y:H-60-(H-60-150)*p,s:1-.55*p};if(p>=1&&!anim.done){anim.done=true;kicks++;
+   if(!anim.save){goals++;G.add(100);msg='GOAL! Keeper guessed '+['left','centre','right'][anim.gz]+', you went '+['left','centre','right'][anim.z]}else{msg='Saved - the keeper read you ('+['left','centre','right'][anim.z]+')'}
+   setTimeout(()=>{anim=null;busy=false;keeperX=W/2;ball={x:W/2,y:H-60,s:1};if(kicks>=10)done()},900)}}
+ else{keeperX+= (W/2-keeperX)*.1}
+ // keeper
+ g.fillStyle='#f59e0b';g.fillRect(keeperX-26,120,52,90);g.beginPath();g.arc(keeperX,108,16,0,7);g.fill();g.fillStyle='#f59e0b';g.fillRect(keeperX-60,130,120,10);
+ // ball
+ g.fillStyle='#f8fafc';g.beginPath();g.arc(ball.x,ball.y,20*ball.s,0,7);g.fill();g.strokeStyle='#0f172a';g.lineWidth=2;g.stroke();
+ g.fillStyle='#e2e8f0';g.font='700 16px sans-serif';g.textAlign='left';g.fillText('Kick '+Math.min(kicks+1,10)+' / 10     Goals '+goals,16,24);g.textAlign='center';g.fillText(msg,W/2,H-16);
+ const c=[0,0,0];hist.forEach(h=>c[h]++);bar.innerHTML='Your mix so far - Left '+c[0]+' | Centre '+c[1]+' | Right '+c[2]+'. A habit (anything far from even and patternless) is a leak the keeper exploits.';
+ if(kicks<10||anim)requestAnimationFrame(loop)}
+function done(){const c=[0,0,0];hist.forEach(h=>c[h]++);const H_=-c.map(x=>x/hist.length).filter(p=>p>0).reduce((a,p)=>a+p*Math.log2(p),0);
+ const bonus=Math.round((H_/Math.log2(3))*200);G.add(bonus);
+ G.end('You scored <b>'+goals+'/10</b> with an unpredictability bonus of <b>'+bonus+'</b>. In a game with no stable pure choice, the equilibrium is a <b>mix</b>: randomise so the opponent cannot profit from any pattern.',G.score)}
+cv.addEventListener('pointerdown',e=>{const p=GT.ptr(cv,W,H,e);if(p.y<260)shoot(GT.clamp(Math.floor((p.x-60)/((W-120)/3)),0,2))});
+addEventListener('keydown',e=>{const k={a:0,s:1,d:2}[e.key.toLowerCase()];if(k!==undefined)shoot(k)});
+requestAnimationFrame(loop);
+
+</script>
+</body>
+</html>
