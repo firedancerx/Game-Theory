@@ -185,9 +185,9 @@ GT.init=function(cfg){
  const sc=GT.el('span',{class:'gt-pill blue'},['Score 0']);
  const who=GT.el('span',{class:'gt-pill',style:'cursor:pointer',title:'Click to change player name',onclick:()=>{GTCert.forget();location.reload();}},['Player: '+GTCert.name()+' (change)']);
  /* session clock: every game ends when time runs out (cfg.time seconds overrides the default: video 150s, sim 480s) */
- const limit=cfg.time||(cfg.kind==='sim'?480:150);const tEnd=Date.now()+limit*1000;
+ const untimed=cfg.kind==='sim';const limit=untimed?86400:(cfg.time||150);const tEnd=Date.now()+limit*1000;
  const fmt=t=>Math.floor(t/60)+':'+String(t%60).padStart(2,'0');
- const clock=GT.el('span',{class:'gt-pill time'},['Time '+fmt(limit)]);
+ const clock=GT.el('span',{class:'gt-pill time'},['Time '+fmt(limit)]);if(untimed)clock.style.display='none';
  const head=GT.el('div',{class:'gt-head'},[
   GT.el('div',{},[GT.el('h1',{},['Game '+cfg.n+': '+cfg.title]),GT.el('p',{},['Lesson '+cfg.lesson+' companion - '+cfg.sub])]),
   GT.el('div',{class:'gt-pills'},[GT.el('span',{class:'gt-pill '+(cfg.kind==='sim'?'gold':'')},[cfg.kind==='sim'?'Simulation - 2x leaderboard weight':'Video game - 1x leaderboard weight']),who,clock,sc])]);
