@@ -1,0 +1,300 @@
+<meta charset="utf-8">
+<p><strong>EXECUTIVE GAME THEORY CURRICULUM • 12-WEEK MASTER ARCHITECTURE</strong></p>
+
+<img src="cid:banner-lesson-03-p1" alt="Lesson 03 banner" />
+
+<h2>Part 1: Analytical Blueprint — The Dominance Test: Finding the Move That Always Wins and the Move That Always Loses</h2>
+
+<p><strong>Strategic Focus &amp; Learning Objective:</strong> In this topic, we will be learning how to apply the Strict Dominance Test and Iterated Elimination of Strictly Dominated Strategies (IESDS) to solve the Single-Best-Move Fallacy (hunting for one brilliant move while ignoring the options that no rational player would ever choose).</p>
+
+<p><strong>The Real-World Operational Problem:</strong> Management teams spend weeks debating which of eight strategic options is "best", then discover the debate was wasted: three of the eight were worse than another option in every possible market scenario. Time, board attention and capital are consumed defending moves that a ten-minute dominance test would have deleted. Meanwhile a rival that prunes quickly commits earlier and sets the terms of the contest.</p>
+
+<p><strong>How This Topic Solves It:</strong> The dominance test replaces opinion with a mechanical comparison: fix one rival move, compare your options, repeat for every rival move. Any option that is worse in every column is strictly dominated and can be deleted without losing anything. A smaller grid is easier to read, easier to defend to a board, and frequently exposes the equilibrium outright. This lesson gives you the test, its limits, and a repeatable boardroom protocol.</p>
+
+<p><strong>■ EXECUTIVE LEARNING ADVISORY</strong> Do not start by asking "what is our best move?" Start by asking "which of our moves would we never defend, whatever the rival does?" Delete those first. A strategy that loses in every scenario is not a risk to be managed; it is a cost you can remove today.</p>
+
+<h3>Part I: The 4-Part Prelude Protocol</h3>
+
+<ol>
+
+<li><strong>Models in Focus:</strong> Strict Dominance, Strictly Dominated Strategies, Dominant-Strategy Equilibrium, and the Iterated Elimination of Strictly Dominated Strategies (IESDS).</li>
+
+<li><strong>Lifelike Dilemma &amp; Problem Statement:</strong> A regional contractor is preparing a bid for a hospital-wing fit-out against one national rival. Its bid committee shortlists three proposals: A, a premium-quality bid at a high price; B, a mid-price bid with a bundled maintenance contract; and C, a low-price bid with minimal specification. The committee spends five weeks arguing about price curves. A junior analyst finally ranks the outcomes of all three options against the rival&#x27;s three possible moves (aggressive bid, moderate bid, no bid) and shows that Option C ranks below Option A in every column. No scenario exists in which the bare-bones bid is the best choice, yet it had absorbed half of the debate.</li>
+
+<li><strong>Component Dissection:</strong> The committee committed the Single-Best-Move Fallacy. It searched for the winner instead of deleting the losers. The analyst did not need to forecast the rival at all: a strictly dominated option is worse whatever the rival does, so the rival&#x27;s identity and intentions are irrelevant to the decision to drop it.</li>
+
+<li><strong>Lesson Embarkation:</strong> This lesson formalizes the dominance test and shows how to run it on a payoff matrix in under ten minutes, then how to repeat it (IESDS) until the game shrinks to its logical core.</li>
+
+</ol>
+
+<h3>Part II: The 7-Stage Core Pedagogy</h3>
+
+<h4>Stage 1: Why Learn This (The 45-Second Operational Hook)</h4>
+
+<p>Every strategy meeting contains an unstated assumption: that all options on the slide deserve equal discussion time. They do not. In any matrix, some options are beaten in every column by some other option, and discussing them is pure waste. The 45-second hook is this: before you debate any option, ask whether another option on the page does at least as well in every scenario and strictly better in every scenario. If yes, the option is dominated and the debate is over.</p>
+
+<p><strong>▼ CHECKPOINT: WHAT YOU MUST KNOW BEFORE MOVING FORWARD</strong> Never ask "which option is best?" first. Ask "which option is worse than another option in every scenario?" and delete it. You cannot lose by removing a strictly dominated move.</p>
+
+<h4>Stage 2: The 5-Minute Core Framework (The Dominance Test Architecture)</h4>
+
+<p>Your payoff ranks (4 = best, 1 = worst) for three bid options against the rival&#x27;s three possible moves form a 3 × 3 grid. Run the test column by column: hold the rival&#x27;s move fixed, rank your three options, then repeat.</p>
+
+<table border="1" cellpadding="8" cellspacing="0">
+<thead>
+<tr><th>Your bid \ Rival move</th><th>Rival: Aggressive bid</th><th>Rival: Moderate bid</th><th>Rival: No bid</th></tr>
+</thead>
+<tbody>
+<tr><td>Option A: Premium-quality bid</td><td>4 (wins at a healthy margin)</td><td>3 (wins narrowly)</td><td>3 (wins, margin intact)</td></tr>
+<tr><td>Option B: Mid-price with maintenance bundle</td><td>3 (competitive, thin margin)</td><td>4 (best fit for client)</td><td>2 (wins, margin left on table)</td></tr>
+<tr><td>Option C: Bare-bones low-price bid</td><td>2 (loses on quality scoring)</td><td>1 (loses, reputation damage)</td><td>1 (wins but with loss-making scope)</td></tr>
+</tbody>
+</table>
+
+<img src="cid:diagram-03a" alt="diagram" />
+
+<p><em>Figure 3A: The Dominance Test Architecture (fix a rival move, compare your payoffs, repeat for all rival moves, declare dominance)</em></p>
+
+<p>Reading the grid: Option C scores 2, 1, 1 while Option A scores 4, 3, 3. A beats C in all three columns, so C is strictly dominated and is deleted. Notice that no option dominates all the others: Option B beats A against a moderate bid, and A beats B against the other two. Dominated moves can exist even when no dominant move does.</p>
+
+<p><strong>▼ CHECKPOINT: WHAT YOU MUST KNOW BEFORE MOVING FORWARD</strong> A strategy is strictly dominated only if another strategy beats it in every column, not on average and not in most columns. One column that breaks the pattern means the test fails.</p>
+
+<h4>Stage 3: The 3-Layered Operational Deep Dive</h4>
+
+<ul>
+
+<li><strong>Layer 1 —</strong> The Mechanical Protocol (The Column Scan): Fix one rival move and rank your options against it. Repeat for every rival move. If one option is strictly better than another in every column, the weaker option is strictly dominated. If one option beats every alternative in every column, it is a strictly dominant strategy and the decision is made.</li>
+
+<li><strong>Layer 2 —</strong> The Cognitive Failure Mode (The Averaging Trap): Executives often compare options by their average payoff across scenarios. An option can have a higher average and still be a bad choice if a single scenario is catastrophic, and an option with a lower average can be strictly dominated in none of the columns. Dominance is a column-by-column test, not an average-weighted forecast.</li>
+
+<li><strong>Layer 3 —</strong> Boundary Conditions: Dominance needs strictness. If two options tie in even one column the dominance is only weak, and deleting weakly dominated options can remove genuine equilibria and makes the result depend on the order of deletion. Iterated deletion also requires that each player believes the others will not play dominated moves, which fails against irrational, bluffing or mis-informed rivals.</li>
+
+</ul>
+
+<p><strong>▼ CHECKPOINT: WHAT YOU MUST KNOW BEFORE MOVING FORWARD</strong> Test column by column and demand strictness. Averages, weighted forecasts and "most scenarios" arguments are not dominance. Treat weak dominance as a hint, never as a license to delete.</p>
+
+<h4>Stage 4: Real-World Applications × 3</h4>
+
+<ol>
+
+<li>Commercial Tendering (Bid Shortlisting): A construction group compares five bid configurations against three rival behaviors. Two configurations lose to others in every column and are removed in the first meeting, cutting the tender review from three weeks to four days.</li>
+
+<li>Airline Fare Filing (Booking-Class Strategy): A carrier ranks six fare-class rules against rival price moves. Four rules are dominated by a simpler fare ladder; the revenue team stops modelling them and redirects analyst time to the two live options.</li>
+
+<li>Software Licensing (Pricing Plan Pruning): A SaaS vendor reviews seven licensing structures against three competitor reactions. After the dominance test only three structures survive, and the pricing committee can present a one-page decision to the board.</li>
+
+</ol>
+
+<p><strong>▼ CHECKPOINT: WHAT YOU MUST KNOW BEFORE MOVING FORWARD</strong> In every commercial decision, list the options and the rival scenarios first, then delete everything strictly dominated before any financial modelling. Modelling a dominated option is analyst time you cannot recover.</p>
+
+<h4>Stage 5: Diagnostic Self-Quiz &amp; Evaluative Rubric</h4>
+
+<p><strong>Scenario:</strong> Your logistics company can choose Plan X, Plan Y or Plan Z against three possible rival moves. Your ranks (4 best, 1 worst) are X: 4, 2, 3; Y: 3, 2, 2; Z: 1, 1, 1. Which statement is correct?</p>
+
+<p>A) Z is strictly dominated by both X and Y.  B) Y is strictly dominated by X.  C) X is a strictly dominant strategy.  D) No option is dominated because the averages are close.</p>
+
+<p><strong>Recommended Answer —A:</strong> Y scores 3, 2, 2 against X&#x27;s 4, 2, 3, so X is better in columns one and three but only equal in column two. That is weak dominance, not strict dominance, so B is wrong. Z (1, 1, 1) loses to both X and Y in every column, so A is correct. Always check strict inequality in every column before deleting an option.</p>
+
+<p><strong>▼ CHECKPOINT: WHAT YOU MUST KNOW BEFORE MOVING FORWARD</strong> Equal payoffs in a single column turn strict dominance into weak dominance. Always verify strictness in every column before you delete anything.</p>
+
+<h4>Stage 6: What You Should Know by Now (Daily Life Translation)</h4>
+
+<p><strong>■ THE DAILY LIFE TRANSLATION</strong> Choosing a commute is a dominance test. If Route 1 is the same price as Route 2 but takes longer in rush hour, in light traffic and in rain, Route 2 strictly dominates it and you never need to discuss Route 1 again. If Route 1 is faster only when it does not rain, you have no dominance and you need a forecast. The test tells you instantly whether you need a forecast at all.</p>
+
+<p><strong>▼ CHECKPOINT: WHAT YOU MUST KNOW BEFORE MOVING FORWARD</strong> Sometimes the best decision-making shortcut is realizing that no decision is required. Delete dominated options and spend your forecasting effort only where it can change the answer.</p>
+
+<h4>Stage 7: Self-Regulated Practice &amp; Interactive Discovery</h4>
+
+<p>Take a live decision on your desk with at least three options and at least three outside scenarios. Rank every option in every scenario from 4 to 1, then run the column scan. Write down which options are strictly dominated, which are only weakly dominated, and whether any option dominates all the rest. Then test the result in the two companion games below.</p>
+
+<p><strong>▼ CHECKPOINT: WHAT YOU MUST KNOW BEFORE MOVING FORWARD</strong> Five minutes of column scanning before a strategy meeting often removes half of the options. Do it before the meeting, not during it.</p>
+
+<h4>Topic 03 Companion Games: Operational Briefing &amp; Deployment</h4>
+
+<ol>
+
+<li><strong>Pedagogical Intent:</strong> Convert this lesson into instinctive boardroom reflexes through twin interactive engines hosted on GitHub Pages.</li>
+
+<li><strong>Executive Objectives:</strong><ul><li>Game 1 (Cull the Dominated, Video Game): Spot the strictly dominated move before the clock runs out</li><li>Game 2 (Tender Elimination Chain, Business Simulation): Iterated elimination in a contract-bidding standoff</li></ul></li>
+
+<li><strong>Scoring Standards:</strong> Passing the calibration quiz in Game 1 activates a 200% Entry Buff. Game 2 carries DOUBLE WEIGHT (2x) on the unified leaderboard. Every session is time-limited, and finishing a game unlocks the Get Certified button for a 1-5 golden star victory certificate.</li>
+
+<li><strong>Playable Online Links:</strong><ul><li>Game 1 (Cull the Dominated): <a href="https://firedancerx.github.io/Game-Theory/Games/Lesson%2003/game1_cull_the_dominated.html">https://firedancerx.github.io/Game-Theory/Games/Lesson%2003/game1_cull_the_dominated.html</a></li><li>Game 2 (Tender Elimination Chain): <a href="https://firedancerx.github.io/Game-Theory/Games/Lesson%2003/game2_tender_elimination_chain.html">https://firedancerx.github.io/Game-Theory/Games/Lesson%2003/game2_tender_elimination_chain.html</a></li><li>Master Platform Portal: <a href="https://firedancerx.github.io/Game-Theory/">https://firedancerx.github.io/Game-Theory/</a></li></ul></li>
+
+</ol>
+
+<h4>Appendix: Obsidian Knowledge Graph Semantic Triplets</h4>
+
+<p>Import these atomic triplets into your executive knowledge vault (Obsidian / Logseq):</p>
+
+<p><strong>Obsidian Raw Semantic Triplets (Copy &amp; Paste into Vault)</strong></p>
+
+<pre><code>%%
+[[Strict Dominance]] --[means]--&gt; [[Better In Every Scenario]]
+[[Dominated Strategy]] --[is]--&gt; [[Safely Deletable]]
+[[Dominant Strategy]] --[ends]--&gt; [[Strategic Deliberation]]
+[[IESDS]] --[repeats]--&gt; [[Dominance Test]]
+[[Weak Dominance]] --[risks]--&gt; [[Deleting Equilibria]]
+[[Averaging Trap]] --[confuses]--&gt; [[Mean Payoff With Dominance]]
+[[Common Knowledge Of Rationality]] --[underpins]--&gt; [[Iterated Deletion]]
+%%</code></pre>
+
+<table border="1" cellpadding="8" cellspacing="0">
+<thead>
+<tr><th>Concept Entity</th><th>Historical Origin &amp; Date</th><th>Obsidian Semantic Triplets</th><th>Executive Commercial Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td>[[Strict Dominance]]</td><td>John von Neumann &amp; Oskar Morgenstern, Theory of Games and Economic Behavior (1944)</td><td>[[Strict Dominance]] --[means]--&gt; [[Better In Every Scenario]]</td><td>An option that beats another in every scenario makes the weaker option safe to delete.</td></tr>
+<tr><td>[[IESDS]]</td><td>Hervé Moulin, dominance-solvable games (1979); David Pearce and Douglas Bernheim, rationalizability (1984)</td><td>[[IESDS]] --[repeats]--&gt; [[Dominance Test]]</td><td>Delete dominated moves, then re-test the smaller grid until nothing more can be removed.</td></tr>
+<tr><td>[[Common Knowledge Of Rationality]]</td><td>Robert Aumann, Agreeing to Disagree (1976)</td><td>[[Common Knowledge Of Rationality]] --[underpins]--&gt; [[Iterated Deletion]]</td><td>Iterated deletion is only as reliable as your belief that rivals will not play dominated moves.</td></tr>
+</tbody>
+</table>
+
+<p><strong>高管博弈论研修课程 • 12周权威架构规范</strong></p>
+
+<h2>第 03 课：严格占优策略与劣势动作</h2>
+
+<p>战略分析蓝图（中文版）：占优检验——找出永远获胜的动作与永远失败的动作</p>
+
+<p><strong>战略重点与学习目标：</strong> 在本课中，我们将学习如何运用严格占优检验与严格劣势策略迭代剔除法 (IESDS)，彻底破除“只找唯一最优动作”的谬误，不再为任何理性参与者都绝不会选择的方案耗费董事会的时间。</p>
+
+<p><strong>真实的商业运营困境：</strong> 管理团队常常花数周争论八个战略方案哪个“最好”，最后才发现其中三个在任何市场情景下都不如另一个方案。时间、董事会注意力与资本被消耗在原本十分钟占优检验就能删除的动作上；与此同时，剪枝迅速的对手更早投入，掌握了博弈的主导权。</p>
+
+<p><strong>本课题如何化解此困境：</strong> 占优检验用机械比较取代主观争论：锁定对手的一个动作，比较己方各方案，再对每个对手动作重复。只要某方案在每一列都更差，它就是严格劣势方案，可以放心删除。更小的矩阵更易读、更易向董事会交代，常常直接暴露均衡。</p>
+
+<p><strong>■ 高管研习提示</strong> 不要一上来就问“我们的最佳动作是什么”，而要先问“无论对手怎么做，哪些动作我们永远无法自圆其说”。先删除这些。在每种情景下都输的策略不是需要管理的风险，而是今天就能砍掉的成本。</p>
+
+<h3>第一部分：四步前奏导引协议</h3>
+
+<ol>
+
+<li><strong>核心模型：</strong> 严格占优、严格劣势策略、占优策略均衡，以及严格劣势策略迭代剔除 (IESDS)。</li>
+
+<li><strong>真实商业困境：</strong> 一家区域承包商要竞标一座医院新楼的装修工程，对手是一家全国性企业。投标委员会入围三个方案：A 为高价高品质方案；B 为中等价格并捆绑维保合同；C 为极简规格的低价方案。委员会就价格曲线争论了五周。一位初级分析员最后把三个方案面对对手三种动作（激进报价、适度报价、不投标）的结果全部排序，发现方案 C 在每一列都不如方案 A。裸价方案根本没有成为最佳选择的情景，却占用了一半的争论时间。</li>
+
+<li><strong>结构剖析：</strong> 委员会犯了“唯一最优动作”谬误：它在找赢家，而不是先删输家。分析员完全不需要预测对手，因为严格劣势方案无论对手怎么做都更差，所以对手是谁、想做什么，与是否放弃它无关。</li>
+
+<li><strong>课程启航：</strong> 本课将规范占优检验，并展示如何在十分钟内对收益矩阵运行检验，再反复迭代 (IESDS)，直到博弈缩小到其逻辑核心。</li>
+
+</ol>
+
+<h3>第二部分：七阶核心教学体系</h3>
+
+<h4>阶段 1：为什么要学（45 秒运营开场）</h4>
+
+<p>每场战略会议都隐含一个未明言的假设：幻灯片上的每个方案都值得同等讨论时间。其实不然。在任何矩阵中，总有一些方案在每一列都输给另一个方案，讨论它们纯属浪费。45 秒开场只有一个问题：在争论任何方案之前，先看页面上是否有另一个方案在每种情景下都严格更好。如果有，该方案已被占优，争论到此结束。</p>
+
+<p><strong>▼ 自检关卡：推进前必须领悟的常识</strong> 永远不要先问“哪个方案最好”，而要先问“哪个方案在每种情景下都比另一个差”，然后把它删掉。删除严格劣势动作，你不可能吃亏。</p>
+
+<h4>阶段 2：五分钟核心框架 (占优检验架构)</h4>
+
+<p>你面对对手三种可能动作时，三个投标方案的己方收益排序（4 = 最优，1 = 最差）构成一张 3 × 3 网格。请逐列检验：锁定对手动作，对己方三个方案排序，再换下一列。</p>
+
+<table border="1" cellpadding="8" cellspacing="0">
+<thead>
+<tr><th>己方方案 ／ 对手动作</th><th>对手：激进报价</th><th>对手：适度报价</th><th>对手：不投标</th></tr>
+</thead>
+<tbody>
+<tr><td>方案 A：高品质投标</td><td>4（高利润中标）</td><td>3（险胜）</td><td>3（中标，利润完整）</td></tr>
+<tr><td>方案 B：中价格加维保捆绑</td><td>3（有竞争力，利润薄）</td><td>4（最契合客户）</td><td>2（中标，浪费利润空间）</td></tr>
+<tr><td>方案 C：极简低价投标</td><td>2（质量评分落败）</td><td>1（落败，声誉受损）</td><td>1（中标但范围亏损）</td></tr>
+</tbody>
+</table>
+
+<img src="cid:diagram-03c" alt="diagram" />
+
+<p><em>图 3C：占优检验架构（锁定对手动作、比较己方收益、对所有对手动作重复、判定占优）</em></p>
+
+<p>读表：方案 C 得 2、1、1，方案 A 得 4、3、3。A 在三列中全部优于 C，所以 C 严格劣势，应予删除。注意没有任何方案占优于所有其他方案：面对适度报价时 B 优于 A，面对另外两种动作时 A 优于 B。即便不存在占优动作，劣势动作依然可以存在。</p>
+
+<p><strong>▼ 自检关卡：推进前必须领悟的常识</strong> 只有当另一个策略在每一列都更好时，才算严格劣势，平均更好或多数列更好都不算。只要有一列打破规律，检验就不成立。</p>
+
+<h4>阶段 3：三层运营深潜</h4>
+
+<ul>
+
+<li><strong>第一层——</strong> 机械操作协议（逐列扫描）：锁定对手的一个动作，对己方方案排序，再对每个对手动作重复。如果某方案在每一列都严格优于另一个，较弱方案即为严格劣势。如果某方案在每一列都优于所有其他方案，它就是严格占优策略，决策随即完成。</li>
+
+<li><strong>第二层——</strong> 认知失效模式（平均值陷阱）：高管常按各情景下的平均收益比较方案。方案可能平均值更高，却因某个情景的灾难性结果而不是好选择。占优是逐列检验，不是加权预测。</li>
+
+<li><strong>第三层——</strong> 边界条件：占优要求“严格”。只要某一列出现平局，占优就只是弱占优；删除弱占优方案可能删掉真实的均衡，且结果取决于删除顺序。迭代删除还要求每个参与者相信对手不会选择劣势动作，面对非理性、虚张声势或信息有误的对手，这一前提不成立。</li>
+
+</ul>
+
+<p><strong>▼ 自检关卡：推进前必须领悟的常识</strong> 逐列检验，坚持严格性。平均值、加权预测与“大多数情景”的论证都不是占优。把弱占优当作提示，而不是删除许可。</p>
+
+<h4>阶段 4：真实世界应用 × 3</h4>
+
+<ol>
+
+<li>商业投标（方案入围）：一家建筑集团把五种投标配置与三种对手行为对比，两种配置在每一列都输给其他配置，首次会议即删除，投标评审从三周缩短到四天。</li>
+
+<li>航空票价申报（舱位策略）：一家航空公司把六条票价舱位规则与对手价格动作对比，其中四条被更简单的票价阶梯占优，收益团队停止建模，把分析资源转向两个有效方案。</li>
+
+<li>软件授权（定价方案剪枝）：一家 SaaS 厂商对照三种竞品反应评审七种授权结构，占优检验后只剩三种，定价委员会可以向董事会提交一页纸决策。</li>
+
+</ol>
+
+<p><strong>▼ 自检关卡：推进前必须领悟的常识</strong> 在每个商业决策中，先列出方案与对手情景，在任何财务建模之前先删除所有严格劣势项。为劣势方案建模，浪费的是无法挽回的分析师时间。</p>
+
+<h4>阶段 5：诊断自测与评分标准</h4>
+
+<p><strong>情景：</strong> 你的物流公司可以在方案 X、Y、Z 中选择，面对对手三种动作。你的排名（4 最优，1 最差）是：X：4、2、3；Y：3、2、2；Z：1、1、1。下列哪项说法正确？</p>
+
+<p>A) Z 被 X 与 Y 同时严格占优。　B) Y 被 X 严格占优。　C) X 是严格占优策略。　D) 因为平均值接近，所以没有被占优的方案。</p>
+
+<p><strong>推荐答案——A：</strong> Y 得 3、2、2，X 得 4、2、3：X 在第一列和第三列更好，第二列相等，因此 X 对 Y 只是弱占优，不是严格占优。而 Z（1、1、1）在每一列都输给 X 和 Y，被两者严格占优。所以 A 正确。关键启示：删除前务必逐列核对严格不等式。</p>
+
+<p><strong>▼ 自检关卡：推进前必须领悟的常识</strong> 单独一列的收益相等，就会把严格占优变成弱占优。删除任何方案之前，务必逐列核对严格性。</p>
+
+<h4>阶段 6：此刻你应当明白的事（日常生活转译）</h4>
+
+<p><strong>■ 日常生活转译</strong> 选择通勤路线就是一次占优检验。如果路线 1 与路线 2 价格相同，但在高峰、畅通与下雨时都更慢，路线 2 严格占优，你再也不必讨论路线 1。如果路线 1 只在不下雨时更快，就没有占优，需要天气预测。检验能立刻告诉你是否需要预测。</p>
+
+<p><strong>▼ 自检关卡：推进前必须领悟的常识</strong> 有时最好的决策捷径，是意识到根本无需决策。删除劣势方案，把预测精力只花在能改变答案的地方。</p>
+
+<h4>阶段 7：自主练习与互动探索</h4>
+
+<p>选一个你桌上的真实决策：至少三个方案、至少三个外部情景。把每个方案在每个情景下从 4 到 1 排序，然后逐列扫描。写下哪些方案严格劣势、哪些只是弱劣势、是否有方案占优于其余全部。再到下方两款配套游戏中检验结果。</p>
+
+<p><strong>▼ 自检关卡：推进前必须领悟的常识</strong> 战略会议前五分钟的逐列扫描，往往能删掉一半方案。请在会前做，而不是会上做。</p>
+
+<h4>第 03 课配套游戏：运营简报与部署</h4>
+
+<ol>
+
+<li><strong>教学意图：</strong> 通过部署在 GitHub Pages 上的两款互动引擎，把本课内容转化为本能的董事会反应。</li>
+
+<li><strong>高管目标：</strong><ul><li>游戏 1（剔除劣势动作，视频游戏）：在倒计时结束前，识别出被严格占优的动作。</li><li>游戏 2（投标淘汰链，商业模拟）：在合同投标僵局中，运用迭代剔除法逐步缩小对局。</li></ul></li>
+
+<li><strong>计分标准：</strong> 在游戏 1 中通过校准测验，可激活 200% 入场加成。游戏 2 在统一排行榜上享有双倍权重 (2x)。每局游戏都有时间限制，完成后可点击“获取证书”，领取 1 至 5 颗金星的胜利证书。</li>
+
+<li><strong>在线游玩链接：</strong><ul><li>游戏 1 (剔除劣势动作): <a href="https://firedancerx.github.io/Game-Theory/Games/Lesson%2003/game1_cull_the_dominated.html">https://firedancerx.github.io/Game-Theory/Games/Lesson%2003/game1_cull_the_dominated.html</a></li><li>游戏 2 (投标淘汰链): <a href="https://firedancerx.github.io/Game-Theory/Games/Lesson%2003/game2_tender_elimination_chain.html">https://firedancerx.github.io/Game-Theory/Games/Lesson%2003/game2_tender_elimination_chain.html</a></li><li>主平台入口： <a href="https://firedancerx.github.io/Game-Theory/">https://firedancerx.github.io/Game-Theory/</a></li></ul></li>
+
+</ol>
+
+<h4>附录：Obsidian 知识图谱语义三元组</h4>
+
+<p>请将下列原子三元组导入你的高管知识库（Obsidian / Logseq）：</p>
+
+<p><strong>Obsidian 原始语义三元组（复制并粘贴至知识库）</strong></p>
+
+<pre><code>%%
+[[严格占优]] --[意味着]--&gt; [[每种情景下都更好]]
+[[劣势策略]] --[属于]--&gt; [[可安全删除项]]
+[[占优策略]] --[终结]--&gt; [[战略争论]]
+[[IESDS]] --[重复]--&gt; [[占优检验]]
+[[弱占优]] --[风险在于]--&gt; [[误删均衡]]
+[[平均值陷阱]] --[混淆]--&gt; [[平均收益与占优]]
+[[理性共同知识]] --[支撑]--&gt; [[迭代删除]]
+%%</code></pre>
+
+<table border="1" cellpadding="8" cellspacing="0">
+<thead>
+<tr><th>概念实体</th><th>历史渊源与年份</th><th>Obsidian 语义三元组</th><th>高管商业含义</th></tr>
+</thead>
+<tbody>
+<tr><td>[[严格占优]]</td><td>约翰·冯·诺依曼与奥斯卡·摩根斯特恩，《博弈论与经济行为》(1944)</td><td>[[严格占优]] --[意味着]--&gt; [[每种情景下都更好]]</td><td>在每种情景下都优于另一方案，则较弱方案可以安全删除。</td></tr>
+<tr><td>[[IESDS]]</td><td>埃尔韦·穆兰 (1979)；戴维·皮尔斯与道格拉斯·伯恩海姆，理性化 (1984)</td><td>[[IESDS]] --[重复]--&gt; [[占优检验]]</td><td>删除劣势动作后，对更小的网格再次检验，直到无可再删。</td></tr>
+<tr><td>[[理性共同知识]]</td><td>罗伯特·奥曼，《同意去不同意》(1976)</td><td>[[理性共同知识]] --[支撑]--&gt; [[迭代删除]]</td><td>迭代删除的可靠程度，取决于你对“对手不会选劣势动作”的信心。</td></tr>
+</tbody>
+</table>

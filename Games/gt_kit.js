@@ -194,6 +194,17 @@ GT.init=function(cfg){
  const how=GT.el('div',{class:'gt-card gt-how',html:'<b>How to play.</b> '+cfg.how});
  const body=GT.el('div',{});
  wrap.append(head,how,body);
+ /* START gate: nothing runs until the player clicks the bar; the click reloads and the flag lets init continue */
+ if(window.name!=='gt_go'){
+  if(!document.getElementById('gt-start-css')){const st=document.createElement('style');st.id='gt-start-css';
+   st.textContent='.gt-start{display:block;width:100%;margin:18px 0;padding:30px 12px;font:900 2.1rem/1.1 Georgia,serif;letter-spacing:.12em;text-transform:uppercase;color:#1a1000;background:linear-gradient(135deg,#ffe27a,#f5b800 55%,#c98a00);border:4px solid #fff3a0;border-radius:14px;cursor:pointer;box-shadow:0 0 0 4px #7a4f00,0 10px 30px rgba(245,184,0,.45);animation:gtpulse 1.4s ease-in-out infinite}.gt-start small{display:block;margin-top:8px;font:600 .9rem system-ui,sans-serif;letter-spacing:.02em;text-transform:none;color:#4a3000}.gt-start:hover{filter:brightness(1.08)}@keyframes gtpulse{50%{transform:scale(1.015);box-shadow:0 0 0 4px #7a4f00,0 10px 40px rgba(245,184,0,.8)}}';
+   document.head.appendChild(st);}
+  const b=GT.el('button',{class:'gt-start',onclick:()=>{window.name='gt_go';location.reload();}},['START GAME']);
+  b.insertAdjacentHTML('beforeend','<small>Read the instructions above, then click to begin. The clock starts only when you click.</small>');
+  how.after(b);
+  throw new Error('GT_START_REQUIRED (waiting for player to press START)');
+ }
+ window.name='';
  const ov=GT.el('div',{class:'gt-ov'});document.body.appendChild(ov);
  const api={body,score:0,ended:false,
   setScore(v){if(api.ended)return;api.score=Math.max(0,Math.round(v));sc.textContent='Score '+api.score;},

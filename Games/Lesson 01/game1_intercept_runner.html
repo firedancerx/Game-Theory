@@ -97,6 +97,7 @@
   </div>
 
   <!-- DEBRIEF & EXECUTIVE SUMMARY -->
+  <button id="gt-start" class="gt-start" style="display:none" onclick="beginRun()">START GAME<small>Read the instructions above, then click to begin. The clock starts only when you click.</small></button>
   <div id="debrief-container" class="card" style="display:none;">
     <h2 style="color:var(--accent); margin-bottom:8px;">Executive Strategic Debrief</h2>
     <p id="debrief-text" style="color:var(--text-muted); line-height:1.6; font-size:0.95rem;"></p>
@@ -107,6 +108,7 @@
   </div>
 </div>
 
+<style>.gt-start{display:block;width:100%;margin:18px 0;padding:30px 12px;font:900 2.1rem/1.1 Georgia,serif;letter-spacing:.12em;text-transform:uppercase;color:#1a1000;background:linear-gradient(135deg,#ffe27a,#f5b800 55%,#c98a00);border:4px solid #fff3a0;border-radius:14px;cursor:pointer;box-shadow:0 0 0 4px #7a4f00,0 10px 30px rgba(245,184,0,.45);animation:gtpulse 1.4s ease-in-out infinite}.gt-start small{display:block;margin-top:8px;font:600 .9rem system-ui,sans-serif;letter-spacing:.02em;text-transform:none;color:#4a3000}.gt-start:hover{filter:brightness(1.08)}@keyframes gtpulse{50%{transform:scale(1.015)}}</style>
 <script src="../gt_cert.js"></script>
 <script>
 GTCert.gate();
@@ -261,6 +263,14 @@ function resetGame() {
 
 let runEnd=0,runTick=null;
 function startGame() {
+  if (animationId) cancelAnimationFrame(animationId);
+  clearInterval(runTick);gameActive=false;resetGame();
+  document.getElementById("debrief-container").style.display="none";
+  document.getElementById("gt-start").style.display="block";
+  document.getElementById("gt-start").scrollIntoView({block:"center"});
+}
+function beginRun() {
+  document.getElementById("gt-start").style.display="none";
   if (animationId) cancelAnimationFrame(animationId);
   clearInterval(runTick);runEnd=Date.now()+120000;
   runTick=setInterval(()=>{if(!gameActive)return;const l=Math.max(0,Math.ceil((runEnd-Date.now())/1000));const e=document.getElementById('hud-time');e.textContent=Math.floor(l/60)+':'+String(l%60).padStart(2,'0');e.style.color=l<=15?'var(--danger)':'var(--success)';if(l<=0)endGame();},250);

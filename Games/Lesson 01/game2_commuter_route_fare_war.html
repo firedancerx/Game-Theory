@@ -102,8 +102,10 @@
       </tbody>
     </table>
 
+    <button id="gt-start" class="gt-start" onclick="beginSim()">START GAME<small>Read the instructions above, then click to begin. The clock starts only when you click.</small></button>
+    <div id="gt-clock" style="display:none;text-align:right;font-weight:700;color:var(--gold);margin-bottom:6px">Time 5:00</div>
     <!-- DECISION INTERFACE -->
-    <div id="action-section">
+    <div id="action-section" style="display:none">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
         <h4 style="font-size:1rem; color:var(--gold);">Select Fare for Round <span id="round-num">1</span> of 3:</h4>
         <span style="font-size:0.85rem; color:var(--text-muted);">Cumulative Profit: <strong id="cum-profit" style="color:var(--success);">$0.0M</strong></span>
@@ -155,6 +157,7 @@
   </div>
 </div>
 
+<style>.gt-start{display:block;width:100%;margin:18px 0;padding:30px 12px;font:900 2.1rem/1.1 Georgia,serif;letter-spacing:.12em;text-transform:uppercase;color:#1a1000;background:linear-gradient(135deg,#ffe27a,#f5b800 55%,#c98a00);border:4px solid #fff3a0;border-radius:14px;cursor:pointer;box-shadow:0 0 0 4px #7a4f00,0 10px 30px rgba(245,184,0,.45);animation:gtpulse 1.4s ease-in-out infinite}.gt-start small{display:block;margin-top:8px;font:600 .9rem system-ui,sans-serif;letter-spacing:.02em;text-transform:none;color:#4a3000}.gt-start:hover{filter:brightness(1.08)}@keyframes gtpulse{50%{transform:scale(1.015)}}</style>
 <script src="../gt_cert.js"></script>
 <script>
 GTCert.gate();
@@ -284,13 +287,22 @@ function finishCampaign() {
   <br><br><button class="btn-primary" onclick="GTCert.show({lesson:'01',n:2,title:'Commuter Fare War',kind:'sim',score:totalPlayerProfit*2,stars:totalPlayerProfit>=8?5:totalPlayerProfit>=7?4:totalPlayerProfit>=5?3:totalPlayerProfit>=3?2:1})" style="background:linear-gradient(135deg,#d97706,#b45309)">Get Certified</button>`;
 }
 
+let simTick=null;
+function beginSim(){
+  document.getElementById("gt-start").style.display="none";document.getElementById("action-section").style.display="block";
+  const c=document.getElementById("gt-clock");c.style.display="block";const end=Date.now()+300000;clearInterval(simTick);
+  simTick=setInterval(()=>{const l=Math.max(0,Math.ceil((end-Date.now())/1000));c.textContent="Time "+Math.floor(l/60)+":"+String(l%60).padStart(2,"0");
+   if(l<=0){clearInterval(simTick);let g=0;while(history.length<3&&g++<5)playTurn("Medium");}},500);
+}
 function resetCampaign() {
+  clearInterval(simTick);document.getElementById("gt-clock").style.display="none";
+  document.getElementById("gt-start").style.display="block";
   currentRound = 1;
   history = [];
   totalPlayerProfit = 0;
   totalRivalProfit = 0;
   clearMatrixHighlights();
-  document.getElementById("action-section").style.display = "block";
+  document.getElementById("action-section").style.display = "none";
   document.getElementById("final-debrief").style.display = "none";
   document.getElementById("round-num").textContent = "1";
   document.getElementById("cum-profit").textContent = "$0.0M";

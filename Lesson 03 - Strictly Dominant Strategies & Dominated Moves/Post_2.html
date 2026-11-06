@@ -1,0 +1,300 @@
+<meta charset="utf-8">
+<p><strong>EXECUTIVE GAME THEORY CURRICULUM • 12-WEEK MASTER ARCHITECTURE</strong></p>
+
+<img src="cid:banner-lesson-03-p2" alt="Lesson 03 banner" />
+
+<h2>Part 2: Intuitive Reinforcement &amp; Strategic Inversion — Eliminate the Losers First: Iterated Deletion and the Limits of Rival Rationality</h2>
+
+<p><strong>Strategic Focus &amp; Learning Objective:</strong> In this topic, we will be learning how to apply Iterated Elimination of Strictly Dominated Strategies (IESDS) with the Inversion Reflex to solve the Rationality Overconfidence Blind Spot (assuming every rival will play only sensible moves, or ignoring that a sensible rival would never play several of its own options).</p>
+
+<p><strong>The Real-World Operational Problem:</strong> Executives either stop at the first deletion, leaving a grid that is still too large to read, or they push the logic too far and treat a rival&#x27;s irrationality as impossible. Both errors are expensive. Stopping early wastes the biggest benefit of dominance, which is that deleting one player&#x27;s bad option can expose a bad option for the other player. Over-trusting the logic exposes the firm when a rival, for reasons of ego, error or desperation, plays a move that theory says it never should.</p>
+
+<p><strong>How This Topic Solves It:</strong> Inversion starts from deletion. First remove everything that no rational player would choose, for both sides. Then re-read the smaller grid from the rival&#x27;s side, because deleting your own dominated moves often turns one of the rival&#x27;s moves into a dominated move too. Repeat until nothing is left to delete. Finally, stress test the answer by asking what happens if a rival ignores the logic. This gives you both the equilibrium and the boundary of your confidence in it.</p>
+
+<p><strong>■ EXECUTIVE INVERSION ADVISORY</strong> Before choosing a move, delete moves. Before trusting the equilibrium, test it against a rival who does not play by the book. The first protects you from wasted effort; the second protects you from misplaced confidence.</p>
+
+<h3>Part I: The 4-Part Prelude Protocol</h3>
+
+<ol>
+
+<li><strong>Models in Focus:</strong> Iterated deletion, dominance solvability, order of deletion, common knowledge of rationality, and the cost of misjudging rival rationality.</li>
+
+<li><strong>Lifelike Dilemma &amp; Problem Statement:</strong> Two bidders, Firm A and Firm B, compete for an infrastructure services contract. Each has three tactical options. A new CFO at Firm A insists on modelling the rival&#x27;s "best move" and builds a forty-tab spreadsheet. A bid strategist instead deletes dominated options in turn: first one of Firm B&#x27;s options is worse than another in every row, then one of Firm A&#x27;s own options becomes dominated once that column is gone, and the grid collapses to a single cell in four steps. Firm A bids accordingly and wins. Two years later, against a rival under investor pressure that bids irrationally, the same procedure is applied with false confidence and the firm loses badly.</li>
+
+<li><strong>Component Dissection:</strong> Firm A&#x27;s procedure was correct. Its mistake in the second episode was to treat the procedure as a law of nature instead of a conditional prediction. IESDS predicts the outcome only if every player is rational and each knows the other is rational. When that belief is doubtful, the equilibrium becomes a benchmark rather than a forecast.</li>
+
+<li><strong>Lesson Embarkation:</strong> This lesson shows you how to run iterated deletion across both players, in the right order, and how to stress test the result against rivals who may not be rational.</li>
+
+</ol>
+
+<h3>Part II: The 7-Stage Core Pedagogy</h3>
+
+<h4>Stage 1: Why Learn This (The 45-Second Operational Hook)</h4>
+
+<p>Dominance is powerful because it is contagious. Once one of your rival&#x27;s options is deleted, the remaining grid is smaller, and options that were safe in a large grid may now be dominated in the small one. A manager who stops after one deletion has done a quarter of the work. A manager who iterates to the end often discovers that the whole game has a single logical outcome and that the "debate" was a calculation.</p>
+
+<p><strong>▼ CHECKPOINT: WHAT YOU MUST KNOW BEFORE MOVING FORWARD</strong> Deletion is contagious. Every option you remove can make another option dominated. Keep going until the test finds nothing more to delete, then read what remains.</p>
+
+<h4>Stage 2: The 5-Minute Core Framework (The Iterated Deletion Framework)</h4>
+
+<p>Consider this 3 × 3 tender grid. Each cell shows (Firm A rank, Firm B rank), where 4 is best and 1 is worst. Firm A chooses a row, Firm B chooses a column. We delete in four rounds.</p>
+
+<table border="1" cellpadding="8" cellspacing="0">
+<thead>
+<tr><th>Firm A \ Firm B</th><th>B1: Walk away</th><th>B2: Match price</th><th>B3: Bundle and undercut</th></tr>
+</thead>
+<tbody>
+<tr><td>A1: Premium bid</td><td>(2, 1)</td><td>(2, 3)</td><td>(3, 3)</td></tr>
+<tr><td>A2: Bundled-service bid</td><td>(2, 1)</td><td>(4, 1)</td><td>(4, 3)</td></tr>
+<tr><td>A3: Low-price bid</td><td>(1, 2)</td><td>(4, 3)</td><td>(3, 4)</td></tr>
+</tbody>
+</table>
+
+<img src="cid:diagram-03b" alt="diagram" />
+
+<p><em>Figure 3B: Inversion — Eliminate the Losers First (delete dominated moves, shrink the grid, re-read it from the rival&#x27;s side)</em></p>
+
+<p>Round 1: B3 beats B1 in every row (3 &gt; 1, 3 &gt; 1, 4 &gt; 2), so Firm B never walks away. Delete B1. Round 2: with B1 gone, A2 beats A1 in both remaining columns (4 &gt; 2, 4 &gt; 3). Delete A1. Round 3: with A1 gone, B3 beats B2 in both remaining rows (3 &gt; 1, 4 &gt; 3). Delete B2. Round 4: only column B3 remains, where A2 earns 4 and A3 earns 3. Delete A3. The surviving cell is (A2, B3) = (4, 3). Nine options became one in four deletions, and neither player ever needed a forecast.</p>
+
+<p><strong>▼ CHECKPOINT: WHAT YOU MUST KNOW BEFORE MOVING FORWARD</strong> Write down each round: which option, which dominator, and in which columns. If you cannot write the justification in one line, the deletion is not safe.</p>
+
+<h4>Stage 3: The 3-Layered Operational Deep Dive</h4>
+
+<ul>
+
+<li><strong>Layer 1 —</strong> The Two-Sided Deletion Protocol: Run the dominance test on your options, then on the rival&#x27;s options, then back on yours. Delete one dominated option at a time and re-test after each deletion. Record the order of deletion, because with strict dominance the final answer does not depend on it, but your audit trail does.</li>
+
+<li><strong>Layer 2 —</strong> The Rationality Overconfidence Blind Spot: IESDS assumes every player is rational and knows the others are rational. A rival under investor pressure, a founder protecting ego, or a team reacting to bad information may play a dominated move. Treat the iterated result as the answer if your rivals are rational, and keep a fallback plan for the case where they are not.</li>
+
+<li><strong>Layer 3 —</strong> Boundary Conditions: When the test stops with several options left, the game is not dominance solvable and you need a different tool such as best-reply analysis (Nash equilibrium). Weak dominance, ties, and mixed strategies all complicate the picture, and deleting weakly dominated options can change which equilibria survive, so use weak dominance as a warning light and not as a deletion order.</li>
+
+</ul>
+
+<p><strong>▼ CHECKPOINT: WHAT YOU MUST KNOW BEFORE MOVING FORWARD</strong> Delete one option at a time, record every step, and name the point at which your logic depends on the rival being rational. That point is your risk.</p>
+
+<h4>Stage 4: Real-World Applications × 3</h4>
+
+<ol>
+
+<li>Public Procurement (Tender Chains): A services firm uses four-round deletion to show that its rival would never submit the abnormally low bid it had feared, and prices at a margin 6 points higher than its first plan, winning on quality scoring.</li>
+
+<li>Airline Alliances (Capacity Games): A carrier realizes that a rival&#x27;s expansion option is dominated once a specific airport slot is secured, and secures that slot before the rival reconsiders. The rival&#x27;s grid shrinks to the choice the carrier wanted.</li>
+
+<li>Labor Negotiations (Offer Sequencing): A management team removes two union demands that are dominated by a third in every scenario, then discovers that the union&#x27;s own best remaining move is acceptance of the compromise it actually wanted.</li>
+
+</ol>
+
+<p><strong>▼ CHECKPOINT: WHAT YOU MUST KNOW BEFORE MOVING FORWARD</strong> Run the deletion on both sides of the table. The most valuable insight is often what your rival&#x27;s grid looks like after you remove your own dominated moves.</p>
+
+<h4>Stage 5: Diagnostic Self-Quiz &amp; Evaluative Rubric</h4>
+
+<p><strong>Scenario:</strong> In a three-by-three game you delete one of your own dominated options. Which of the following is the best next step?</p>
+
+<p>A) Stop, because dominated moves have been removed.  B) Re-run the dominance test on your rival&#x27;s options in the smaller grid, because options that were not dominated before may be now.  C) Assume the rival will play its highest-payoff cell.  D) Average the remaining payoffs and choose the best average.</p>
+
+<p><strong>Recommended Answer —B:</strong> Deleting an option shrinks the grid, and an option that survived in the large grid can become strictly dominated in the smaller one. That is why the test is iterative. Stopping early (A) wastes the benefit, assuming the highest cell (C) ignores the rival&#x27;s own incentives, and averaging (D) confuses dominance with expected value.</p>
+
+<p><strong>▼ CHECKPOINT: WHAT YOU MUST KNOW BEFORE MOVING FORWARD</strong> After every deletion re-run the test for both players. The grid you are reading is no longer the grid you started with.</p>
+
+<h4>Stage 6: What You Should Know by Now (Daily Life Translation)</h4>
+
+<p><strong>■ THE DAILY LIFE TRANSLATION</strong> Booking a family holiday is iterated deletion. You cross off the destinations that no one wants, which makes it obvious that two options are now unaffordable once the flights are fixed, and the list collapses until one choice remains. But if your teenager decides to ignore the logic and refuse to travel at all, your clean deletion plan meets a player who is not playing by the same rules.</p>
+
+<p><strong>▼ CHECKPOINT: WHAT YOU MUST KNOW BEFORE MOVING FORWARD</strong> Logic gives you the answer for rational players. Daily life, and business, include people who are tired, proud or afraid. Hold the equilibrium firmly and your confidence in it loosely.</p>
+
+<h4>Stage 7: Self-Regulated Practice &amp; Interactive Discovery</h4>
+
+<p>Choose a negotiation or bid you will face this quarter. Build the 3 × 3 grid from both sides, run the deletion rounds in writing, and mark the round where you most rely on the rival being rational. Prepare a one-line fallback for that round. Then test your instincts in the two companion games below.</p>
+
+<p><strong>▼ CHECKPOINT: WHAT YOU MUST KNOW BEFORE MOVING FORWARD</strong> A fallback written before the meeting costs one minute. A fallback improvised in the meeting usually costs the deal.</p>
+
+<h4>Topic 03 Companion Games: Operational Briefing &amp; Deployment</h4>
+
+<ol>
+
+<li><strong>Pedagogical Intent:</strong> Convert this lesson into instinctive boardroom reflexes through twin interactive engines hosted on GitHub Pages.</li>
+
+<li><strong>Executive Objectives:</strong><ul><li>Game 1 (Cull the Dominated, Video Game): Spot the strictly dominated move before the clock runs out</li><li>Game 2 (Tender Elimination Chain, Business Simulation): Iterated elimination in a contract-bidding standoff</li></ul></li>
+
+<li><strong>Scoring Standards:</strong> Passing the calibration quiz in Game 1 activates a 200% Entry Buff. Game 2 carries DOUBLE WEIGHT (2x) on the unified leaderboard. Every session is time-limited, and finishing a game unlocks the Get Certified button for a 1-5 golden star victory certificate.</li>
+
+<li><strong>Playable Online Links:</strong><ul><li>Game 1 (Cull the Dominated): <a href="https://firedancerx.github.io/Game-Theory/Games/Lesson%2003/game1_cull_the_dominated.html">https://firedancerx.github.io/Game-Theory/Games/Lesson%2003/game1_cull_the_dominated.html</a></li><li>Game 2 (Tender Elimination Chain): <a href="https://firedancerx.github.io/Game-Theory/Games/Lesson%2003/game2_tender_elimination_chain.html">https://firedancerx.github.io/Game-Theory/Games/Lesson%2003/game2_tender_elimination_chain.html</a></li><li>Master Platform Portal: <a href="https://firedancerx.github.io/Game-Theory/">https://firedancerx.github.io/Game-Theory/</a></li></ul></li>
+
+</ol>
+
+<h4>Appendix: Obsidian Knowledge Graph Semantic Triplets</h4>
+
+<p>Import these atomic triplets into your executive knowledge vault (Obsidian / Logseq):</p>
+
+<p><strong>Obsidian Raw Semantic Triplets (Copy &amp; Paste into Vault)</strong></p>
+
+<pre><code>%%
+[[IESDS]] --[shrinks]--&gt; [[Game Grid]]
+[[Deleting Dominated Moves]] --[exposes]--&gt; [[Further Dominated Moves]]
+[[Dominance Solvable Game]] --[reduces_to]--&gt; [[Single Outcome]]
+[[Order Of Deletion]] --[matters_for]--&gt; [[Weak Dominance Only]]
+[[Rival Irrationality]] --[breaks]--&gt; [[Iterated Prediction]]
+[[Equilibrium Benchmark]] --[guides]--&gt; [[Negotiation Strategy]]
+[[Fallback Plan]] --[hedges]--&gt; [[Rationality Assumption]]
+%%</code></pre>
+
+<table border="1" cellpadding="8" cellspacing="0">
+<thead>
+<tr><th>Concept Entity</th><th>Historical Origin &amp; Date</th><th>Obsidian Semantic Triplets</th><th>Executive Commercial Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td>[[Dominance Solvable Game]]</td><td>Hervé Moulin (1979)</td><td>[[Dominance Solvable Game]] --[reduces_to]--&gt; [[Single Outcome]]</td><td>A game that collapses to one cell under repeated deletion needs no forecast.</td></tr>
+<tr><td>[[Common Knowledge Of Rationality]]</td><td>Robert Aumann (1976)</td><td>[[Common Knowledge Of Rationality]] --[underpins]--&gt; [[Iterated Deletion]]</td><td>Each player knows that all know that all are rational. This is the hidden assumption behind IESDS.</td></tr>
+<tr><td>[[Rival Irrationality]]</td><td>Behavioral game theory, Colin Camerer (2003)</td><td>[[Rival Irrationality]] --[breaks]--&gt; [[Iterated Prediction]]</td><td>Real opponents deviate. The equilibrium is a benchmark, not a promise.</td></tr>
+</tbody>
+</table>
+
+<p><strong>高管博弈论研修课程 • 12周权威架构规范</strong></p>
+
+<h2>第 03 课：严格占优策略与劣势动作</h2>
+
+<p>直觉强化与逆向思维（中文版）：先剔除必败项——迭代删除与对手理性的边界</p>
+
+<p><strong>战略重点与学习目标：</strong> 在本课中，我们将学习如何把严格劣势策略迭代剔除 (IESDS) 与逆向思维结合，破除“理性过度自信”的盲区：既不要假定每个对手只会走合理的棋，也不要忽略合理的对手本来就不会走自己的若干选项。</p>
+
+<p><strong>真实的商业运营困境：</strong> 高管要么在第一次删除后就停下，留下仍然过大的网格；要么把逻辑推得过头，认为对手不可能非理性。两种错误代价都高。过早停下，浪费了占优最大的好处——删除一方的劣势选项，常常暴露另一方的劣势选项；过度信任逻辑，则在对手因自负、失误或绝望而走出理论上“绝不该走”的一步时，使企业受创。</p>
+
+<p><strong>本课题如何化解此困境：</strong> 逆向思维从删除开始：先为双方删除所有理性参与者都不会选择的动作，再从对手角度重读更小的网格，因为删除己方劣势动作，常常使对手的某个动作也变成劣势。如此重复直到无可删除。最后用“如果对手无视这套逻辑会怎样”来压力测试，得到均衡及你对它的信心边界。</p>
+
+<p><strong>■ 高管逆向提示</strong> 选择动作之前先删除动作；信任均衡之前先用一个不按套路出牌的对手来测试它。前者让你避免无用功，后者让你避免信心错置。</p>
+
+<h3>第一部分：四步前奏导引协议</h3>
+
+<ol>
+
+<li><strong>核心模型：</strong> 迭代删除、占优可解性、删除顺序、理性共同知识，以及误判对手理性的代价。</li>
+
+<li><strong>真实商业困境：</strong> 甲、乙两家公司竞标一份基础设施服务合同，各有三个战术选项。甲公司新任财务总监坚持为对手“最佳动作”建模，做了四十个标签页的电子表格。而一位投标策略师则逐步删除劣势选项：先发现乙的某个选项在每一行都不如另一个，再发现甲自己的某个选项在该列消失后也变成劣势，四步之后网格坍缩为单一格子。甲据此投标并中标。两年后，面对一家受投资人压力而非理性出价的对手，同样的流程被带着虚假的信心再次套用，企业输得很惨。</li>
+
+<li><strong>结构剖析：</strong> 甲公司的流程是对的。第二次的错误在于，把流程当作自然法则，而不是条件预测。IESDS 只有在每个参与者都理性、且彼此知道对方理性时，才预测结果。当这一信念存疑时，均衡只是基准，而不是预测。</li>
+
+<li><strong>课程启航：</strong> 本课将展示如何按正确顺序对双方运行迭代删除，并对结果做压力测试，以应对可能并不理性的对手。</li>
+
+</ol>
+
+<h3>第二部分：七阶核心教学体系</h3>
+
+<h4>阶段 1：为什么要学（45 秒运营开场）</h4>
+
+<p>占优之所以强大，是因为它会“传染”。对手的一个选项被删除后，剩下的网格变小，原本在大网格里安全的选项，在小网格里可能就变成劣势。在第一次删除后就停下的经理只完成了四分之一的工作；一路迭代到底的经理，常发现整个博弈只有唯一的逻辑结果，所谓“争论”不过是一次计算。</p>
+
+<p><strong>▼ 自检关卡：推进前必须领悟的常识</strong> 删除具有传染性。你每删除一个选项，都可能使另一个选项变成劣势。继续检验，直到无可再删，再读剩下的结果。</p>
+
+<h4>阶段 2：五分钟核心框架 (迭代删除框架)</h4>
+
+<p>请看这张 3 × 3 投标网格。每个格子显示（甲排名，乙排名），4 为最优、1 为最差。甲选行，乙选列，我们分四轮删除。</p>
+
+<table border="1" cellpadding="8" cellspacing="0">
+<thead>
+<tr><th>甲 ／ 乙</th><th>乙1：退出</th><th>乙2：跟随报价</th><th>乙3：捆绑并压价</th></tr>
+</thead>
+<tbody>
+<tr><td>甲1：高端投标</td><td>(2, 1)</td><td>(2, 3)</td><td>(3, 3)</td></tr>
+<tr><td>甲2：捆绑服务投标</td><td>(2, 1)</td><td>(4, 1)</td><td>(4, 3)</td></tr>
+<tr><td>甲3：低价投标</td><td>(1, 2)</td><td>(4, 3)</td><td>(3, 4)</td></tr>
+</tbody>
+</table>
+
+<img src="cid:diagram-03d" alt="diagram" />
+
+<p><em>图 3D：逆向思维——先剔除必败项（删除劣势动作、缩小网格、从对手角度重读）</em></p>
+
+<p>第 1 轮：乙3 在每一行都优于乙1（3 &gt; 1、3 &gt; 1、4 &gt; 2），乙绝不会退出，删除乙1。第 2 轮：乙1 消失后，甲2 在剩余两列都优于甲1（4 &gt; 2、4 &gt; 3），删除甲1。第 3 轮：甲1 消失后，乙3 在剩余两行都优于乙2（3 &gt; 1、4 &gt; 3），删除乙2。第 4 轮：只剩乙3 一列，甲2 得 4、甲3 得 3，删除甲3。最终格子是（甲2，乙3）= (4, 3)。九个选项在四次删除后变成一个，双方都不需要任何预测。</p>
+
+<p><strong>▼ 自检关卡：推进前必须领悟的常识</strong> 逐轮写下：哪个选项、哪个占优者、在哪些列。如果无法用一句话写出删除理由，这次删除就不安全。</p>
+
+<h4>阶段 3：三层运营深潜</h4>
+
+<ul>
+
+<li><strong>第一层——</strong> 双边删除协议：先对己方选项运行占优检验，再对对手选项，再回到己方。每次只删除一个劣势选项，并在每次删除后重新检验。记录删除顺序：严格占优下最终答案与顺序无关，但你的审计线索需要它。</li>
+
+<li><strong>第二层——</strong> 理性过度自信盲区：IESDS 假定每个参与者都理性，且知道别人也理性。受投资人压力的对手、保护自尊的创始人，或基于错误信息行动的团队，都可能走出劣势动作。若对手理性，迭代结果就是答案；同时为对手不理性的情形准备后备方案。</li>
+
+<li><strong>第三层——</strong> 边界条件：当检验停在仍有多个选项时，博弈不是占优可解的，需要其他工具，例如最优反应分析（纳什均衡）。弱占优、平局与混合策略都会让情况复杂化，删除弱占优选项可能改变幸存的均衡，所以把弱占优当作警示灯，不要当作删除顺序。</li>
+
+</ul>
+
+<p><strong>▼ 自检关卡：推进前必须领悟的常识</strong> 每次只删一个选项，记录每一步，并指出你的逻辑在哪一点依赖于对手理性。那一点就是你的风险。</p>
+
+<h4>阶段 4：真实世界应用 × 3</h4>
+
+<ol>
+
+<li>公共采购（投标链）：一家服务公司用四轮删除证明，对手不会提交它曾担心的异常低价，因此定价比最初方案高出 6 个百分点，并凭质量评分中标。</li>
+
+<li>航空联盟（运力博弈）：一家航空公司意识到，一旦拿下某个机场时刻，对手的扩张方案即成为劣势，于是抢在对手重新考虑之前锁定了该时刻。对手的网格缩小到航空公司希望的选择。</li>
+
+<li>劳资谈判（报价顺序）：管理层删除了两项在每种情景下都被第三项占优的工会诉求，随后发现工会剩下的最佳动作恰恰是接受管理层真正想要的折中方案。</li>
+
+</ol>
+
+<p><strong>▼ 自检关卡：推进前必须领悟的常识</strong> 在谈判桌的双方都运行删除。最有价值的洞察，往往是在你删除自己的劣势动作之后，对手的网格变成了什么样。</p>
+
+<h4>阶段 5：诊断自测与评分标准</h4>
+
+<p><strong>情景：</strong> 在一个三乘三博弈中，你删除了自己的一个劣势选项。下列哪项是最佳的下一步？</p>
+
+<p>A) 停止，因为劣势动作已被删除。　B) 在更小的网格里对对手的选项重新运行占优检验，因为之前未被占优的选项现在可能被占优。　C) 假定对手会选收益最高的格子。　D) 对剩余收益求平均，选择平均值最高者。</p>
+
+<p><strong>推荐答案——B：</strong> 删除选项会缩小网格，在大网格中幸存的选项可能在小网格中变成严格劣势，这正是检验需要迭代的原因。过早停下（A）浪费了好处，假定对手选最高格（C）忽略了对手自身的激励，求平均（D）则把占优与期望值混为一谈。</p>
+
+<p><strong>▼ 自检关卡：推进前必须领悟的常识</strong> 每次删除后都要为双方重新运行检验。你正在读的网格，已不是你开始时的网格。</p>
+
+<h4>阶段 6：此刻你应当明白的事（日常生活转译）</h4>
+
+<p><strong>■ 日常生活转译</strong> 规划家庭假期就是迭代删除。你划掉没人想去的目的地，一旦航班确定，又发现有两个选项负担不起，名单不断缩小，直到只剩一个。但如果你的青少年决定无视这套逻辑、干脆拒绝出行，你干净的删除计划就遇上了一个不按同一规则出牌的玩家。</p>
+
+<p><strong>▼ 自检关卡：推进前必须领悟的常识</strong> 逻辑给出的是理性参与者的答案。日常生活与商业中，也有疲惫、骄傲或恐惧的人。对均衡要坚定，对自己的信心要留有余地。</p>
+
+<h4>阶段 7：自主练习与互动探索</h4>
+
+<p>选一场你本季度要面对的谈判或投标。从双方角度构建 3 × 3 网格，书面运行各轮删除，并标出你最依赖“对手理性”的那一轮，为那一轮准备一句后备方案。然后在下方两款配套游戏中检验你的直觉。</p>
+
+<p><strong>▼ 自检关卡：推进前必须领悟的常识</strong> 会前写下后备方案只需一分钟，会上临时想后备方案，往往要付出整笔交易的代价。</p>
+
+<h4>第 03 课配套游戏：运营简报与部署</h4>
+
+<ol>
+
+<li><strong>教学意图：</strong> 通过部署在 GitHub Pages 上的两款互动引擎，把本课内容转化为本能的董事会反应。</li>
+
+<li><strong>高管目标：</strong><ul><li>游戏 1（剔除劣势动作，视频游戏）：在倒计时结束前，识别出被严格占优的动作。</li><li>游戏 2（投标淘汰链，商业模拟）：在合同投标僵局中，运用迭代剔除法逐步缩小对局。</li></ul></li>
+
+<li><strong>计分标准：</strong> 在游戏 1 中通过校准测验，可激活 200% 入场加成。游戏 2 在统一排行榜上享有双倍权重 (2x)。每局游戏都有时间限制，完成后可点击“获取证书”，领取 1 至 5 颗金星的胜利证书。</li>
+
+<li><strong>在线游玩链接：</strong><ul><li>游戏 1 (剔除劣势动作): <a href="https://firedancerx.github.io/Game-Theory/Games/Lesson%2003/game1_cull_the_dominated.html">https://firedancerx.github.io/Game-Theory/Games/Lesson%2003/game1_cull_the_dominated.html</a></li><li>游戏 2 (投标淘汰链): <a href="https://firedancerx.github.io/Game-Theory/Games/Lesson%2003/game2_tender_elimination_chain.html">https://firedancerx.github.io/Game-Theory/Games/Lesson%2003/game2_tender_elimination_chain.html</a></li><li>主平台入口： <a href="https://firedancerx.github.io/Game-Theory/">https://firedancerx.github.io/Game-Theory/</a></li></ul></li>
+
+</ol>
+
+<h4>附录：Obsidian 知识图谱语义三元组</h4>
+
+<p>请将下列原子三元组导入你的高管知识库（Obsidian / Logseq）：</p>
+
+<p><strong>Obsidian 原始语义三元组（复制并粘贴至知识库）</strong></p>
+
+<pre><code>%%
+[[IESDS]] --[缩小]--&gt; [[博弈网格]]
+[[删除劣势动作]] --[暴露]--&gt; [[更多劣势动作]]
+[[占优可解博弈]] --[收敛于]--&gt; [[唯一结果]]
+[[删除顺序]] --[仅影响]--&gt; [[弱占优情形]]
+[[对手非理性]] --[打破]--&gt; [[迭代预测]]
+[[均衡基准]] --[指导]--&gt; [[谈判策略]]
+[[后备方案]] --[对冲]--&gt; [[理性假设]]
+%%</code></pre>
+
+<table border="1" cellpadding="8" cellspacing="0">
+<thead>
+<tr><th>概念实体</th><th>历史渊源与年份</th><th>Obsidian 语义三元组</th><th>高管商业含义</th></tr>
+</thead>
+<tbody>
+<tr><td>[[占优可解博弈]]</td><td>埃尔韦·穆兰 (1979)</td><td>[[占优可解博弈]] --[收敛于]--&gt; [[唯一结果]]</td><td>反复删除后坍缩为一个格子的博弈，不需要任何预测。</td></tr>
+<tr><td>[[理性共同知识]]</td><td>罗伯特·奥曼 (1976)</td><td>[[理性共同知识]] --[支撑]--&gt; [[迭代删除]]</td><td>每个人都知道所有人都知道所有人理性。这是 IESDS 背后隐藏的假设。</td></tr>
+<tr><td>[[对手非理性]]</td><td>行为博弈论，科林·凯莫勒 (2003)</td><td>[[对手非理性]] --[打破]--&gt; [[迭代预测]]</td><td>真实的对手会偏离。均衡是基准，不是承诺。</td></tr>
+</tbody>
+</table>
